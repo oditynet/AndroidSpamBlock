@@ -5,3 +5,8 @@ Android block spam
 
 
 <img src="https://github.com/oditynet/AndroidSpamBlock/blob/main/out1.jpg" width="300" height="auto" />
+
+
+Вы добавляете имена, которые показываются во время звонка или часть номера и по этому паттерну блокируется. 
+
+TODO: -) Входящий звонок на 0,5 сек вы все же услышите. Надо Исправить
