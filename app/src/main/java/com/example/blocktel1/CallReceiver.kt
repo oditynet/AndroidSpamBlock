@@ -1,14 +1,13 @@
 package com.example.blocktel1
 
+
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.provider.ContactsContract
 import android.telephony.TelephonyManager
 import android.util.Log
 import android.widget.Toast
-import androidx.core.content.edit
 
 class CallReceiver : BroadcastReceiver() {
 
@@ -26,9 +25,10 @@ class CallReceiver : BroadcastReceiver() {
 
                     // Загружаем список блокируемых текстов из SharedPreferences
                     val blockedPatterns = loadBlockedPatterns(context)
+                    val settings = loadSettings(context)
 
                     // Проверяем, нужно ли блокировать этот звонок
-                    val shouldBlock = shouldBlockCall(number, contactName, blockedPatterns)
+                    val shouldBlock = shouldBlockCall(number, contactName, blockedPatterns, settings, context)
 
                     val logMessage = "Входящий звонок:\n" +
                             "Номер: $number\n" +
@@ -83,29 +83,9 @@ class CallReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun loadBlockedPatterns(context: Context): List<String> {
-        val prefs = context.getSharedPreferences("blocktel_prefs", Context.MODE_PRIVATE)
-        val patterns = prefs.getStringSet("blocked_patterns", emptySet()) ?: emptySet()
-        return patterns.toList()
-    }
-
-    private fun shouldBlockCall(number: String, name: String?, blockedPatterns: List<String>): Boolean {
-        if (blockedPatterns.isEmpty()) return false
-
-        return blockedPatterns.any { pattern ->
-            pattern.isNotBlank() && (
-                number.contains(pattern, ignoreCase = true) ||
-                (name?.contains(pattern, ignoreCase = true) == true)
-            )
-        }
-    }
-
     private fun blockCall(context: Context) {
         try {
             Log.w("CallMonitor", "ПОПЫТКА ЗАБЛОКИРОВАТЬ ЗВОНОК")
-
-            // Способ 1: Используем ITelephony (требует системного разрешения)
-            // Это более сложный метод, который может работать не на всех устройствах
 
             // Способ 2: Используем доступные методы для завершения звонка
             // Для Android 9+ (API 28) и выше можно попробовать этот способ

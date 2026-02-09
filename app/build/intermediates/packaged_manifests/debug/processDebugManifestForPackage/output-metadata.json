@@ -4,7 +4,7 @@
     "type": "PACKAGED_MANIFESTS",
     "kind": "Directory"
   },
-  "applicationId": "com.example.blocktel1",
+  "applicationId": "com.example.blocktel",
   "variantName": "debug",
   "elements": [
     {
