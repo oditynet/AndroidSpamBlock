@@ -32,6 +32,8 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
+import android.telecom.TelecomManager
+
 // Модель данных для звонков
 data class CallLog(
     val number: String,
@@ -201,7 +203,6 @@ fun formatPhoneNumber(number: String): String {
     }
 }
 
-// Улучшенная функция проверки блокировки
 fun shouldBlockCall(
     number: String,
     name: String?,
@@ -209,33 +210,45 @@ fun shouldBlockCall(
     settings: AppSettings,
     context: Context
 ): Boolean {
-    // Если номер пустой или содержит не только цифры (скрытый номер)
-    if (settings.blockHiddenNumbers && (number.isBlank() || !number.matches(Regex("^[0-9+\\s()-]*$")))) {
-        return true
-    }
+    // Очищаем номер от лишних символов
+    val cleanNumber = number.replace(Regex("[^0-9+]"), "")
 
-    // Если номер международный
-    if (settings.blockInternational && number.startsWith("+") && !number.startsWith("+7")) {
-        return true
-    }
-
-    // Если разрешены контакты и номер есть в контактах
-    if (settings.allowContacts && name != null && name != number) {
-        return false
-    }
-
-    // Проверка по паттернам
+    // 1. ВЫСШИЙ ПРИОРИТЕТ: проверка по паттернам блокировки
+    // Если номер или имя совпадают с паттерном - блокируем ВСЕГДА!
     if (blockedPatterns.isNotEmpty()) {
         val checkPatterns = blockedPatterns.map {
             if (it.startsWith("user_")) it.removePrefix("user_") else it
         }
 
-        return checkPatterns.any { pattern ->
+        val hasBlockingPattern = checkPatterns.any { pattern ->
             pattern.isNotBlank() && (
-                number.contains(pattern, ignoreCase = true) ||
-                (name?.contains(pattern, ignoreCase = true) == true)
-            )
+                    cleanNumber.contains(pattern, ignoreCase = true) ||
+                            (name?.contains(pattern, ignoreCase = true) == true)
+                    )
         }
+
+        // Если есть паттерн блокировки - ИГНОРИРУЕМ ВСЕ НАСТРОЙКИ и блокируем!
+        if (hasBlockingPattern) {
+            return true
+        }
+    }
+
+    // 2. Проверка: является ли номер контактом
+    val isContact = name != null && name != number
+
+    // Если это контакт И включена настройка "разрешать контакты" - НЕ блокируем
+    if (isContact && settings.allowContacts) {
+        return false
+    }
+
+    // 3. Проверка на скрытые номера
+    if (settings.blockHiddenNumbers && (number.isBlank() || !number.matches(Regex("^[0-9+\\s()-]*$")))) {
+        return true
+    }
+
+    // 4. Проверка на международные номера
+    if (settings.blockInternational && number.startsWith("+") && !number.startsWith("+7")) {
+        return true
     }
 
     return false
@@ -382,7 +395,7 @@ suspend fun updatePatternsFromInternet(context: Context, currentPatterns: Mutabl
         withContext(Dispatchers.IO) {
             val url = "https://raw.githubusercontent.com/oditynet/AndroidSpamBlock/main/updatepattern.txt"
 
-            Log.d("UpdatePatterns", "Начинаю загрузку с URL: $url")
+            //Log.d("UpdatePatterns", "Начинаю загрузку с URL: $url")
 
             var connection: java.net.HttpURLConnection? = null
 

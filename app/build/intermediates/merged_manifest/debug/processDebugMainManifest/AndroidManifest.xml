@@ -44,13 +44,13 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.BlockTel"
+        android:theme="@style/Theme.BlockTel1"
         android:usesCleartextTraffic="true" >
         <activity
             android:name="com.example.blocktel1.MainActivity"
             android:exported="true"
             android:label="SpamBlock"
-            android:theme="@style/Theme.BlockTel" >
+            android:theme="@style/Theme.BlockTel1" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

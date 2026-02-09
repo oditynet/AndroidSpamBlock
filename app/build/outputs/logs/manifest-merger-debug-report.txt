@@ -152,7 +152,7 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] /home/odity/.gradle/caches/
 	android:allowBackup
 		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:29:9-35
 	android:theme
-		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:36:9-46
+		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:36:9-47
 	android:networkSecurityConfig
 		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:27:9-69
 	android:dataExtractionRules
@@ -166,7 +166,7 @@ ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManif
 	android:exported
 		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:39:13-36
 	android:theme
-		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:41:13-50
+		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:41:13-51
 	android:name
 		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:38:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
