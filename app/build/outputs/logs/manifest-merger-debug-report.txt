@@ -1,0 +1,351 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:2:1-40:12
+INJECTED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:2:1-40:12
+INJECTED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:2:1-40:12
+INJECTED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:2:1-40:12
+MERGED from [androidx.compose.material3:material3-android:1.3.0] /home/odity/.gradle/caches/9.1.0/transforms/8773379ede19dd100b9e8a43e2b45c3a/transformed/material3-release/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.compose.material:material-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/09e2be4e52bc3b723b2c96b9468842c3/transformed/material-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.material:material-ripple-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/865d7fdfc08a2b93b1b4887908157bff/transformed/material-ripple-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.foundation:foundation-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/f8ccff2f52853583082cca3b290b9932/transformed/foundation-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.animation:animation-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/8f9dc97532fd2c85dea0a9470b45c60a/transformed/animation-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.foundation:foundation-layout-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/dc2b8fea0a3f7f1c76a59906b90c6531/transformed/foundation-layout-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.animation:animation-core-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/a2240e86dd0e6c3fa0c5deba3a0efc19/transformed/animation-core-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-tooling-data-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/216e6acc5243abe884f887fa22cdee20/transformed/ui-tooling-data-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-unit-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/021692819b13d6d724b97e676f1948b7/transformed/ui-unit-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-geometry-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/2e49bb9ca45b3c31d9303141ebed27ef/transformed/ui-geometry-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-util-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/f7846ab3ed5ff5ed419b64b4ce388a54/transformed/ui-util-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-text-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/ce69299416fb6afc18e734ae36572deb/transformed/ui-text-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-tooling-preview-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/7b56e153f7e471113a79f3d01b8d5e79/transformed/ui-tooling-preview-release/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.compose.ui:ui-tooling-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/4ade9f1988b9bf28be06a03915b51d02/transformed/ui-tooling-release/AndroidManifest.xml:17:1-28:12
+MERGED from [androidx.compose.ui:ui-graphics-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/ec141c4f62e2a7967b2eb78ed6bf932e/transformed/ui-graphics-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-test-manifest:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/0517e4fc115d128ab8f9d3ed5e43c3e8/transformed/ui-test-manifest-1.7.0/AndroidManifest.xml:17:1-28:12
+MERGED from [androidx.activity:activity-ktx:1.8.2] /home/odity/.gradle/caches/9.1.0/transforms/b2549ebff5448c1774a5169a33b0b4f0/transformed/activity-ktx-1.8.2/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.activity:activity:1.8.2] /home/odity/.gradle/caches/9.1.0/transforms/e3a0386bdef161d0f875619cfbb63305/transformed/activity-1.8.2/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.activity:activity-compose:1.8.2] /home/odity/.gradle/caches/9.1.0/transforms/f4bb9f1326c5a9a5a67bd73029fc1fcc/transformed/activity-compose-1.8.2/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.material:material-icons-core-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/adaa29bbcb44626dca310f0a75a0e9b3/transformed/material-icons-core-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/d76a002772befc0c468ecdecab0a95bf/transformed/ui-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.emoji2:emoji2:1.3.0] /home/odity/.gradle/caches/9.1.0/transforms/880e241cbc3a576a42cf84d49ce43e49/transformed/emoji2-1.3.0/AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.autofill:autofill:1.0.0] /home/odity/.gradle/caches/9.1.0/transforms/3c22e5e9d04328bf46b64aabc9b436e8/transformed/autofill-1.0.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.graphics:graphics-path:1.0.1] /home/odity/.gradle/caches/9.1.0/transforms/b78a51ee063b2b456f4bd2b9ccf62f87/transformed/graphics-path-1.0.1/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] /home/odity/.gradle/caches/9.1.0/transforms/a1458f0c4effb3d0f0b6c1c0f31bba4a/transformed/customview-poolingcontainer-1.0.0/AndroidManifest.xml:17:1-23:12
+MERGED from [androidx.core:core-ktx:1.13.1] /home/odity/.gradle/caches/9.1.0/transforms/196758d790c485112a10699fb221836c/transformed/core-ktx-1.13.1/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.core:core:1.13.1] /home/odity/.gradle/caches/9.1.0/transforms/d80277031a4caac6958743bc25c1df71/transformed/core-1.13.1/AndroidManifest.xml:17:1-30:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/5a7bba3ea3e4cab1ee22cf4a0fe46835/transformed/lifecycle-livedata-core-2.8.3/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-android:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/e825fedeb2180b82f461fe4f28eb4c61/transformed/lifecycle-viewmodel-release/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx-android:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/84ff2c82358549ddfaf8785965821988/transformed/lifecycle-runtime-ktx-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-runtime-android:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/8599ac0a2f5712a900f20f792769bc3b/transformed/lifecycle-runtime-release/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/11d4dfdb2c6301b8155670429b377a9f/transformed/lifecycle-process-2.8.3/AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/c0298c700f27ea59b210099d4a12a6f0/transformed/lifecycle-viewmodel-ktx-2.8.3/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-runtime-compose-android:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/08a4199b4f00cb41a90bea5327d6268a/transformed/lifecycle-runtime-compose-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/cbf25ae616863300d38b330e1ceaec26/transformed/lifecycle-viewmodel-savedstate-2.8.3/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.savedstate:savedstate:1.2.1] /home/odity/.gradle/caches/9.1.0/transforms/bf5e850460d4d9d02372760293a97d18/transformed/savedstate-1.2.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.savedstate:savedstate-ktx:1.2.1] /home/odity/.gradle/caches/9.1.0/transforms/1843888a00d9ffd962695192ab9b3b28/transformed/savedstate-ktx-1.2.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.compose.runtime:runtime-saveable-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/a1f596c67b99d046070013067d156c6f/transformed/runtime-saveable-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.runtime:runtime-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/4b3e0b912e87fb345a8905454b8ed3d5/transformed/runtime-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.annotation:annotation-experimental:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/fd44ab0d5bceba0c657762b1a2ffa854/transformed/annotation-experimental-1.4.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/odity/.gradle/caches/9.1.0/transforms/9412e1ffb92bfb9e111fe6ef58777a27/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:17:1-27:12
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/odity/.gradle/caches/9.1.0/transforms/8ce2e7b55643e75461df13a47f226acf/transformed/profileinstaller-1.3.1/AndroidManifest.xml:17:1-55:12
+MERGED from [androidx.startup:startup-runtime:1.1.1] /home/odity/.gradle/caches/9.1.0/transforms/8a7ac5ee0134f1d6232046989e498eee/transformed/startup-runtime-1.1.1/AndroidManifest.xml:17:1-33:12
+MERGED from [androidx.tracing:tracing:1.0.0] /home/odity/.gradle/caches/9.1.0/transforms/8580426ec4b32583ea08a2d6c2ae1a4b/transformed/tracing-1.0.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.interpolator:interpolator:1.0.0] /home/odity/.gradle/caches/9.1.0/transforms/ca4ad6b2ba5f7da95ecc472ed19da7f9/transformed/interpolator-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.arch.core:core-runtime:2.2.0] /home/odity/.gradle/caches/9.1.0/transforms/2214651e9c506c1053b2ef572b3e5c1d/transformed/core-runtime-2.2.0/AndroidManifest.xml:17:1-22:12
+	package
+		INJECTED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml
+	android:versionName
+		INJECTED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml
+	xmlns:tools
+		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:3:5-51
+	android:versionCode
+		INJECTED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:2:11-69
+uses-permission#android.permission.READ_CONTACTS
+ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:5:5-72
+	android:name
+		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:5:22-69
+uses-permission#android.permission.READ_CALL_LOG
+ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:6:5-72
+	android:name
+		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:6:22-69
+uses-permission#android.permission.READ_PHONE_STATE
+ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:7:5-75
+	android:name
+		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:7:22-72
+uses-permission#android.permission.ANSWER_PHONE_CALLS
+ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:8:5-77
+	android:name
+		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:8:22-74
+application
+ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:10:5-38:19
+INJECTED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:10:5-38:19
+MERGED from [androidx.compose.ui:ui-tooling-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/4ade9f1988b9bf28be06a03915b51d02/transformed/ui-tooling-release/AndroidManifest.xml:22:5-26:19
+MERGED from [androidx.compose.ui:ui-tooling-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/4ade9f1988b9bf28be06a03915b51d02/transformed/ui-tooling-release/AndroidManifest.xml:22:5-26:19
+MERGED from [androidx.compose.ui:ui-test-manifest:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/0517e4fc115d128ab8f9d3ed5e43c3e8/transformed/ui-test-manifest-1.7.0/AndroidManifest.xml:22:5-26:19
+MERGED from [androidx.compose.ui:ui-test-manifest:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/0517e4fc115d128ab8f9d3ed5e43c3e8/transformed/ui-test-manifest-1.7.0/AndroidManifest.xml:22:5-26:19
+MERGED from [androidx.emoji2:emoji2:1.3.0] /home/odity/.gradle/caches/9.1.0/transforms/880e241cbc3a576a42cf84d49ce43e49/transformed/emoji2-1.3.0/AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.emoji2:emoji2:1.3.0] /home/odity/.gradle/caches/9.1.0/transforms/880e241cbc3a576a42cf84d49ce43e49/transformed/emoji2-1.3.0/AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.core:core:1.13.1] /home/odity/.gradle/caches/9.1.0/transforms/d80277031a4caac6958743bc25c1df71/transformed/core-1.13.1/AndroidManifest.xml:28:5-89
+MERGED from [androidx.core:core:1.13.1] /home/odity/.gradle/caches/9.1.0/transforms/d80277031a4caac6958743bc25c1df71/transformed/core-1.13.1/AndroidManifest.xml:28:5-89
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/11d4dfdb2c6301b8155670429b377a9f/transformed/lifecycle-process-2.8.3/AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/11d4dfdb2c6301b8155670429b377a9f/transformed/lifecycle-process-2.8.3/AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/odity/.gradle/caches/9.1.0/transforms/9412e1ffb92bfb9e111fe6ef58777a27/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/odity/.gradle/caches/9.1.0/transforms/9412e1ffb92bfb9e111fe6ef58777a27/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/odity/.gradle/caches/9.1.0/transforms/8ce2e7b55643e75461df13a47f226acf/transformed/profileinstaller-1.3.1/AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/odity/.gradle/caches/9.1.0/transforms/8ce2e7b55643e75461df13a47f226acf/transformed/profileinstaller-1.3.1/AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] /home/odity/.gradle/caches/9.1.0/transforms/8a7ac5ee0134f1d6232046989e498eee/transformed/startup-runtime-1.1.1/AndroidManifest.xml:25:5-31:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] /home/odity/.gradle/caches/9.1.0/transforms/8a7ac5ee0134f1d6232046989e498eee/transformed/startup-runtime-1.1.1/AndroidManifest.xml:25:5-31:19
+	android:extractNativeLibs
+		INJECTED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml
+	android:appComponentFactory
+		ADDED from [androidx.core:core:1.13.1] /home/odity/.gradle/caches/9.1.0/transforms/d80277031a4caac6958743bc25c1df71/transformed/core-1.13.1/AndroidManifest.xml:28:18-86
+	android:supportsRtl
+		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:17:9-35
+	android:label
+		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:15:9-41
+	android:fullBackupContent
+		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:13:9-54
+	android:roundIcon
+		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:16:9-54
+	android:icon
+		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:14:9-43
+	android:allowBackup
+		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:11:9-35
+	android:theme
+		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:18:9-47
+	android:dataExtractionRules
+		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:12:9-65
+activity#com.example.blocktel1.MainActivity
+ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:19:9-29:20
+	android:label
+		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:22:13-38
+	android:exported
+		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:21:13-36
+	android:theme
+		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:23:13-51
+	android:name
+		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:20:13-41
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:24:13-28:29
+action#android.intent.action.MAIN
+ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:25:17-69
+	android:name
+		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:25:25-66
+category#android.intent.category.LAUNCHER
+ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:27:17-77
+	android:name
+		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:27:27-74
+receiver#com.example.blocktel1.CallReceiver
+ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:31:9-37:20
+	android:exported
+		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:33:13-36
+	android:name
+		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:32:13-41
+intent-filter#action:name:android.intent.action.PHONE_STATE
+ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:34:13-36:29
+action#android.intent.action.PHONE_STATE
+ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:35:17-76
+	android:name
+		ADDED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml:35:25-73
+uses-sdk
+INJECTED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml
+INJECTED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml
+MERGED from [androidx.compose.material3:material3-android:1.3.0] /home/odity/.gradle/caches/9.1.0/transforms/8773379ede19dd100b9e8a43e2b45c3a/transformed/material3-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.material3:material3-android:1.3.0] /home/odity/.gradle/caches/9.1.0/transforms/8773379ede19dd100b9e8a43e2b45c3a/transformed/material3-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.material:material-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/09e2be4e52bc3b723b2c96b9468842c3/transformed/material-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/09e2be4e52bc3b723b2c96b9468842c3/transformed/material-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-ripple-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/865d7fdfc08a2b93b1b4887908157bff/transformed/material-ripple-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-ripple-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/865d7fdfc08a2b93b1b4887908157bff/transformed/material-ripple-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/f8ccff2f52853583082cca3b290b9932/transformed/foundation-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/f8ccff2f52853583082cca3b290b9932/transformed/foundation-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/8f9dc97532fd2c85dea0a9470b45c60a/transformed/animation-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/8f9dc97532fd2c85dea0a9470b45c60a/transformed/animation-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-layout-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/dc2b8fea0a3f7f1c76a59906b90c6531/transformed/foundation-layout-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-layout-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/dc2b8fea0a3f7f1c76a59906b90c6531/transformed/foundation-layout-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-core-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/a2240e86dd0e6c3fa0c5deba3a0efc19/transformed/animation-core-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-core-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/a2240e86dd0e6c3fa0c5deba3a0efc19/transformed/animation-core-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-tooling-data-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/216e6acc5243abe884f887fa22cdee20/transformed/ui-tooling-data-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-tooling-data-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/216e6acc5243abe884f887fa22cdee20/transformed/ui-tooling-data-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-unit-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/021692819b13d6d724b97e676f1948b7/transformed/ui-unit-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-unit-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/021692819b13d6d724b97e676f1948b7/transformed/ui-unit-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-geometry-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/2e49bb9ca45b3c31d9303141ebed27ef/transformed/ui-geometry-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-geometry-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/2e49bb9ca45b3c31d9303141ebed27ef/transformed/ui-geometry-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-util-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/f7846ab3ed5ff5ed419b64b4ce388a54/transformed/ui-util-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-util-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/f7846ab3ed5ff5ed419b64b4ce388a54/transformed/ui-util-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-text-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/ce69299416fb6afc18e734ae36572deb/transformed/ui-text-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-text-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/ce69299416fb6afc18e734ae36572deb/transformed/ui-text-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-tooling-preview-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/7b56e153f7e471113a79f3d01b8d5e79/transformed/ui-tooling-preview-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-tooling-preview-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/7b56e153f7e471113a79f3d01b8d5e79/transformed/ui-tooling-preview-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-tooling-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/4ade9f1988b9bf28be06a03915b51d02/transformed/ui-tooling-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-tooling-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/4ade9f1988b9bf28be06a03915b51d02/transformed/ui-tooling-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-graphics-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/ec141c4f62e2a7967b2eb78ed6bf932e/transformed/ui-graphics-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-graphics-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/ec141c4f62e2a7967b2eb78ed6bf932e/transformed/ui-graphics-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-test-manifest:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/0517e4fc115d128ab8f9d3ed5e43c3e8/transformed/ui-test-manifest-1.7.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-test-manifest:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/0517e4fc115d128ab8f9d3ed5e43c3e8/transformed/ui-test-manifest-1.7.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity-ktx:1.8.2] /home/odity/.gradle/caches/9.1.0/transforms/b2549ebff5448c1774a5169a33b0b4f0/transformed/activity-ktx-1.8.2/AndroidManifest.xml:5:5-44
+MERGED from [androidx.activity:activity-ktx:1.8.2] /home/odity/.gradle/caches/9.1.0/transforms/b2549ebff5448c1774a5169a33b0b4f0/transformed/activity-ktx-1.8.2/AndroidManifest.xml:5:5-44
+MERGED from [androidx.activity:activity:1.8.2] /home/odity/.gradle/caches/9.1.0/transforms/e3a0386bdef161d0f875619cfbb63305/transformed/activity-1.8.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity:1.8.2] /home/odity/.gradle/caches/9.1.0/transforms/e3a0386bdef161d0f875619cfbb63305/transformed/activity-1.8.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity-compose:1.8.2] /home/odity/.gradle/caches/9.1.0/transforms/f4bb9f1326c5a9a5a67bd73029fc1fcc/transformed/activity-compose-1.8.2/AndroidManifest.xml:5:5-44
+MERGED from [androidx.activity:activity-compose:1.8.2] /home/odity/.gradle/caches/9.1.0/transforms/f4bb9f1326c5a9a5a67bd73029fc1fcc/transformed/activity-compose-1.8.2/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-icons-core-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/adaa29bbcb44626dca310f0a75a0e9b3/transformed/material-icons-core-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-icons-core-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/adaa29bbcb44626dca310f0a75a0e9b3/transformed/material-icons-core-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/d76a002772befc0c468ecdecab0a95bf/transformed/ui-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/d76a002772befc0c468ecdecab0a95bf/transformed/ui-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.emoji2:emoji2:1.3.0] /home/odity/.gradle/caches/9.1.0/transforms/880e241cbc3a576a42cf84d49ce43e49/transformed/emoji2-1.3.0/AndroidManifest.xml:21:5-44
+MERGED from [androidx.emoji2:emoji2:1.3.0] /home/odity/.gradle/caches/9.1.0/transforms/880e241cbc3a576a42cf84d49ce43e49/transformed/emoji2-1.3.0/AndroidManifest.xml:21:5-44
+MERGED from [androidx.autofill:autofill:1.0.0] /home/odity/.gradle/caches/9.1.0/transforms/3c22e5e9d04328bf46b64aabc9b436e8/transformed/autofill-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.autofill:autofill:1.0.0] /home/odity/.gradle/caches/9.1.0/transforms/3c22e5e9d04328bf46b64aabc9b436e8/transformed/autofill-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.graphics:graphics-path:1.0.1] /home/odity/.gradle/caches/9.1.0/transforms/b78a51ee063b2b456f4bd2b9ccf62f87/transformed/graphics-path-1.0.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.graphics:graphics-path:1.0.1] /home/odity/.gradle/caches/9.1.0/transforms/b78a51ee063b2b456f4bd2b9ccf62f87/transformed/graphics-path-1.0.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] /home/odity/.gradle/caches/9.1.0/transforms/a1458f0c4effb3d0f0b6c1c0f31bba4a/transformed/customview-poolingcontainer-1.0.0/AndroidManifest.xml:20:5-21:38
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] /home/odity/.gradle/caches/9.1.0/transforms/a1458f0c4effb3d0f0b6c1c0f31bba4a/transformed/customview-poolingcontainer-1.0.0/AndroidManifest.xml:20:5-21:38
+MERGED from [androidx.core:core-ktx:1.13.1] /home/odity/.gradle/caches/9.1.0/transforms/196758d790c485112a10699fb221836c/transformed/core-ktx-1.13.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core-ktx:1.13.1] /home/odity/.gradle/caches/9.1.0/transforms/196758d790c485112a10699fb221836c/transformed/core-ktx-1.13.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core:1.13.1] /home/odity/.gradle/caches/9.1.0/transforms/d80277031a4caac6958743bc25c1df71/transformed/core-1.13.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.13.1] /home/odity/.gradle/caches/9.1.0/transforms/d80277031a4caac6958743bc25c1df71/transformed/core-1.13.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/5a7bba3ea3e4cab1ee22cf4a0fe46835/transformed/lifecycle-livedata-core-2.8.3/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/5a7bba3ea3e4cab1ee22cf4a0fe46835/transformed/lifecycle-livedata-core-2.8.3/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-android:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/e825fedeb2180b82f461fe4f28eb4c61/transformed/lifecycle-viewmodel-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-android:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/e825fedeb2180b82f461fe4f28eb4c61/transformed/lifecycle-viewmodel-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx-android:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/84ff2c82358549ddfaf8785965821988/transformed/lifecycle-runtime-ktx-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx-android:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/84ff2c82358549ddfaf8785965821988/transformed/lifecycle-runtime-ktx-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-android:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/8599ac0a2f5712a900f20f792769bc3b/transformed/lifecycle-runtime-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-android:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/8599ac0a2f5712a900f20f792769bc3b/transformed/lifecycle-runtime-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/11d4dfdb2c6301b8155670429b377a9f/transformed/lifecycle-process-2.8.3/AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/11d4dfdb2c6301b8155670429b377a9f/transformed/lifecycle-process-2.8.3/AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/c0298c700f27ea59b210099d4a12a6f0/transformed/lifecycle-viewmodel-ktx-2.8.3/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/c0298c700f27ea59b210099d4a12a6f0/transformed/lifecycle-viewmodel-ktx-2.8.3/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-compose-android:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/08a4199b4f00cb41a90bea5327d6268a/transformed/lifecycle-runtime-compose-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-compose-android:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/08a4199b4f00cb41a90bea5327d6268a/transformed/lifecycle-runtime-compose-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/cbf25ae616863300d38b330e1ceaec26/transformed/lifecycle-viewmodel-savedstate-2.8.3/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/cbf25ae616863300d38b330e1ceaec26/transformed/lifecycle-viewmodel-savedstate-2.8.3/AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate:1.2.1] /home/odity/.gradle/caches/9.1.0/transforms/bf5e850460d4d9d02372760293a97d18/transformed/savedstate-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate:1.2.1] /home/odity/.gradle/caches/9.1.0/transforms/bf5e850460d4d9d02372760293a97d18/transformed/savedstate-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate-ktx:1.2.1] /home/odity/.gradle/caches/9.1.0/transforms/1843888a00d9ffd962695192ab9b3b28/transformed/savedstate-ktx-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate-ktx:1.2.1] /home/odity/.gradle/caches/9.1.0/transforms/1843888a00d9ffd962695192ab9b3b28/transformed/savedstate-ktx-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.runtime:runtime-saveable-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/a1f596c67b99d046070013067d156c6f/transformed/runtime-saveable-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-saveable-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/a1f596c67b99d046070013067d156c6f/transformed/runtime-saveable-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/4b3e0b912e87fb345a8905454b8ed3d5/transformed/runtime-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/4b3e0b912e87fb345a8905454b8ed3d5/transformed/runtime-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/fd44ab0d5bceba0c657762b1a2ffa854/transformed/annotation-experimental-1.4.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/fd44ab0d5bceba0c657762b1a2ffa854/transformed/annotation-experimental-1.4.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/odity/.gradle/caches/9.1.0/transforms/9412e1ffb92bfb9e111fe6ef58777a27/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/odity/.gradle/caches/9.1.0/transforms/9412e1ffb92bfb9e111fe6ef58777a27/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/odity/.gradle/caches/9.1.0/transforms/8ce2e7b55643e75461df13a47f226acf/transformed/profileinstaller-1.3.1/AndroidManifest.xml:21:5-44
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/odity/.gradle/caches/9.1.0/transforms/8ce2e7b55643e75461df13a47f226acf/transformed/profileinstaller-1.3.1/AndroidManifest.xml:21:5-44
+MERGED from [androidx.startup:startup-runtime:1.1.1] /home/odity/.gradle/caches/9.1.0/transforms/8a7ac5ee0134f1d6232046989e498eee/transformed/startup-runtime-1.1.1/AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.startup:startup-runtime:1.1.1] /home/odity/.gradle/caches/9.1.0/transforms/8a7ac5ee0134f1d6232046989e498eee/transformed/startup-runtime-1.1.1/AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.tracing:tracing:1.0.0] /home/odity/.gradle/caches/9.1.0/transforms/8580426ec4b32583ea08a2d6c2ae1a4b/transformed/tracing-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.tracing:tracing:1.0.0] /home/odity/.gradle/caches/9.1.0/transforms/8580426ec4b32583ea08a2d6c2ae1a4b/transformed/tracing-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.interpolator:interpolator:1.0.0] /home/odity/.gradle/caches/9.1.0/transforms/ca4ad6b2ba5f7da95ecc472ed19da7f9/transformed/interpolator-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] /home/odity/.gradle/caches/9.1.0/transforms/ca4ad6b2ba5f7da95ecc472ed19da7f9/transformed/interpolator-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.arch.core:core-runtime:2.2.0] /home/odity/.gradle/caches/9.1.0/transforms/2214651e9c506c1053b2ef572b3e5c1d/transformed/core-runtime-2.2.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.arch.core:core-runtime:2.2.0] /home/odity/.gradle/caches/9.1.0/transforms/2214651e9c506c1053b2ef572b3e5c1d/transformed/core-runtime-2.2.0/AndroidManifest.xml:20:5-44
+	android:targetSdkVersion
+		INJECTED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /home/odity/AndroidStudioProjects/BlockTel1/app/src/main/AndroidManifest.xml
+activity#androidx.compose.ui.tooling.PreviewActivity
+ADDED from [androidx.compose.ui:ui-tooling-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/4ade9f1988b9bf28be06a03915b51d02/transformed/ui-tooling-release/AndroidManifest.xml:23:9-25:39
+	android:exported
+		ADDED from [androidx.compose.ui:ui-tooling-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/4ade9f1988b9bf28be06a03915b51d02/transformed/ui-tooling-release/AndroidManifest.xml:25:13-36
+	android:name
+		ADDED from [androidx.compose.ui:ui-tooling-android:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/4ade9f1988b9bf28be06a03915b51d02/transformed/ui-tooling-release/AndroidManifest.xml:24:13-71
+activity#androidx.activity.ComponentActivity
+ADDED from [androidx.compose.ui:ui-test-manifest:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/0517e4fc115d128ab8f9d3ed5e43c3e8/transformed/ui-test-manifest-1.7.0/AndroidManifest.xml:23:9-25:39
+	android:exported
+		ADDED from [androidx.compose.ui:ui-test-manifest:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/0517e4fc115d128ab8f9d3ed5e43c3e8/transformed/ui-test-manifest-1.7.0/AndroidManifest.xml:25:13-36
+	android:name
+		ADDED from [androidx.compose.ui:ui-test-manifest:1.7.0] /home/odity/.gradle/caches/9.1.0/transforms/0517e4fc115d128ab8f9d3ed5e43c3e8/transformed/ui-test-manifest-1.7.0/AndroidManifest.xml:24:13-63
+provider#androidx.startup.InitializationProvider
+ADDED from [androidx.emoji2:emoji2:1.3.0] /home/odity/.gradle/caches/9.1.0/transforms/880e241cbc3a576a42cf84d49ce43e49/transformed/emoji2-1.3.0/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/11d4dfdb2c6301b8155670429b377a9f/transformed/lifecycle-process-2.8.3/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/11d4dfdb2c6301b8155670429b377a9f/transformed/lifecycle-process-2.8.3/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/odity/.gradle/caches/9.1.0/transforms/8ce2e7b55643e75461df13a47f226acf/transformed/profileinstaller-1.3.1/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/odity/.gradle/caches/9.1.0/transforms/8ce2e7b55643e75461df13a47f226acf/transformed/profileinstaller-1.3.1/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.startup:startup-runtime:1.1.1] /home/odity/.gradle/caches/9.1.0/transforms/8a7ac5ee0134f1d6232046989e498eee/transformed/startup-runtime-1.1.1/AndroidManifest.xml:26:9-30:34
+MERGED from [androidx.startup:startup-runtime:1.1.1] /home/odity/.gradle/caches/9.1.0/transforms/8a7ac5ee0134f1d6232046989e498eee/transformed/startup-runtime-1.1.1/AndroidManifest.xml:26:9-30:34
+	tools:node
+		ADDED from [androidx.emoji2:emoji2:1.3.0] /home/odity/.gradle/caches/9.1.0/transforms/880e241cbc3a576a42cf84d49ce43e49/transformed/emoji2-1.3.0/AndroidManifest.xml:28:13-31
+	android:authorities
+		ADDED from [androidx.emoji2:emoji2:1.3.0] /home/odity/.gradle/caches/9.1.0/transforms/880e241cbc3a576a42cf84d49ce43e49/transformed/emoji2-1.3.0/AndroidManifest.xml:26:13-68
+	android:exported
+		ADDED from [androidx.emoji2:emoji2:1.3.0] /home/odity/.gradle/caches/9.1.0/transforms/880e241cbc3a576a42cf84d49ce43e49/transformed/emoji2-1.3.0/AndroidManifest.xml:27:13-37
+	android:name
+		ADDED from [androidx.emoji2:emoji2:1.3.0] /home/odity/.gradle/caches/9.1.0/transforms/880e241cbc3a576a42cf84d49ce43e49/transformed/emoji2-1.3.0/AndroidManifest.xml:25:13-67
+meta-data#androidx.emoji2.text.EmojiCompatInitializer
+ADDED from [androidx.emoji2:emoji2:1.3.0] /home/odity/.gradle/caches/9.1.0/transforms/880e241cbc3a576a42cf84d49ce43e49/transformed/emoji2-1.3.0/AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.emoji2:emoji2:1.3.0] /home/odity/.gradle/caches/9.1.0/transforms/880e241cbc3a576a42cf84d49ce43e49/transformed/emoji2-1.3.0/AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.emoji2:emoji2:1.3.0] /home/odity/.gradle/caches/9.1.0/transforms/880e241cbc3a576a42cf84d49ce43e49/transformed/emoji2-1.3.0/AndroidManifest.xml:30:17-75
+permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.13.1] /home/odity/.gradle/caches/9.1.0/transforms/d80277031a4caac6958743bc25c1df71/transformed/core-1.13.1/AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.13.1] /home/odity/.gradle/caches/9.1.0/transforms/d80277031a4caac6958743bc25c1df71/transformed/core-1.13.1/AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.13.1] /home/odity/.gradle/caches/9.1.0/transforms/d80277031a4caac6958743bc25c1df71/transformed/core-1.13.1/AndroidManifest.xml:23:9-81
+permission#com.example.blocktel1.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.13.1] /home/odity/.gradle/caches/9.1.0/transforms/d80277031a4caac6958743bc25c1df71/transformed/core-1.13.1/AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.13.1] /home/odity/.gradle/caches/9.1.0/transforms/d80277031a4caac6958743bc25c1df71/transformed/core-1.13.1/AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.13.1] /home/odity/.gradle/caches/9.1.0/transforms/d80277031a4caac6958743bc25c1df71/transformed/core-1.13.1/AndroidManifest.xml:23:9-81
+uses-permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.13.1] /home/odity/.gradle/caches/9.1.0/transforms/d80277031a4caac6958743bc25c1df71/transformed/core-1.13.1/AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.13.1] /home/odity/.gradle/caches/9.1.0/transforms/d80277031a4caac6958743bc25c1df71/transformed/core-1.13.1/AndroidManifest.xml:26:22-94
+uses-permission#com.example.blocktel1.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.13.1] /home/odity/.gradle/caches/9.1.0/transforms/d80277031a4caac6958743bc25c1df71/transformed/core-1.13.1/AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.13.1] /home/odity/.gradle/caches/9.1.0/transforms/d80277031a4caac6958743bc25c1df71/transformed/core-1.13.1/AndroidManifest.xml:26:22-94
+meta-data#androidx.lifecycle.ProcessLifecycleInitializer
+ADDED from [androidx.lifecycle:lifecycle-process:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/11d4dfdb2c6301b8155670429b377a9f/transformed/lifecycle-process-2.8.3/AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.lifecycle:lifecycle-process:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/11d4dfdb2c6301b8155670429b377a9f/transformed/lifecycle-process-2.8.3/AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.lifecycle:lifecycle-process:2.8.3] /home/odity/.gradle/caches/9.1.0/transforms/11d4dfdb2c6301b8155670429b377a9f/transformed/lifecycle-process-2.8.3/AndroidManifest.xml:30:17-78
+meta-data#androidx.profileinstaller.ProfileInstallerInitializer
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/odity/.gradle/caches/9.1.0/transforms/8ce2e7b55643e75461df13a47f226acf/transformed/profileinstaller-1.3.1/AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/odity/.gradle/caches/9.1.0/transforms/8ce2e7b55643e75461df13a47f226acf/transformed/profileinstaller-1.3.1/AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/odity/.gradle/caches/9.1.0/transforms/8ce2e7b55643e75461df13a47f226acf/transformed/profileinstaller-1.3.1/AndroidManifest.xml:30:17-85
+receiver#androidx.profileinstaller.ProfileInstallReceiver
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/odity/.gradle/caches/9.1.0/transforms/8ce2e7b55643e75461df13a47f226acf/transformed/profileinstaller-1.3.1/AndroidManifest.xml:34:9-52:20
+	android:enabled
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/odity/.gradle/caches/9.1.0/transforms/8ce2e7b55643e75461df13a47f226acf/transformed/profileinstaller-1.3.1/AndroidManifest.xml:37:13-35
+	android:exported
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/odity/.gradle/caches/9.1.0/transforms/8ce2e7b55643e75461df13a47f226acf/transformed/profileinstaller-1.3.1/AndroidManifest.xml:38:13-36
+	android:permission
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/odity/.gradle/caches/9.1.0/transforms/8ce2e7b55643e75461df13a47f226acf/transformed/profileinstaller-1.3.1/AndroidManifest.xml:39:13-57
+	android:directBootAware
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/odity/.gradle/caches/9.1.0/transforms/8ce2e7b55643e75461df13a47f226acf/transformed/profileinstaller-1.3.1/AndroidManifest.xml:36:13-44
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/odity/.gradle/caches/9.1.0/transforms/8ce2e7b55643e75461df13a47f226acf/transformed/profileinstaller-1.3.1/AndroidManifest.xml:35:13-76
+intent-filter#action:name:androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/odity/.gradle/caches/9.1.0/transforms/8ce2e7b55643e75461df13a47f226acf/transformed/profileinstaller-1.3.1/AndroidManifest.xml:40:13-42:29
+action#androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/odity/.gradle/caches/9.1.0/transforms/8ce2e7b55643e75461df13a47f226acf/transformed/profileinstaller-1.3.1/AndroidManifest.xml:41:17-91
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/odity/.gradle/caches/9.1.0/transforms/8ce2e7b55643e75461df13a47f226acf/transformed/profileinstaller-1.3.1/AndroidManifest.xml:41:25-88
+intent-filter#action:name:androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/odity/.gradle/caches/9.1.0/transforms/8ce2e7b55643e75461df13a47f226acf/transformed/profileinstaller-1.3.1/AndroidManifest.xml:43:13-45:29
+action#androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/odity/.gradle/caches/9.1.0/transforms/8ce2e7b55643e75461df13a47f226acf/transformed/profileinstaller-1.3.1/AndroidManifest.xml:44:17-85
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/odity/.gradle/caches/9.1.0/transforms/8ce2e7b55643e75461df13a47f226acf/transformed/profileinstaller-1.3.1/AndroidManifest.xml:44:25-82
+intent-filter#action:name:androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/odity/.gradle/caches/9.1.0/transforms/8ce2e7b55643e75461df13a47f226acf/transformed/profileinstaller-1.3.1/AndroidManifest.xml:46:13-48:29
+action#androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/odity/.gradle/caches/9.1.0/transforms/8ce2e7b55643e75461df13a47f226acf/transformed/profileinstaller-1.3.1/AndroidManifest.xml:47:17-88
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/odity/.gradle/caches/9.1.0/transforms/8ce2e7b55643e75461df13a47f226acf/transformed/profileinstaller-1.3.1/AndroidManifest.xml:47:25-85
+intent-filter#action:name:androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/odity/.gradle/caches/9.1.0/transforms/8ce2e7b55643e75461df13a47f226acf/transformed/profileinstaller-1.3.1/AndroidManifest.xml:49:13-51:29
+action#androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/odity/.gradle/caches/9.1.0/transforms/8ce2e7b55643e75461df13a47f226acf/transformed/profileinstaller-1.3.1/AndroidManifest.xml:50:17-95
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/odity/.gradle/caches/9.1.0/transforms/8ce2e7b55643e75461df13a47f226acf/transformed/profileinstaller-1.3.1/AndroidManifest.xml:50:25-92
