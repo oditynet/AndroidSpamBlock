@@ -33,6 +33,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 import android.telecom.TelecomManager
+import androidx.compose.ui.text.style.TextOverflow
 
 // Модель данных для звонков
 data class CallLog(
@@ -164,23 +165,42 @@ fun loadSettings(context: Context): AppSettings {
 // Сохранение и загрузка паттернов
 fun saveBlockedPatterns(context: Context, patterns: List<String>) {
     val prefs = context.getSharedPreferences("blocktel_prefs", Context.MODE_PRIVATE)
-    // Помечаем пользовательские паттерны
-    val userPatterns = patterns.filter { it.startsWith("user_") }
-    val otherPatterns = patterns.filterNot { it.startsWith("user_") }
+
+    // Разделяем паттерны на пользовательские и интернет
+    val userPatterns = patterns.filter { it.startsWith("user_") }.toMutableList()
+    val internetPatterns = patterns.filterNot { it.startsWith("user_") }.toMutableList()
 
     val editor = prefs.edit()
+
+    // Сохраняем отдельно
     editor.putStringSet("user_patterns", userPatterns.toSet())
-    editor.putStringSet("other_patterns", otherPatterns.toSet())
+    editor.putStringSet("internet_patterns", internetPatterns.toSet())
+
+    // Также сохраняем дату последнего обновления
+    editor.putLong("last_update_time", System.currentTimeMillis())
+
     editor.apply()
+
+    Log.d("SavePatterns", "Сохранено: ${userPatterns.size} пользовательских + ${internetPatterns.size} интернет паттернов")
 }
 
 fun loadBlockedPatterns(context: Context): List<String> {
     val prefs = context.getSharedPreferences("blocktel_prefs", Context.MODE_PRIVATE)
-    val userPatterns = prefs.getStringSet("user_patterns", emptySet()) ?: emptySet()
-    val otherPatterns = prefs.getStringSet("other_patterns", emptySet()) ?: emptySet()
 
-    return (userPatterns + otherPatterns).toList()
+    val userPatterns = prefs.getStringSet("user_patterns", emptySet()) ?: emptySet()
+    val internetPatterns = prefs.getStringSet("internet_patterns", emptySet()) ?: emptySet()
+
+    // Объединяем, пользовательские паттерны идут первыми
+    val allPatterns = (userPatterns + internetPatterns).toMutableList()
+
+    // Также можно отсортировать пользовательские паттерны первыми
+    val sortedPatterns = allPatterns.sortedBy { !it.startsWith("user_") }
+
+    Log.d("LoadPatterns", "Загружено: ${userPatterns.size} пользовательских + ${internetPatterns.size} интернет паттернов")
+
+    return sortedPatterns
 }
+
 
 // Функция для форматирования номера телефона
 fun formatPhoneNumber(number: String): String {
@@ -253,6 +273,7 @@ fun shouldBlockCall(
 
     return false
 }
+
 
 // Функция для загрузки истории звонков с проверкой блокировки
 fun loadCallHistory(context: Context, blockedPatterns: List<String>, limit: Int = 20): List<CallLog> {
@@ -395,7 +416,7 @@ suspend fun updatePatternsFromInternet(context: Context, currentPatterns: Mutabl
         withContext(Dispatchers.IO) {
             val url = "https://raw.githubusercontent.com/oditynet/AndroidSpamBlock/main/updatepattern.txt"
 
-            //Log.d("UpdatePatterns", "Начинаю загрузку с URL: $url")
+            Log.d("UpdatePatterns", "Начинаю загрузку с URL: $url")
 
             var connection: java.net.HttpURLConnection? = null
 
@@ -434,11 +455,22 @@ suspend fun updatePatternsFromInternet(context: Context, currentPatterns: Mutabl
                         .map { it.trim() }
                         .filter { it.isNotBlank() }
 
-                    Log.d("UpdatePatterns", "Обработано паттернов: ${newPatterns.size}")
+                    Log.d("UpdatePatterns", "Найдено паттернов: ${newPatterns.size}")
 
-                    // Добавляем только новые уникальные паттерны
-                    var skippedCount = 0
+                    // НОВАЯ ЛОГИКА:
+                    // 1. Сохраняем ТОЛЬКО пользовательские паттерны (с префиксом "user_")
+                    val userPatterns = currentPatterns.filter { it.startsWith("user_") }.toMutableList()
+
+                    // 2. Полностью очищаем список
+                    currentPatterns.clear()
+
+                    // 3. Добавляем обратно пользовательские паттерны
+                    currentPatterns.addAll(userPatterns)
+
+                    // 4. Добавляем ВСЕ новые паттерны из интернета
+                    var internetPatternsCount = 0
                     for (pattern in newPatterns) {
+                        // Проверяем, нет ли уже такого паттерна (включая пользовательские)
                         val alreadyExists = currentPatterns.any {
                             val cleanPattern = if (it.startsWith("user_")) it.removePrefix("user_") else it
                             cleanPattern.equals(pattern, ignoreCase = true)
@@ -447,8 +479,10 @@ suspend fun updatePatternsFromInternet(context: Context, currentPatterns: Mutabl
                         if (!alreadyExists) {
                             currentPatterns.add(pattern)
                             addedCount++
+                            internetPatternsCount++
+                            Log.d("UpdatePatterns", "Добавлен паттерн: $pattern")
                         } else {
-                            skippedCount++
+                            Log.d("UpdatePatterns", "Пропущен паттерн (уже существует): $pattern")
                         }
                     }
 
@@ -456,45 +490,43 @@ suspend fun updatePatternsFromInternet(context: Context, currentPatterns: Mutabl
                     saveBlockedPatterns(context, currentPatterns)
 
                     statusMessage = when {
-                        addedCount > 0 && skippedCount > 0 ->
-                            "Добавлено $addedCount новых паттернов. $skippedCount уже существовали."
                         addedCount > 0 ->
-                            "Успешно добавлено $addedCount новых паттернов!"
-                        skippedCount > 0 ->
-                            "Все паттерны уже есть в базе."
+                            "✅ Обновлено! Пользовательских: ${userPatterns.size}. Загружено: $addedCount новых паттернов"
                         newPatterns.isEmpty() ->
-                            "Файл с паттернами пуст."
+                            "⚠️ Файл с паттернами пуст или содержит только комментарии"
                         else ->
-                            "Не удалось добавить новые паттерны."
+                            "ℹ️ Все паттерны уже актуальны. Пользовательских: ${userPatterns.size}. Интернет: ${currentPatterns.size - userPatterns.size}"
                     }
 
+                    Log.d("UpdatePatterns", statusMessage)
+
                 } else {
-                    statusMessage = "Ошибка сервера: $responseCode - $responseMessage"
+                    statusMessage = "❌ Ошибка сервера: $responseCode - $responseMessage"
                     Log.e("UpdatePatterns", "HTTP Error: $responseCode - $responseMessage")
                 }
 
             } catch (e: java.net.SocketTimeoutException) {
-                statusMessage = "Таймаут соединения"
+                statusMessage = "⏱️ Таймаут соединения"
                 Log.e("UpdatePatterns", "SocketTimeoutException", e)
 
             } catch (e: java.net.UnknownHostException) {
-                statusMessage = "Не удалось найти сервер"
+                statusMessage = "🌐 Не удалось найти сервер"
                 Log.e("UpdatePatterns", "UnknownHostException", e)
 
             } catch (e: java.net.MalformedURLException) {
-                statusMessage = "Некорректный URL"
+                statusMessage = "🔗 Некорректный URL"
                 Log.e("UpdatePatterns", "MalformedURLException", e)
 
             } catch (e: java.io.IOException) {
-                statusMessage = "Ошибка ввода-вывода: ${e.message ?: "Unknown IO error"}"
+                statusMessage = "📡 Ошибка сети: ${e.message ?: "Unknown IO error"}"
                 Log.e("UpdatePatterns", "IOException", e)
 
             } catch (e: SecurityException) {
-                statusMessage = "Ошибка безопасности"
+                statusMessage = "🔒 Ошибка безопасности"
                 Log.e("UpdatePatterns", "SecurityException", e)
 
             } catch (e: Exception) {
-                statusMessage = "Неизвестная ошибка: ${e.javaClass.simpleName}"
+                statusMessage = "❓ Неизвестная ошибка: ${e.javaClass.simpleName}"
                 Log.e("UpdatePatterns", "Общая ошибка", e)
 
             } finally {
@@ -691,13 +723,56 @@ fun BlockingPatternsScreen() {
     val blockedPatterns = remember { mutableStateListOf<String>() }
     var newPattern by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
-    var downloadCount by remember { mutableStateOf(0) }
     var statusMessage by remember { mutableStateOf("") }
+    var lastUpdateTime by remember { mutableStateOf("") }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var patternToDelete by remember { mutableStateOf("") }
 
-    // Загружаем сохраненные паттерны
+    // Загружаем сохраненные паттерны и время обновления
     LaunchedEffect(Unit) {
         blockedPatterns.clear()
         blockedPatterns.addAll(loadBlockedPatterns(context))
+
+        // Получаем время последнего обновления
+        val prefs = context.getSharedPreferences("blocktel_prefs", Context.MODE_PRIVATE)
+        val lastUpdate = prefs.getLong("last_update_time", 0)
+        if (lastUpdate > 0) {
+            val date = Date(lastUpdate)
+            val format = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
+            lastUpdateTime = format.format(date)
+        }
+    }
+
+    // Диалог подтверждения удаления
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Удаление паттерна") },
+            text = { Text("Вы уверены, что хотите удалить паттерн \"${patternToDelete.removePrefix("user_")}\"?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        blockedPatterns.remove(patternToDelete)
+                        saveBlockedPatterns(context, blockedPatterns)
+                        showDeleteDialog = false
+                        patternToDelete = ""
+                        showToast(context, "Паттерн удален")
+                    }
+                ) {
+                    Text("Удалить")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        showDeleteDialog = false
+                        patternToDelete = ""
+                    }
+                ) {
+                    Text("Отмена")
+                }
+            }
+        )
     }
 
     Column(
@@ -705,6 +780,7 @@ fun BlockingPatternsScreen() {
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        // Заголовок
         Text(
             text = "Управление блокировками",
             fontSize = 20.sp,
@@ -712,9 +788,12 @@ fun BlockingPatternsScreen() {
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        // Секция добавления нового паттерна
+        // Секция 1: Добавление нового паттерна
         Card(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.1f)
+            )
         ) {
             Column(
                 modifier = Modifier.padding(16.dp)
@@ -726,6 +805,13 @@ fun BlockingPatternsScreen() {
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
 
+                Text(
+                    text = "Паттерн - это часть номера или текста для блокировки",
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    modifier = Modifier.padding(bottom = 12.dp)
+                )
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
@@ -733,8 +819,10 @@ fun BlockingPatternsScreen() {
                     OutlinedTextField(
                         value = newPattern,
                         onValueChange = { newPattern = it },
-                        label = { Text("Текст или часть номера") },
-                        modifier = Modifier.weight(1f)
+                        label = { Text("Введите паттерн") },
+                        placeholder = { Text("Например: 495123 или банк") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true
                     )
 
                     Spacer(modifier = Modifier.width(8.dp))
@@ -742,9 +830,17 @@ fun BlockingPatternsScreen() {
                     Button(
                         onClick = {
                             if (newPattern.isNotBlank()) {
-                                val pattern = "user_" + newPattern.trim()
-                                if (!blockedPatterns.contains(pattern)) {
-                                    blockedPatterns.add(pattern)
+                                val cleanPattern = newPattern.trim()
+                                val userPattern = "user_$cleanPattern"
+
+                                // Проверяем, нет ли уже такого паттерна
+                                val alreadyExists = blockedPatterns.any { pattern ->
+                                    val cleanExisting = if (pattern.startsWith("user_")) pattern.removePrefix("user_") else pattern
+                                    cleanExisting.equals(cleanPattern, ignoreCase = true)
+                                }
+
+                                if (!alreadyExists) {
+                                    blockedPatterns.add(userPattern)
                                     saveBlockedPatterns(context, blockedPatterns)
                                     newPattern = ""
                                     showToast(context, "Паттерн добавлен!")
@@ -754,8 +850,11 @@ fun BlockingPatternsScreen() {
                             } else {
                                 showToast(context, "Введите текст для блокировки")
                             }
-                        }
+                        },
+                        enabled = newPattern.isNotBlank()
                     ) {
+                        Icon(Icons.Default.Add, contentDescription = "Добавить", modifier = Modifier.size(20.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
                         Text("Добавить")
                     }
                 }
@@ -764,19 +863,57 @@ fun BlockingPatternsScreen() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Секция обновления паттернов
+        // Секция 2: Обновление базы паттернов
         Card(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.1f)
+            )
         ) {
             Column(
                 modifier = Modifier.padding(16.dp)
             ) {
-                Text(
-                    text = "Обновить базу паттернов",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text(
+                            text = "Обновление базы паттернов",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        if (lastUpdateTime.isNotEmpty()) {
+                            Text(
+                                text = "Последнее обновление: $lastUpdateTime",
+                                fontSize = 10.sp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                                modifier = Modifier.padding(top = 2.dp)
+                            )
+                        }
+                    }
+
+                    // Статистика паттернов
+                    val userCount = blockedPatterns.count { it.startsWith("user_") }
+                    val internetCount = blockedPatterns.size - userCount
+                    Column(
+                        horizontalAlignment = Alignment.End
+                    ) {
+                        Text(
+                            text = "Всего: ${blockedPatterns.size}",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                        Text(
+                            text = "Ваши: $userCount • База: $internetCount",
+                            fontSize = 10.sp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
                     text = "Загрузит свежие паттерны из интернета. Ваши личные паттерны не будут удалены.",
@@ -791,21 +928,35 @@ fun BlockingPatternsScreen() {
                             isLoading = true
                             statusMessage = ""
                             val (count, message) = updatePatternsFromInternet(context, blockedPatterns)
-                            downloadCount = count
+
+                            // Обновляем время последнего обновления
+                            val prefs = context.getSharedPreferences("blocktel_prefs", Context.MODE_PRIVATE)
+                            val lastUpdate = prefs.getLong("last_update_time", 0)
+                            if (lastUpdate > 0) {
+                                val date = Date(lastUpdate)
+                                val format = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
+                                lastUpdateTime = format.format(date)
+                            }
+
                             statusMessage = message
                             isLoading = false
                         }
                     },
                     enabled = !isLoading,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
                 ) {
                     if (isLoading) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(20.dp),
-                            strokeWidth = 2.dp
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                     } else {
-                        Icon(Icons.Default.Refresh, contentDescription = "Обновить")
+                        Icon(Icons.Default.Refresh, contentDescription = "Обновить", modifier = Modifier.size(20.dp))
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Загрузить обновления")
@@ -816,36 +967,47 @@ fun BlockingPatternsScreen() {
                     Spacer(modifier = Modifier.height(8.dp))
                     Card(
                         colors = CardDefaults.cardColors(
-                            containerColor = if (downloadCount > 0)
-                                MaterialTheme.colorScheme.primaryContainer
-                            else if (statusMessage.contains("Ошибка", ignoreCase = true))
-                                MaterialTheme.colorScheme.errorContainer
-                            else
-                                MaterialTheme.colorScheme.surfaceContainer
+                            containerColor = when {
+                                statusMessage.contains("✅") || statusMessage.contains("Обновлено") ->
+                                    MaterialTheme.colorScheme.primaryContainer
+                                statusMessage.contains("❌") || statusMessage.contains("Ошибка") ->
+                                    MaterialTheme.colorScheme.errorContainer
+                                else ->
+                                    MaterialTheme.colorScheme.surfaceContainer
+                            }
                         ),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Column(
-                            modifier = Modifier.padding(12.dp)
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            if (downloadCount > 0) {
-                                Text(
-                                    text = "✅ Успешно!",
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
+                            val icon = when {
+                                statusMessage.contains("✅") || statusMessage.contains("Обновлено") -> Icons.Default.CheckCircle
+                                statusMessage.contains("❌") || statusMessage.contains("Ошибка") -> Icons.Default.Close
+                                else -> Icons.Default.Info
                             }
+                            val tint = when {
+                                statusMessage.contains("✅") || statusMessage.contains("Обновлено") ->
+                                    MaterialTheme.colorScheme.primary
+                                statusMessage.contains("❌") || statusMessage.contains("Ошибка") ->
+                                    MaterialTheme.colorScheme.error
+                                else ->
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            }
+
+                            Icon(
+                                icon,
+                                contentDescription = "Статус",
+                                tint = tint,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = statusMessage,
                                 fontSize = 12.sp,
-                                color = if (downloadCount > 0)
-                                    MaterialTheme.colorScheme.onPrimaryContainer
-                                else if (statusMessage.contains("Ошибка", ignoreCase = true))
-                                    MaterialTheme.colorScheme.onErrorContainer
-                                else
-                                    MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier.padding(top = if (downloadCount > 0) 4.dp else 0.dp)
+                                color = tint,
+                                modifier = Modifier.weight(1f)
                             )
                         }
                     }
@@ -855,9 +1017,12 @@ fun BlockingPatternsScreen() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Список паттернов с информацией
+        // Секция 3: Список паттернов
         Card(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainer
+            )
         ) {
             Column(
                 modifier = Modifier.padding(16.dp)
@@ -867,32 +1032,26 @@ fun BlockingPatternsScreen() {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column {
-                        Text(
-                            text = "Список паттернов:",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "Всего: ${blockedPatterns.size}",
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        )
-                    }
+                    Text(
+                        text = "Список паттернов",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
 
-                    Column(
-                        horizontalAlignment = Alignment.End
-                    ) {
-                        Text(
-                            text = "${blockedPatterns.count { it.startsWith("user_") }} пользовательских",
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        Text(
-                            text = "${blockedPatterns.count { !it.startsWith("user_") }} из интернета",
-                            fontSize = 10.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                        )
+                    // Кнопка очистки всех пользовательских паттернов
+                    if (blockedPatterns.any { it.startsWith("user_") }) {
+                        TextButton(
+                            onClick = {
+                                val userPatterns = blockedPatterns.filter { it.startsWith("user_") }
+                                blockedPatterns.removeAll(userPatterns)
+                                saveBlockedPatterns(context, blockedPatterns)
+                                showToast(context, "Удалены все пользовательские паттерны")
+                            }
+                        ) {
+                            Icon(Icons.Default.Delete, contentDescription = "Очистить все", modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Очистить мои", fontSize = 12.sp)
+                        }
                     }
                 }
 
@@ -902,19 +1061,20 @@ fun BlockingPatternsScreen() {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 24.dp),
+                            .padding(vertical = 32.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Icon(
-                            Icons.Default.Warning,
+                            Icons.Default.Close,
                             contentDescription = "Нет паттернов",
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
                             modifier = Modifier.size(48.dp)
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
                         Text(
                             text = "Нет добавленных паттернов",
                             fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         )
                         Text(
@@ -924,27 +1084,28 @@ fun BlockingPatternsScreen() {
                         )
                     }
                 } else {
-                    // Кнопка для просмотра статистики
-                    Button(
-                        onClick = {
-                            val userPatterns = blockedPatterns.count { it.startsWith("user_") }
-                            val internetPatterns = blockedPatterns.count { !it.startsWith("user_") }
-                            showLongToast(context,
-                                "Статистика:\n" +
-                                "Всего паттернов: ${blockedPatterns.size}\n" +
-                                "Пользовательских: $userPatterns\n" +
-                                "Из интернета: $internetPatterns"
-                            )
-                        },
+                    // Фильтр для отображения
+                    var showOnlyUserPatterns by remember { mutableStateOf(false) }
+
+                    Row(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                        )
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.Info, contentDescription = "Статистика", modifier = Modifier.size(16.dp))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Показать статистику")
+                        FilterChip(
+                            selected = showOnlyUserPatterns,
+                            onClick = { showOnlyUserPatterns = !showOnlyUserPatterns },
+                            label = { Text("Только мои") },
+                            leadingIcon = if (showOnlyUserPatterns) {
+                                { Icon(Icons.Default.Check, contentDescription = "Выбрано", modifier = Modifier.size(16.dp)) }
+                            } else null
+                        )
+
+                        Text(
+                            text = "Показано: ${blockedPatterns.count { !showOnlyUserPatterns || it.startsWith("user_") }}/${blockedPatterns.size}",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        )
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -953,18 +1114,21 @@ fun BlockingPatternsScreen() {
                         modifier = Modifier.height(250.dp),
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        items(blockedPatterns) { pattern ->
+                        val filteredPatterns = if (showOnlyUserPatterns) {
+                            blockedPatterns.filter { it.startsWith("user_") }
+                        } else {
+                            blockedPatterns
+                        }
+
+                        items(filteredPatterns) { pattern ->
                             PatternItem(
                                 pattern = pattern,
+                                isUserPattern = pattern.startsWith("user_"),
                                 onDelete = {
-                                    if (pattern.startsWith("user_")) {
-                                        blockedPatterns.remove(pattern)
-                                        saveBlockedPatterns(context, blockedPatterns)
-                                        showToast(context, "Паттерн удален")
-                                    } else {
-                                        showToast(context, "Можно удалять только пользовательские паттерны")
-                                    }
-                                }
+                                    patternToDelete = pattern
+                                    showDeleteDialog = true
+                                },
+                                modifier = Modifier.fillMaxWidth()
                             )
                         }
                     }
@@ -975,12 +1139,22 @@ fun BlockingPatternsScreen() {
 }
 
 @Composable
-fun PatternItem(pattern: String, onDelete: () -> Unit) {
-    val isUserPattern = pattern.startsWith("user_")
+fun PatternItem(
+    pattern: String,
+    isUserPattern: Boolean,
+    onDelete: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val displayPattern = if (isUserPattern) pattern.removePrefix("user_") else pattern
 
     Card(
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier,
+        colors = CardDefaults.cardColors(
+            containerColor = if (isUserPattern)
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.1f)
+            else
+                MaterialTheme.colorScheme.surfaceContainer
+        )
     ) {
         Row(
             modifier = Modifier
@@ -989,29 +1163,72 @@ fun PatternItem(pattern: String, onDelete: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.weight(1f)
             ) {
-                Text(text = displayPattern)
+                // Иконка для типа паттерна
                 if (isUserPattern) {
-                    Text(
-                        text = "Пользовательский",
-                        fontSize = 10.sp,
-                        color = MaterialTheme.colorScheme.primary
+                    Icon(
+                        Icons.Default.Person,
+                        contentDescription = "Пользовательский",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(16.dp)
                     )
+                    Spacer(modifier = Modifier.width(8.dp))
+                } else {
+                    Icon(
+                        Icons.Default.Share,
+                        contentDescription = "Из интернета",
+                        tint = MaterialTheme.colorScheme.secondary,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
+
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = displayPattern,
+                        fontSize = 14.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    if (isUserPattern) {
+                        Text(
+                            text = "Мой паттерн",
+                            fontSize = 10.sp,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    } else {
+                        Text(
+                            text = "Из базы данных",
+                            fontSize = 10.sp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                        )
+                    }
                 }
             }
 
+            // Кнопка удаления только для пользовательских паттернов
             if (isUserPattern) {
                 IconButton(
-                    onClick = onDelete
+                    onClick = onDelete,
+                    modifier = Modifier.size(36.dp)
                 ) {
-                    Icon(Icons.Default.Delete, contentDescription = "Удалить", tint = MaterialTheme.colorScheme.error)
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = "Удалить",
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.size(20.dp)
+                    )
                 }
             }
         }
     }
 }
+
 
 @Composable
 fun SettingsScreen() {

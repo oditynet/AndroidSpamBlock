@@ -1,4 +1,4 @@
-#Mon Feb 09 20:34:53 MSK 2026
+#Mon Feb 09 20:54:00 MSK 2026
 base.0=/home/odity/AndroidStudioProjects/BlockTel1/app/build/intermediates/dex/debug/mergeExtDexDebug/classes.dex
 base.1=/home/odity/AndroidStudioProjects/BlockTel1/app/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex
 base.2=/home/odity/AndroidStudioProjects/BlockTel1/app/build/intermediates/dex/debug/mergeProjectDexDebug/11/classes.dex
