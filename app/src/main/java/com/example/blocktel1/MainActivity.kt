@@ -1,5 +1,8 @@
 package com.example.blocktel1
 
+import android.util.Base64
+import java.nio.charset.StandardCharsets
+
 import android.Manifest
 import android.content.Context
 import android.content.Intent
@@ -34,6 +37,29 @@ import java.util.*
 
 import android.telecom.TelecomManager
 import androidx.compose.ui.text.style.TextOverflow
+
+// Функция для декодирования base64
+fun decodeBase64(encoded: String): String {
+    return try {
+        val decodedBytes = Base64.decode(encoded, Base64.DEFAULT)
+        String(decodedBytes, StandardCharsets.UTF_8)
+    } catch (e: Exception) {
+        Log.e("Base64", "Ошибка декодирования: ${e.message}")
+        "" // Возвращаем пустую строку в случае ошибки
+    }
+}
+
+// Функция для проверки строки на base64
+fun isBase64(str: String): Boolean {
+    return try {
+        // Проверяем, можно ли декодировать строку
+        Base64.decode(str, Base64.DEFAULT)
+        // Проверяем, что строка содержит только допустимые символы
+        str.matches(Regex("^[A-Za-z0-9+/]+={0,2}$"))
+    } catch (e: Exception) {
+        false
+    }
+}
 
 // Модель данных для звонков
 data class CallLog(
@@ -168,8 +194,21 @@ fun saveBlockedPatterns(context: Context, patterns: List<String>) {
     val prefs = context.getSharedPreferences("blocktel_prefs", Context.MODE_PRIVATE)
 
     // Разделяем паттерны на пользовательские и интернет
-    val userPatterns = patterns.filter { it.startsWith("user_") }.toMutableList()
-    val internetPatterns = patterns.filterNot { it.startsWith("user_") }.toMutableList()
+    val userPatterns = patterns
+        .filter { it.startsWith("user_") }
+        .map {
+            // Сохраняем пользовательские паттерны как есть
+            it
+        }
+        .toMutableList()
+
+    val internetPatterns = patterns
+        .filterNot { it.startsWith("user_") }
+        .map {
+            // Для интернет-паттернов сохраняем уже очищенные версии
+            it
+        }
+        .toMutableList()
 
     val editor = prefs.edit()
 
@@ -421,7 +460,7 @@ suspend fun updatePatternsFromInternet(context: Context, currentPatterns: Mutabl
         withContext(Dispatchers.IO) {
             val url = "https://raw.githubusercontent.com/oditynet/AndroidSpamBlock/main/updatepattern.txt"
 
-            //Log.d("UpdatePatterns", "Начинаю загрузку с URL: $url")
+            Log.d("UpdatePatterns", "Начинаю загрузку с URL: $url")
 
             var connection: java.net.HttpURLConnection? = null
 
@@ -434,33 +473,71 @@ suspend fun updatePatternsFromInternet(context: Context, currentPatterns: Mutabl
                 connection.setRequestProperty("User-Agent", "Mozilla/5.0")
                 connection.setRequestProperty("Accept", "text/plain")
 
-              //  Log.d("UpdatePatterns", "Пытаюсь подключиться...")
+                Log.d("UpdatePatterns", "Пытаюсь подключиться...")
                 connection.connect()
 
                 val responseCode = connection.responseCode
                 val responseMessage = connection.responseMessage ?: "No message"
 
-               // Log.d("UpdatePatterns", "Response Code: $responseCode, Message: $responseMessage")
+                Log.d("UpdatePatterns", "Response Code: $responseCode, Message: $responseMessage")
 
                 if (responseCode == java.net.HttpURLConnection.HTTP_OK) {
                     val inputStream = connection.inputStream
                     val patternsText = inputStream.bufferedReader().use { it.readText() }
                     inputStream.close()
 
-                   // Log.d("UpdatePatterns", "Получено данных: ${patternsText.length} символов")
+                    Log.d("UpdatePatterns", "Получено данных: ${patternsText.length} символов")
+                    Log.d("UpdatePatterns", "Первые 200 символов: ${patternsText.take(200)}")
 
                     // Разбиваем на строки и фильтруем
                     val lines = patternsText.lines()
-                   // Log.d("UpdatePatterns", "Всего строк в файле: ${lines.size}")
+                    Log.d("UpdatePatterns", "Всего строк в файле: ${lines.size}")
 
-                    val newPatterns = lines
-                        .filter { line ->
-                            line.isNotBlank() && !line.trim().startsWith("#")
+                    // Собираем очищенные паттерны
+                    val newPatterns = mutableListOf<String>()
+
+                    lines.forEachIndexed { index, line ->
+                        val trimmedLine = line.trim()
+
+                        // Пропускаем пустые строки и комментарии
+                        if (trimmedLine.isNotBlank() && !trimmedLine.startsWith("#")) {
+                            // Проверяем, является ли строка base64
+                            if (isBase64(trimmedLine)) {
+                                // Декодируем base64
+                                val decoded = decodeBase64(trimmedLine)
+                                if (decoded.isNotBlank()) {
+                                    Log.d("UpdatePatterns", "Строка $index: декодировано из base64: '$decoded'")
+
+                                    // Очищаем декодированную строку
+                                    val cleaned = decoded.replace(Regex("[^0-9a-zA-Z]"), "")
+                                    if (cleaned.isNotBlank()) {
+                                        newPatterns.add(cleaned)
+                                        Log.d("UpdatePatterns", "  → Добавлен паттерн: '$cleaned'")
+                                    }
+                                } else {
+                                    Log.d("UpdatePatterns", "Строка $index: не удалось декодировать base64")
+                                }
+                            } else {
+                                // Если не base64, добавляем как есть (после очистки)
+                                val cleaned = trimmedLine.replace(Regex("[^0-9a-zA-Z]"), "")
+                                if (cleaned.isNotBlank()) {
+                                    newPatterns.add(cleaned)
+                                    Log.d("UpdatePatterns", "Строка $index: обычная строка: '$cleaned'")
+                                }
+                            }
                         }
-                        .map { it.trim() }
-                        .filter { it.isNotBlank() }
+                    }
 
-                  //  Log.d("UpdatePatterns", "Найдено паттернов: ${newPatterns.size}")
+                    Log.d("UpdatePatterns", "Найдено паттернов после обработки: ${newPatterns.size}")
+
+                    // Проверяем, есть ли конкретный паттерн для тестирования
+                    val testPattern = "4956406600"
+                    if (newPatterns.contains(testPattern)) {
+                        Log.d("UpdatePatterns", "✅ ПАТТЕРН $testPattern НАЙДЕН В ЗАГРУЖЕННЫХ!")
+                    } else {
+                        Log.d("UpdatePatterns", "⚠️ ПАТТЕРН $testPattern НЕ НАЙДЕН в загруженных")
+                        Log.d("UpdatePatterns", "Первые 20 паттернов: ${newPatterns.take(20)}")
+                    }
 
                     // НОВАЯ ЛОГИКА:
                     // 1. Сохраняем ТОЛЬКО пользовательские паттерны (с префиксом "user_")
@@ -477,8 +554,8 @@ suspend fun updatePatternsFromInternet(context: Context, currentPatterns: Mutabl
                     for (pattern in newPatterns) {
                         // Проверяем, нет ли уже такого паттерна (включая пользовательские)
                         val alreadyExists = currentPatterns.any {
-                            val cleanPattern = if (it.startsWith("user_")) it.removePrefix("user_") else it
-                            cleanPattern.equals(pattern, ignoreCase = true)
+                            val cleanExisting = if (it.startsWith("user_")) it.removePrefix("user_") else it
+                            cleanExisting.equals(pattern, ignoreCase = true)
                         }
 
                         if (!alreadyExists) {
@@ -494,13 +571,20 @@ suspend fun updatePatternsFromInternet(context: Context, currentPatterns: Mutabl
                     // Сохраняем обновленный список
                     saveBlockedPatterns(context, currentPatterns)
 
+                    // Логируем результат
+                    val userCount = userPatterns.size
+                    val internetCount = currentPatterns.size - userCount
+
+                    Log.d("UpdatePatterns", "Итог: Пользовательских: $userCount, Интернет: $internetCount")
+                    Log.d("UpdatePatterns", "Добавлено новых: $addedCount")
+
                     statusMessage = when {
                         addedCount > 0 ->
-                            "✅ Пользовательских: ${userPatterns.size}. Загружено: $addedCount новых"
+                            "✅ Пользовательских: $userCount. Загружено: $addedCount новых"
                         newPatterns.isEmpty() ->
                             "⚠️ Файл с паттернами пуст или содержит только комментарии"
                         else ->
-                            "ℹ️ Все паттерны уже актуальны. Пользовательских: ${userPatterns.size}. Интернет: ${currentPatterns.size - userPatterns.size}"
+                            "ℹ️ Все паттерны уже актуальны. Пользовательских: $userCount. Интернет: $internetCount"
                     }
 
                     Log.d("UpdatePatterns", statusMessage)
