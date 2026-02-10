@@ -37,7 +37,8 @@ import androidx.compose.ui.text.style.TextOverflow
 
 // Модель данных для звонков
 data class CallLog(
-    val number: String,
+    val number: String,           // Форматированный номер
+    val cleanNumber: String,      // Очищенный номер (только цифры)
     val name: String?,
     val timestamp: String,
     val type: String,
@@ -282,7 +283,6 @@ fun loadCallHistory(context: Context, blockedPatterns: List<String>, limit: Int 
 
     try {
         // Проверяем разрешение на чтение журнала вызовов
-        // Проверяем разрешение на чтение журнала вызовов
         if (ContextCompat.checkSelfPermission(
                 context,
                 Manifest.permission.READ_CALL_LOG
@@ -322,7 +322,7 @@ fun loadCallHistory(context: Context, blockedPatterns: List<String>, limit: Int 
                     "Неизвестно"
                 }
 
-                // Определяем тип звонка
+                // Определяем тип звонка - ЭТО ДОБАВЛЯЕМ
                 val typeText = when (callType) {
                     android.provider.CallLog.Calls.INCOMING_TYPE -> "📥 Входящий"
                     android.provider.CallLog.Calls.OUTGOING_TYPE -> "📤 Исходящий"
@@ -333,10 +333,13 @@ fun loadCallHistory(context: Context, blockedPatterns: List<String>, limit: Int 
                     else -> "❓ Неизвестно"
                 }
 
-                // Форматируем номер
+                // Форматируем номер для отображения
                 val formattedNumber = formatPhoneNumber(number)
 
-                // Проверяем, нужно ли блокировать с учетом контактов
+                // Получаем очищенный номер для паттернов
+                val cleanNumber = number.replace(Regex("[^0-9+]"), "")
+
+                // Проверяем, нужно ли блокировать
                 val shouldBlock = shouldBlockCall(
                     formattedNumber,
                     name,
@@ -355,9 +358,10 @@ fun loadCallHistory(context: Context, blockedPatterns: List<String>, limit: Int 
                 callLogs.add(
                     CallLog(
                         number = formattedNumber,
+                        cleanNumber = cleanNumber,
                         name = name,
                         timestamp = date,
-                        type = typeText,
+                        type = typeText,  // Используем typeText здесь
                         duration = durationText,
                         shouldBlock = shouldBlock
                     )
@@ -612,6 +616,40 @@ fun CallMonitorApp(
     }
 }
 
+// Функция для добавления номера в паттерны блокировки
+fun addNumberToPatterns(context: Context, phoneNumber: String, blockedPatterns: MutableList<String>) {
+    // Очищаем номер от форматирования, оставляем только цифры и плюс
+    val cleanNumber = phoneNumber.replace(Regex("[^0-9+]"), "")
+
+    if (cleanNumber.isBlank()) {
+        showToast(context, "Не удалось извлечь номер")
+        return
+    }
+
+    // Создаем паттерн с префиксом user_
+    val pattern = "user_$cleanNumber"
+
+    // Проверяем, нет ли уже такого паттерна
+    val alreadyExists = blockedPatterns.any { existingPattern ->
+        val cleanExisting = if (existingPattern.startsWith("user_"))
+            existingPattern.removePrefix("user_")
+        else
+            existingPattern
+
+        cleanExisting.equals(cleanNumber, ignoreCase = true)
+    }
+
+    if (!alreadyExists) {
+        blockedPatterns.add(pattern)
+        // Сохраняем обновленные паттерны
+        saveBlockedPatterns(context, blockedPatterns)
+        showToast(context, "Номер добавлен в паттерны блокировки")
+        Log.d("AddToPatterns", "Добавлен номер: $cleanNumber")
+    } else {
+        showToast(context, "Этот номер уже есть в списке блокировок")
+    }
+}
+
 @Composable
 fun MainScreen(
     permissionGranted: Boolean,
@@ -687,7 +725,18 @@ fun MainScreen(
             // Основной экран с логами звонков
             CallHistoryScreen(
                 callLogs = callLogs,
-                isLoading = isLoading
+                isLoading = isLoading,
+                onAddToPatterns = { phoneNumber ->
+                    val cleanNumber = phoneNumber.replace(Regex("[^0-9+]"), "")
+                    addNumberToPatterns(context, cleanNumber, blockedPatterns)
+
+                    // Обновляем историю, чтобы показать новые блокировки
+                    scope.launch {
+                        val updatedHistory = loadCallHistory(context, blockedPatterns, callLogLimit.value)
+                        callLogs.clear()
+                        callLogs.addAll(updatedHistory)
+                    }
+                }
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -695,7 +744,6 @@ fun MainScreen(
             // Статус приложения
             Card(
                 modifier = Modifier.fillMaxWidth()
-
             ) {
                 Column(
                     modifier = Modifier.padding(8.dp)
@@ -1426,7 +1474,8 @@ fun PermissionItem(text: String) {
 @Composable
 fun CallHistoryScreen(
     callLogs: List<CallLog>,
-    isLoading: Boolean
+    isLoading: Boolean,
+    onAddToPatterns: (String) -> Unit
 ) {
     if (isLoading) {
         Box(
@@ -1458,14 +1507,25 @@ fun CallHistoryScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(callLogs) { call ->
-                CallHistoryItem(call)
+                CallHistoryItem(
+                    call = call,
+                    onAddToPatterns = {
+                        // Используем cleanNumber для добавления в паттерны
+                        if (call.cleanNumber.isNotBlank()) {
+                            onAddToPatterns(call.cleanNumber)
+                        }
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-fun CallHistoryItem(call: CallLog) {
+fun CallHistoryItem(
+    call: CallLog,
+    onAddToPatterns: () -> Unit = {}
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -1478,6 +1538,7 @@ fun CallHistoryItem(call: CallLog) {
         Column(
             modifier = Modifier.padding(10.dp)
         ) {
+            // Первая строка: информация о звонке и кнопка блокировки
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -1503,46 +1564,83 @@ fun CallHistoryItem(call: CallLog) {
                     }
                 }
 
-                Column(
-                    horizontalAlignment = Alignment.End
+                // Кнопка добавления в паттерны
+                IconButton(
+                    onClick = onAddToPatterns,
+                    modifier = Modifier.size(36.dp)
                 ) {
-                    Text(
-                        text = call.type,
-                        fontSize = 11.sp,
-                        color = if (call.shouldBlock)
-                            MaterialTheme.colorScheme.error
-                        else
-                            MaterialTheme.colorScheme.primary
-                    )
-
-                    Text(
-                        text = call.duration,
-                        fontSize = 10.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                        modifier = Modifier.padding(top = 2.dp)
+                    Icon(
+                        Icons.Default.AddCircle,
+                        contentDescription = "Заблокировать номер",
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.size(20.dp)
                     )
                 }
             }
 
-            // Вторая строка с датой и статусом блокировки
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Вторая строка: тип звонка, продолжительность и статус блокировки
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = call.timestamp,
-                    fontSize = 11.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
-
-                if (call.shouldBlock) {
+                // Левый блок: тип и продолжительность
+                Column {
                     Text(
-                        text = "Будет заблокирован",
-                        fontSize = 10.sp,
-                        color = MaterialTheme.colorScheme.error,
+                        text = call.type,
+                        fontSize = 12.sp,
+                        color = if (call.shouldBlock)
+                            MaterialTheme.colorScheme.error
+                        else
+                            MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Medium
                     )
+
+                    if (call.duration.isNotEmpty() && call.duration != "0:00") {
+                        Text(
+                            text = "Длительность: ${call.duration}",
+                            fontSize = 10.sp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                            modifier = Modifier.padding(top = 2.dp)
+                        )
+                    }
+                }
+
+                // Правый блок: дата и статус блокировки
+                Column(
+                    horizontalAlignment = Alignment.End
+                ) {
+                    // Дата и время
+                    Text(
+                        text = call.timestamp,
+                        fontSize = 11.sp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                        fontWeight = FontWeight.Medium
+                    )
+
+                    // Статус блокировки (если применимо)
+                    if (call.shouldBlock) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(top = 2.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = "Заблокировано",
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(12.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "Будет заблокирован",
+                                fontSize = 10.sp,
+                                color = MaterialTheme.colorScheme.error,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
                 }
             }
         }
