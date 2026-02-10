@@ -11,7 +11,7 @@ class MyCallScreeningService : CallScreeningService() {
 
     override fun onScreenCall(callDetails: Call.Details) {
         val phoneNumber = callDetails.handle?.schemeSpecificPart ?: ""
-        Log.d("CallScreening", "Перехват звонка от: $phoneNumber")
+        //Log.d("CallScreening", "Перехват звонка от: $phoneNumber")
 
         val shouldBlock = shouldBlockCall(this, phoneNumber)
 
@@ -34,7 +34,7 @@ class MyCallScreeningService : CallScreeningService() {
         respondToCall(callDetails, response)
 
         if (shouldBlock) {
-            Log.i("CallScreening", "Звонок заблокирован: $phoneNumber")
+            //Log.i("CallScreening", "Звонок заблокирован: $phoneNumber")
         }
     }
 

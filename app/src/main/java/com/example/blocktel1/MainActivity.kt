@@ -282,6 +282,7 @@ fun loadCallHistory(context: Context, blockedPatterns: List<String>, limit: Int 
 
     try {
         // Проверяем разрешение на чтение журнала вызовов
+        // Проверяем разрешение на чтение журнала вызовов
         if (ContextCompat.checkSelfPermission(
                 context,
                 Manifest.permission.READ_CALL_LOG
@@ -416,7 +417,7 @@ suspend fun updatePatternsFromInternet(context: Context, currentPatterns: Mutabl
         withContext(Dispatchers.IO) {
             val url = "https://raw.githubusercontent.com/oditynet/AndroidSpamBlock/main/updatepattern.txt"
 
-            Log.d("UpdatePatterns", "Начинаю загрузку с URL: $url")
+            //Log.d("UpdatePatterns", "Начинаю загрузку с URL: $url")
 
             var connection: java.net.HttpURLConnection? = null
 
@@ -429,24 +430,24 @@ suspend fun updatePatternsFromInternet(context: Context, currentPatterns: Mutabl
                 connection.setRequestProperty("User-Agent", "Mozilla/5.0")
                 connection.setRequestProperty("Accept", "text/plain")
 
-                Log.d("UpdatePatterns", "Пытаюсь подключиться...")
+              //  Log.d("UpdatePatterns", "Пытаюсь подключиться...")
                 connection.connect()
 
                 val responseCode = connection.responseCode
                 val responseMessage = connection.responseMessage ?: "No message"
 
-                Log.d("UpdatePatterns", "Response Code: $responseCode, Message: $responseMessage")
+               // Log.d("UpdatePatterns", "Response Code: $responseCode, Message: $responseMessage")
 
                 if (responseCode == java.net.HttpURLConnection.HTTP_OK) {
                     val inputStream = connection.inputStream
                     val patternsText = inputStream.bufferedReader().use { it.readText() }
                     inputStream.close()
 
-                    Log.d("UpdatePatterns", "Получено данных: ${patternsText.length} символов")
+                   // Log.d("UpdatePatterns", "Получено данных: ${patternsText.length} символов")
 
                     // Разбиваем на строки и фильтруем
                     val lines = patternsText.lines()
-                    Log.d("UpdatePatterns", "Всего строк в файле: ${lines.size}")
+                   // Log.d("UpdatePatterns", "Всего строк в файле: ${lines.size}")
 
                     val newPatterns = lines
                         .filter { line ->
@@ -455,7 +456,7 @@ suspend fun updatePatternsFromInternet(context: Context, currentPatterns: Mutabl
                         .map { it.trim() }
                         .filter { it.isNotBlank() }
 
-                    Log.d("UpdatePatterns", "Найдено паттернов: ${newPatterns.size}")
+                  //  Log.d("UpdatePatterns", "Найдено паттернов: ${newPatterns.size}")
 
                     // НОВАЯ ЛОГИКА:
                     // 1. Сохраняем ТОЛЬКО пользовательские паттерны (с префиксом "user_")
@@ -491,7 +492,7 @@ suspend fun updatePatternsFromInternet(context: Context, currentPatterns: Mutabl
 
                     statusMessage = when {
                         addedCount > 0 ->
-                            "✅ Обновлено! Пользовательских: ${userPatterns.size}. Загружено: $addedCount новых паттернов"
+                            "✅ Пользовательских: ${userPatterns.size}. Загружено: $addedCount новых"
                         newPatterns.isEmpty() ->
                             "⚠️ Файл с паттернами пуст или содержит только комментарии"
                         else ->
@@ -567,7 +568,7 @@ fun CallMonitorApp(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("📞 Блокировщик звонков Pro") },
+                title = { Text("📞 Блокировщик звонков") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.primary
@@ -583,7 +584,7 @@ fun CallMonitorApp(
                     onClick = { selectedTab = 0 }
                 )
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.Close, contentDescription = "Блокировки") },
+                    icon = { Icon(Icons.Default.Clear, contentDescription = "Блокировки") },
                     label = { Text("Блокировки") },
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 }
@@ -676,12 +677,12 @@ fun MainScreen(
                     }
                 ) {
                     Icon(Icons.Default.Refresh, contentDescription = "Обновить")
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.width(2.dp))
                     Text("Обновить")
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             // Основной экран с логами звонков
             CallHistoryScreen(
@@ -689,14 +690,15 @@ fun MainScreen(
                 isLoading = isLoading
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             // Статус приложения
             Card(
                 modifier = Modifier.fillMaxWidth()
+
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(8.dp)
                 ) {
                     Text(
                         text = "Статус: ${if (permissionGranted) "✅ Активен" else "❌ Неактивен"}",
@@ -778,6 +780,7 @@ fun BlockingPatternsScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(vertical = 4.dp)
             .padding(16.dp)
     ) {
         // Заголовок
@@ -785,7 +788,7 @@ fun BlockingPatternsScreen() {
             text = "Управление блокировками",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.padding(bottom = 8.dp)
         )
 
         // Секция 1: Добавление нового паттерна
@@ -796,7 +799,7 @@ fun BlockingPatternsScreen() {
             )
         ) {
             Column(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(8.dp)
             ) {
                 Text(
                     text = "Добавить свой паттерн:",
@@ -805,12 +808,12 @@ fun BlockingPatternsScreen() {
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
 
-                Text(
+                /*Text(
                     text = "Паттерн - это часть номера или текста для блокировки",
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                    modifier = Modifier.padding(bottom = 12.dp)
-                )
+                    modifier = Modifier.padding(bottom = 5.dp)
+                )*/
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -819,8 +822,8 @@ fun BlockingPatternsScreen() {
                     OutlinedTextField(
                         value = newPattern,
                         onValueChange = { newPattern = it },
-                        label = { Text("Введите паттерн") },
-                        placeholder = { Text("Например: 495123 или банк") },
+                        label = { Text("") },
+                        placeholder = { Text("Паттерн - это часть номера или текста для блокировки") },
                         modifier = Modifier.weight(1f),
                         singleLine = true
                     )
@@ -861,7 +864,7 @@ fun BlockingPatternsScreen() {
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
         // Секция 2: Обновление базы паттернов
         Card(
@@ -871,7 +874,7 @@ fun BlockingPatternsScreen() {
             )
         ) {
             Column(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(8.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -913,14 +916,7 @@ fun BlockingPatternsScreen() {
                     }
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Text(
-                    text = "Загрузит свежие паттерны из интернета. Ваши личные паттерны не будут удалены.",
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                    modifier = Modifier.padding(bottom = 12.dp)
-                )
+                    // Spacer(modifier = Modifier.height(12.dp))
 
                 Button(
                     onClick = {
@@ -979,7 +975,7 @@ fun BlockingPatternsScreen() {
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Row(
-                            modifier = Modifier.padding(12.dp),
+                            modifier = Modifier.padding(8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             val icon = when {
@@ -1015,7 +1011,7 @@ fun BlockingPatternsScreen() {
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         // Секция 3: Список паттернов
         Card(
@@ -1025,7 +1021,7 @@ fun BlockingPatternsScreen() {
             )
         ) {
             Column(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(6.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -1070,7 +1066,7 @@ fun BlockingPatternsScreen() {
                             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
                             modifier = Modifier.size(48.dp)
                         )
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "Нет добавленных паттернов",
                             fontSize = 14.sp,
@@ -1212,7 +1208,7 @@ fun PatternItem(
             }
 
             // Кнопка удаления только для пользовательских паттернов
-            if (isUserPattern) {
+                //if (isUserPattern) {
                 IconButton(
                     onClick = onDelete,
                     modifier = Modifier.size(36.dp)
@@ -1223,7 +1219,7 @@ fun PatternItem(
                         tint = MaterialTheme.colorScheme.error,
                         modifier = Modifier.size(20.dp)
                     )
-                }
+               // }
             }
         }
     }
@@ -1246,14 +1242,14 @@ fun SettingsScreen() {
             text = "Настройки блокировки",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.padding(bottom = 6.dp)
         )
 
         Card(
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(10.dp)
             ) {
                 // Настройка лимита истории
                 Text(
@@ -1269,7 +1265,7 @@ fun SettingsScreen() {
                     value = sliderValue,
                     onValueChange = { sliderValue = it },
                     valueRange = 10f..100f,
-                    steps = 9,
+                    steps = 10,
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -1299,7 +1295,7 @@ fun SettingsScreen() {
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(10.dp)
             ) {
                 // Настройки блокировки
                 Text(
@@ -1367,38 +1363,6 @@ fun SettingsScreen() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Информация о приложении
-        Card(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text(
-                    text = "Информация:",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-
-                Text(
-                    text = "• Использует CallScreeningService для быстрой блокировки",
-                    fontSize = 12.sp
-                )
-                Text(
-                    text = "• Приоритетный BroadcastReceiver для раннего перехвата",
-                    fontSize = 12.sp
-                )
-                Text(
-                    text = "• Foreground Service для постоянной работы",
-                    fontSize = 12.sp
-                )
-                Text(
-                    text = "• Блокирует до того, как зазвонит телефон",
-                    fontSize = 12.sp
-                )
-            }
-        }
     }
 }
 
@@ -1512,7 +1476,7 @@ fun CallHistoryItem(call: CallLog) {
         )
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(10.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -1557,24 +1521,30 @@ fun CallHistoryItem(call: CallLog) {
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                         modifier = Modifier.padding(top = 2.dp)
                     )
-
-                    if (call.shouldBlock) {
-                        Text(
-                            text = "Будет заблокирован",
-                            fontSize = 9.sp,
-                            color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.padding(top = 2.dp)
-                        )
-                    }
                 }
             }
 
-            Text(
-                text = call.timestamp,
-                fontSize = 11.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                modifier = Modifier.padding(top = 8.dp)
-            )
+            // Вторая строка с датой и статусом блокировки
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = call.timestamp,
+                    fontSize = 11.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+
+                if (call.shouldBlock) {
+                    Text(
+                        text = "Будет заблокирован",
+                        fontSize = 10.sp,
+                        color = MaterialTheme.colorScheme.error,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
         }
     }
 }
