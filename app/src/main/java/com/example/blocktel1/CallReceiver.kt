@@ -6,10 +6,14 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.provider.ContactsContract
+import android.telecom.TelecomManager
 import android.telephony.TelephonyManager
 import android.util.Log
+import android.view.KeyEvent
 import android.widget.Toast
+import androidx.annotation.RequiresPermission
 import androidx.core.content.ContextCompat
 
 class CallReceiver : BroadcastReceiver() {
@@ -86,28 +90,24 @@ class CallReceiver : BroadcastReceiver() {
         }
     }
 
+    @RequiresPermission(Manifest.permission.ANSWER_PHONE_CALLS)
     private fun blockCall(context: Context) {
         try {
-            //Log.w("CallMonitor", "ПОПЫТКА ЗАБЛОКИРОВАТЬ ЗВОНОК")
+            Log.w("CallMonitor", "ПОПЫТКА ЗАБЛОКИРОВАТЬ ЗВОНОК")
 
             // Способ 2: Используем доступные методы для завершения звонка
             // Для Android 9+ (API 28) и выше можно попробовать этот способ
-            if (ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.CALL_PHONE
-            ) == PackageManager.PERMISSION_GRANTED) {
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-                    try {
-                        val telecomManager = context.getSystemService(Context.TELECOM_SERVICE)
-                                as android.telecom.TelecomManager
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                try {
+                    val telecomManager = context.getSystemService(Context.TELECOM_SERVICE)
+                        as TelecomManager
 
-                        // Пытаемся завершить звонок
-                        telecomManager.endCall()
-                        Log.i("CallMonitor", "Звонок завершен через TelecomManager")
-                        Toast.makeText(context, "Звонок заблокирован!", Toast.LENGTH_SHORT).show()
-                    } catch (e: Exception) {
-                        Log.e("CallMonitor", "Ошибка при завершении звонка через TelecomManager", e)
-                    }
+                    // Пытаемся завершить звонок
+                    telecomManager.endCall()
+                    Log.i("CallMonitor", "Звонок завершен через TelecomManager")
+                    Toast.makeText(context, "Звонок заблокирован!", Toast.LENGTH_SHORT).show()
+                } catch (e: Exception) {
+                    Log.e("CallMonitor", "Ошибка при завершении звонка через TelecomManager", e)
                 }
             }
 
@@ -115,8 +115,10 @@ class CallReceiver : BroadcastReceiver() {
             try {
                 val intent = Intent(Intent.ACTION_MEDIA_BUTTON).apply {
                     putExtra(Intent.EXTRA_KEY_EVENT,
-                        android.view.KeyEvent(android.view.KeyEvent.ACTION_DOWN,
-                        android.view.KeyEvent.KEYCODE_HEADSETHOOK))
+                        KeyEvent(
+                            KeyEvent.ACTION_DOWN,
+                        KeyEvent.KEYCODE_HEADSETHOOK)
+                    )
                 }
                 context.sendOrderedBroadcast(intent, null)
 
@@ -124,8 +126,10 @@ class CallReceiver : BroadcastReceiver() {
 
                 val intent2 = Intent(Intent.ACTION_MEDIA_BUTTON).apply {
                     putExtra(Intent.EXTRA_KEY_EVENT,
-                        android.view.KeyEvent(android.view.KeyEvent.ACTION_UP,
-                        android.view.KeyEvent.KEYCODE_HEADSETHOOK))
+                        KeyEvent(
+                            KeyEvent.ACTION_UP,
+                        KeyEvent.KEYCODE_HEADSETHOOK)
+                    )
                 }
                 context.sendOrderedBroadcast(intent2, null)
 
