@@ -704,7 +704,7 @@ fun CallMonitorApp(
                             Text("📞 Телефон")
                             if (settings.value.isDefaultDialer) {
                                 Text(
-                                    text = "версия 0.3.1",
+                                    text = "версия 0.3.1.1",
                                     fontSize = 12.sp,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -2382,6 +2382,34 @@ fun ActiveCallScreen(
     onDisconnect: () -> Unit
 ) {
     val context = LocalContext.current
+
+    // === КОД ДЛЯ ПРОБУЖДЕНИЯ ЭКРАНА И ОБХОДА БЛОКИРОВКИ ===
+    LaunchedEffect(call) {
+        // Находим Activity из текущего контекста Compose
+        val activity = context as? android.app.Activity
+        activity?.window?.let { window ->
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O_MR1) {
+                // Для Android 8.1 и новее (включая Android 14/15/16)
+                activity.setShowWhenLocked(true)
+                activity.setTurnScreenOn(true)
+
+                // Просим систему временно разблокировать экран для нашего звонка
+                val keyguardManager = context.getSystemService(android.content.Context.KEYGUARD_SERVICE) as android.app.KeyguardManager
+                keyguardManager.requestDismissKeyguard(activity, null)
+            } else {
+                // Для старых версий Android (до Android 8)
+                @Suppress("DEPRECATION")
+                window.addFlags(
+                    android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+                    android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
+                    android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
+                    android.view.WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+                )
+            }
+        }
+    }
+
+
     var isSpeakerOn by remember { mutableStateOf(false) }
 
     // Наблюдаем за системным состоянием звонка в реальном времени
@@ -2423,7 +2451,15 @@ fun ActiveCallScreen(
             }
         }
         call.registerCallback(callback)
-        onDispose { call.unregisterCallback(callback) }
+        onDispose {
+            call.unregisterCallback(callback)
+            // СБРАСЫВАЕМ ФЛАГИ ПРОБУЖДЕНИЯ ПРИ УНИЧТОЖЕНИИ ЭКРАНА ЗВОНКА
+            val activity = context as? android.app.Activity
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O_MR1) {
+                activity?.setShowWhenLocked(false)
+                activity?.setTurnScreenOn(false)
+            }
+        }
     }
 
     Column(

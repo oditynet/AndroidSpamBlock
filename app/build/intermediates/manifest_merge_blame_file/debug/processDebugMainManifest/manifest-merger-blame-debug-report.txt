@@ -60,332 +60,335 @@
 28    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 28-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:23:5-80
 28-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:23:22-77
-29    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-29-->[androidx.media3:media3-common:1.9.2] /home/odity/.gradle/caches/9.1.0/transforms/8102c8aa68b1c93da093628a5a30305c/transformed/media3-common-1.9.2/AndroidManifest.xml:22:5-79
-29-->[androidx.media3:media3-common:1.9.2] /home/odity/.gradle/caches/9.1.0/transforms/8102c8aa68b1c93da093628a5a30305c/transformed/media3-common-1.9.2/AndroidManifest.xml:22:22-76
-30    <uses-permission android:name="android.permission.WAKE_LOCK" />
-30-->[androidx.media3:media3-exoplayer:1.9.2] /home/odity/.gradle/caches/9.1.0/transforms/87a5434fdc8e5b9cb1e7d16ab5b0ef1e/transformed/media3-exoplayer-1.9.2/AndroidManifest.xml:23:5-68
-30-->[androidx.media3:media3-exoplayer:1.9.2] /home/odity/.gradle/caches/9.1.0/transforms/87a5434fdc8e5b9cb1e7d16ab5b0ef1e/transformed/media3-exoplayer-1.9.2/AndroidManifest.xml:23:22-65
-31    <uses-permission android:name="android.permission.INTERNET" />
-31-->[com.google.firebase:firebase-database:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/c8cbd78716e2939aea82278650263cff/transformed/firebase-database-21.0.0/AndroidManifest.xml:23:5-67
-31-->[com.google.firebase:firebase-database:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/c8cbd78716e2939aea82278650263cff/transformed/firebase-database-21.0.0/AndroidManifest.xml:23:22-64
-32
-33    <permission
-33-->[androidx.core:core:1.16.0] /home/odity/.gradle/caches/9.1.0/transforms/c9e65b4f6f94437ea11aa0d56b36334b/transformed/core-1.16.0/AndroidManifest.xml:22:5-24:47
-34        android:name="com.example.blocktel.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
-34-->[androidx.core:core:1.16.0] /home/odity/.gradle/caches/9.1.0/transforms/c9e65b4f6f94437ea11aa0d56b36334b/transformed/core-1.16.0/AndroidManifest.xml:23:9-81
-35        android:protectionLevel="signature" />
-35-->[androidx.core:core:1.16.0] /home/odity/.gradle/caches/9.1.0/transforms/c9e65b4f6f94437ea11aa0d56b36334b/transformed/core-1.16.0/AndroidManifest.xml:24:9-44
-36
-37    <uses-permission android:name="com.example.blocktel.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
-37-->[androidx.core:core:1.16.0] /home/odity/.gradle/caches/9.1.0/transforms/c9e65b4f6f94437ea11aa0d56b36334b/transformed/core-1.16.0/AndroidManifest.xml:26:5-97
-37-->[androidx.core:core:1.16.0] /home/odity/.gradle/caches/9.1.0/transforms/c9e65b4f6f94437ea11aa0d56b36334b/transformed/core-1.16.0/AndroidManifest.xml:26:22-94
-38
-39    <application
-39-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:25:5-83:19
-40        android:allowBackup="true"
-40-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:26:9-35
-41        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-41-->[androidx.core:core:1.16.0] /home/odity/.gradle/caches/9.1.0/transforms/c9e65b4f6f94437ea11aa0d56b36334b/transformed/core-1.16.0/AndroidManifest.xml:28:18-86
-42        android:debuggable="true"
-43        android:extractNativeLibs="false"
-44        android:icon="@mipmap/ic_launcher"
-44-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:27:9-43
-45        android:label="@string/app_name"
-45-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:28:9-41
-46        android:roundIcon="@mipmap/ic_launcher_round"
-46-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:29:9-54
-47        android:supportsRtl="true"
-47-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:30:9-35
-48        android:theme="@style/Theme.BlockTel1" >
-48-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:31:9-47
-49        <activity
-49-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:33:9-53:20
-50            android:name="com.example.blocktel1.MainActivity"
-50-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:34:13-41
-51            android:exported="true"
-51-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:35:13-36
-52            android:launchMode="singleTask" >
-52-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:36:13-44
-53            <intent-filter>
-53-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:38:13-41:29
-54                <action android:name="android.intent.action.MAIN" />
-54-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:39:17-69
-54-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:39:25-66
-55
-56                <category android:name="android.intent.category.LAUNCHER" />
-56-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:40:17-77
-56-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:40:27-74
-57            </intent-filter>
-58
-59            <!-- Для приложения по умолчанию -->
-60            <intent-filter>
-60-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:44:13-47:29
-61                <action android:name="android.intent.action.DIAL" />
-61-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:45:17-69
-61-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:45:25-66
-62
-63                <category android:name="android.intent.category.DEFAULT" />
-63-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:46:17-76
-63-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:46:27-73
-64            </intent-filter>
-65            <intent-filter>
-65-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:48:13-52:29
-66                <action android:name="android.intent.action.DIAL" />
-66-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:45:17-69
-66-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:45:25-66
-67
-68                <category android:name="android.intent.category.DEFAULT" />
-68-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:46:17-76
-68-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:46:27-73
-69
-70                <data android:scheme="tel" />
-70-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:51:17-46
-70-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:51:23-43
-71            </intent-filter>
-72        </activity>
-73
-74        <service
-74-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:55:9-59:57
-75            android:name="com.example.blocktel1.CallBlockingService"
-75-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:56:13-48
-76            android:enabled="true"
-76-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:57:13-35
-77            android:exported="false"
-77-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:58:13-37
-78            android:foregroundServiceType="phoneCall" />
-78-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:59:13-54
-79        <service
-79-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:61:9-69:19
-80            android:name="com.example.blocktel1.MyCallScreeningService"
-80-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:62:13-51
-81            android:enabled="true"
-81-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:64:13-35
-82            android:exported="true"
-82-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:65:13-36
-83            android:permission="android.permission.BIND_SCREENING_SERVICE" >
-83-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:63:13-75
-84            <intent-filter>
-84-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:66:13-68:29
-85                <action android:name="android.telecom.CallScreeningService" />
-85-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:67:17-79
-85-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:67:25-76
-86            </intent-filter>
-87        </service>
-88        <service
-88-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:71:9-81:19
-89            android:name="com.example.blocktel1.MyInCallService"
-89-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:72:13-44
-90            android:exported="true"
-90-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:74:13-36
-91            android:permission="android.permission.BIND_INCALL_SERVICE" >
-91-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:73:13-72
-92            <meta-data
-92-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:75:13-77:40
-93                android:name="android.telecom.IN_CALL_SERVICE_UI"
-93-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:76:17-66
-94                android:value="true" />
-94-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:77:17-37
-95
-96            <intent-filter>
-96-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:78:13-80:29
-97                <action android:name="android.telecom.InCallService" />
-97-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:79:17-72
-97-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:79:25-69
-98            </intent-filter>
-99        </service>
-100
-101        <activity
-101-->[com.google.android.gms:play-services-auth:21.5.1] /home/odity/.gradle/caches/9.1.0/transforms/1be0cffe3591067b8249047fd822a5b4/transformed/play-services-auth-21.5.1/AndroidManifest.xml:23:9-27:75
-102            android:name="com.google.android.gms.auth.api.signin.internal.SignInHubActivity"
-102-->[com.google.android.gms:play-services-auth:21.5.1] /home/odity/.gradle/caches/9.1.0/transforms/1be0cffe3591067b8249047fd822a5b4/transformed/play-services-auth-21.5.1/AndroidManifest.xml:24:13-93
-103            android:excludeFromRecents="true"
-103-->[com.google.android.gms:play-services-auth:21.5.1] /home/odity/.gradle/caches/9.1.0/transforms/1be0cffe3591067b8249047fd822a5b4/transformed/play-services-auth-21.5.1/AndroidManifest.xml:25:13-46
-104            android:exported="false"
-104-->[com.google.android.gms:play-services-auth:21.5.1] /home/odity/.gradle/caches/9.1.0/transforms/1be0cffe3591067b8249047fd822a5b4/transformed/play-services-auth-21.5.1/AndroidManifest.xml:26:13-37
-105            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-105-->[com.google.android.gms:play-services-auth:21.5.1] /home/odity/.gradle/caches/9.1.0/transforms/1be0cffe3591067b8249047fd822a5b4/transformed/play-services-auth-21.5.1/AndroidManifest.xml:27:13-72
-106        <!--
-107            Service handling Google Sign-In user revocation. For apps that do not integrate with
-108            Google Sign-In, this service will never be started.
-109        -->
-110        <service
-110-->[com.google.android.gms:play-services-auth:21.5.1] /home/odity/.gradle/caches/9.1.0/transforms/1be0cffe3591067b8249047fd822a5b4/transformed/play-services-auth-21.5.1/AndroidManifest.xml:33:9-37:51
-111            android:name="com.google.android.gms.auth.api.signin.RevocationBoundService"
-111-->[com.google.android.gms:play-services-auth:21.5.1] /home/odity/.gradle/caches/9.1.0/transforms/1be0cffe3591067b8249047fd822a5b4/transformed/play-services-auth-21.5.1/AndroidManifest.xml:34:13-89
-112            android:exported="true"
-112-->[com.google.android.gms:play-services-auth:21.5.1] /home/odity/.gradle/caches/9.1.0/transforms/1be0cffe3591067b8249047fd822a5b4/transformed/play-services-auth-21.5.1/AndroidManifest.xml:35:13-36
-113            android:permission="com.google.android.gms.auth.api.signin.permission.REVOCATION_NOTIFICATION"
-113-->[com.google.android.gms:play-services-auth:21.5.1] /home/odity/.gradle/caches/9.1.0/transforms/1be0cffe3591067b8249047fd822a5b4/transformed/play-services-auth-21.5.1/AndroidManifest.xml:36:13-107
-114            android:visibleToInstantApps="true" />
-114-->[com.google.android.gms:play-services-auth:21.5.1] /home/odity/.gradle/caches/9.1.0/transforms/1be0cffe3591067b8249047fd822a5b4/transformed/play-services-auth-21.5.1/AndroidManifest.xml:37:13-48
-115        <service
-115-->[com.google.firebase:firebase-database-ktx:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/94a0e781647a804f7563e95a5e1dab74/transformed/firebase-database-ktx-21.0.0/AndroidManifest.xml:9:9-15:19
-116            android:name="com.google.firebase.components.ComponentDiscoveryService"
-116-->[com.google.firebase:firebase-database-ktx:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/94a0e781647a804f7563e95a5e1dab74/transformed/firebase-database-ktx-21.0.0/AndroidManifest.xml:10:13-84
-117            android:directBootAware="true"
-117-->[com.google.firebase:firebase-common:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/cb6dff032423709dfbf65977152005fc/transformed/firebase-common-21.0.0/AndroidManifest.xml:32:13-43
-118            android:exported="false" >
-118-->[com.google.firebase:firebase-database-ktx:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/94a0e781647a804f7563e95a5e1dab74/transformed/firebase-database-ktx-21.0.0/AndroidManifest.xml:11:13-37
-119            <meta-data
-119-->[com.google.firebase:firebase-database-ktx:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/94a0e781647a804f7563e95a5e1dab74/transformed/firebase-database-ktx-21.0.0/AndroidManifest.xml:12:13-14:85
-120                android:name="com.google.firebase.components:com.google.firebase.database.ktx.FirebaseDatabaseLegacyRegistrar"
-120-->[com.google.firebase:firebase-database-ktx:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/94a0e781647a804f7563e95a5e1dab74/transformed/firebase-database-ktx-21.0.0/AndroidManifest.xml:13:17-127
-121                android:value="com.google.firebase.components.ComponentRegistrar" />
-121-->[com.google.firebase:firebase-database-ktx:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/94a0e781647a804f7563e95a5e1dab74/transformed/firebase-database-ktx-21.0.0/AndroidManifest.xml:14:17-82
-122            <meta-data
-122-->[com.google.firebase:firebase-database:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/c8cbd78716e2939aea82278650263cff/transformed/firebase-database-21.0.0/AndroidManifest.xml:29:13-31:85
-123                android:name="com.google.firebase.components:com.google.firebase.database.FirebaseDatabaseKtxRegistrar"
-123-->[com.google.firebase:firebase-database:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/c8cbd78716e2939aea82278650263cff/transformed/firebase-database-21.0.0/AndroidManifest.xml:30:17-120
-124                android:value="com.google.firebase.components.ComponentRegistrar" />
-124-->[com.google.firebase:firebase-database:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/c8cbd78716e2939aea82278650263cff/transformed/firebase-database-21.0.0/AndroidManifest.xml:31:17-82
-125            <meta-data
-125-->[com.google.firebase:firebase-database:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/c8cbd78716e2939aea82278650263cff/transformed/firebase-database-21.0.0/AndroidManifest.xml:32:13-34:85
-126                android:name="com.google.firebase.components:com.google.firebase.database.DatabaseRegistrar"
-126-->[com.google.firebase:firebase-database:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/c8cbd78716e2939aea82278650263cff/transformed/firebase-database-21.0.0/AndroidManifest.xml:33:17-109
-127                android:value="com.google.firebase.components.ComponentRegistrar" />
-127-->[com.google.firebase:firebase-database:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/c8cbd78716e2939aea82278650263cff/transformed/firebase-database-21.0.0/AndroidManifest.xml:34:17-82
-128            <meta-data
-128-->[com.google.firebase:firebase-common-ktx:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/c953391b078888a6c435108e1f188fb1/transformed/firebase-common-ktx-21.0.0/AndroidManifest.xml:12:13-14:85
-129                android:name="com.google.firebase.components:com.google.firebase.ktx.FirebaseCommonLegacyRegistrar"
-129-->[com.google.firebase:firebase-common-ktx:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/c953391b078888a6c435108e1f188fb1/transformed/firebase-common-ktx-21.0.0/AndroidManifest.xml:13:17-116
-130                android:value="com.google.firebase.components.ComponentRegistrar" />
-130-->[com.google.firebase:firebase-common-ktx:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/c953391b078888a6c435108e1f188fb1/transformed/firebase-common-ktx-21.0.0/AndroidManifest.xml:14:17-82
-131            <meta-data
-131-->[com.google.firebase:firebase-common:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/cb6dff032423709dfbf65977152005fc/transformed/firebase-common-21.0.0/AndroidManifest.xml:35:13-37:85
-132                android:name="com.google.firebase.components:com.google.firebase.FirebaseCommonKtxRegistrar"
-132-->[com.google.firebase:firebase-common:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/cb6dff032423709dfbf65977152005fc/transformed/firebase-common-21.0.0/AndroidManifest.xml:36:17-109
-133                android:value="com.google.firebase.components.ComponentRegistrar" />
-133-->[com.google.firebase:firebase-common:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/cb6dff032423709dfbf65977152005fc/transformed/firebase-common-21.0.0/AndroidManifest.xml:37:17-82
-134        </service>
-135
-136        <provider
-136-->[com.google.firebase:firebase-common:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/cb6dff032423709dfbf65977152005fc/transformed/firebase-common-21.0.0/AndroidManifest.xml:23:9-28:39
-137            android:name="com.google.firebase.provider.FirebaseInitProvider"
-137-->[com.google.firebase:firebase-common:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/cb6dff032423709dfbf65977152005fc/transformed/firebase-common-21.0.0/AndroidManifest.xml:24:13-77
-138            android:authorities="com.example.blocktel.firebaseinitprovider"
-138-->[com.google.firebase:firebase-common:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/cb6dff032423709dfbf65977152005fc/transformed/firebase-common-21.0.0/AndroidManifest.xml:25:13-72
-139            android:directBootAware="true"
-139-->[com.google.firebase:firebase-common:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/cb6dff032423709dfbf65977152005fc/transformed/firebase-common-21.0.0/AndroidManifest.xml:26:13-43
-140            android:exported="false"
-140-->[com.google.firebase:firebase-common:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/cb6dff032423709dfbf65977152005fc/transformed/firebase-common-21.0.0/AndroidManifest.xml:27:13-37
-141            android:initOrder="100" />
-141-->[com.google.firebase:firebase-common:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/cb6dff032423709dfbf65977152005fc/transformed/firebase-common-21.0.0/AndroidManifest.xml:28:13-36
-142
-143        <activity
-143-->[com.google.android.gms:play-services-base:18.5.0] /home/odity/.gradle/caches/9.1.0/transforms/e7e0a6727daebe466fcfd1d258a7a1a3/transformed/play-services-base-18.5.0/AndroidManifest.xml:5:9-173
-144            android:name="com.google.android.gms.common.api.GoogleApiActivity"
-144-->[com.google.android.gms:play-services-base:18.5.0] /home/odity/.gradle/caches/9.1.0/transforms/e7e0a6727daebe466fcfd1d258a7a1a3/transformed/play-services-base-18.5.0/AndroidManifest.xml:5:19-85
-145            android:exported="false"
-145-->[com.google.android.gms:play-services-base:18.5.0] /home/odity/.gradle/caches/9.1.0/transforms/e7e0a6727daebe466fcfd1d258a7a1a3/transformed/play-services-base-18.5.0/AndroidManifest.xml:5:146-170
-146            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-146-->[com.google.android.gms:play-services-base:18.5.0] /home/odity/.gradle/caches/9.1.0/transforms/e7e0a6727daebe466fcfd1d258a7a1a3/transformed/play-services-base-18.5.0/AndroidManifest.xml:5:86-145
-147        <activity
-147-->[androidx.compose.ui:ui-test-manifest:1.10.5] /home/odity/.gradle/caches/9.1.0/transforms/1360ee0a6c75f315c07933333a515918/transformed/ui-test-manifest-1.10.5/AndroidManifest.xml:23:9-26:79
-148            android:name="androidx.activity.ComponentActivity"
-148-->[androidx.compose.ui:ui-test-manifest:1.10.5] /home/odity/.gradle/caches/9.1.0/transforms/1360ee0a6c75f315c07933333a515918/transformed/ui-test-manifest-1.10.5/AndroidManifest.xml:24:13-63
-149            android:exported="true"
-149-->[androidx.compose.ui:ui-test-manifest:1.10.5] /home/odity/.gradle/caches/9.1.0/transforms/1360ee0a6c75f315c07933333a515918/transformed/ui-test-manifest-1.10.5/AndroidManifest.xml:25:13-36
-150            android:theme="@android:style/Theme.Material.Light.NoActionBar" />
-150-->[androidx.compose.ui:ui-test-manifest:1.10.5] /home/odity/.gradle/caches/9.1.0/transforms/1360ee0a6c75f315c07933333a515918/transformed/ui-test-manifest-1.10.5/AndroidManifest.xml:26:13-76
-151        <activity
-151-->[androidx.compose.ui:ui-tooling-android:1.10.5] /home/odity/.gradle/caches/9.1.0/transforms/d6947bd705f9c8d9b68357323a52e2fe/transformed/ui-tooling/AndroidManifest.xml:23:9-25:39
-152            android:name="androidx.compose.ui.tooling.PreviewActivity"
-152-->[androidx.compose.ui:ui-tooling-android:1.10.5] /home/odity/.gradle/caches/9.1.0/transforms/d6947bd705f9c8d9b68357323a52e2fe/transformed/ui-tooling/AndroidManifest.xml:24:13-71
-153            android:exported="true" />
-153-->[androidx.compose.ui:ui-tooling-android:1.10.5] /home/odity/.gradle/caches/9.1.0/transforms/d6947bd705f9c8d9b68357323a52e2fe/transformed/ui-tooling/AndroidManifest.xml:25:13-36
-154
-155        <provider
-155-->[androidx.emoji2:emoji2:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/93d9c6109747430f952ac09f92730c16/transformed/emoji2-1.4.0/AndroidManifest.xml:24:9-32:20
-156            android:name="androidx.startup.InitializationProvider"
-156-->[androidx.emoji2:emoji2:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/93d9c6109747430f952ac09f92730c16/transformed/emoji2-1.4.0/AndroidManifest.xml:25:13-67
-157            android:authorities="com.example.blocktel.androidx-startup"
-157-->[androidx.emoji2:emoji2:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/93d9c6109747430f952ac09f92730c16/transformed/emoji2-1.4.0/AndroidManifest.xml:26:13-68
-158            android:exported="false" >
-158-->[androidx.emoji2:emoji2:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/93d9c6109747430f952ac09f92730c16/transformed/emoji2-1.4.0/AndroidManifest.xml:27:13-37
-159            <meta-data
-159-->[androidx.emoji2:emoji2:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/93d9c6109747430f952ac09f92730c16/transformed/emoji2-1.4.0/AndroidManifest.xml:29:13-31:52
-160                android:name="androidx.emoji2.text.EmojiCompatInitializer"
-160-->[androidx.emoji2:emoji2:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/93d9c6109747430f952ac09f92730c16/transformed/emoji2-1.4.0/AndroidManifest.xml:30:17-75
-161                android:value="androidx.startup" />
-161-->[androidx.emoji2:emoji2:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/93d9c6109747430f952ac09f92730c16/transformed/emoji2-1.4.0/AndroidManifest.xml:31:17-49
-162            <meta-data
-162-->[androidx.lifecycle:lifecycle-process:2.9.4] /home/odity/.gradle/caches/9.1.0/transforms/f5613f7376ff12fba4d53cb00d949556/transformed/lifecycle-process-2.9.4/AndroidManifest.xml:29:13-31:52
-163                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
-163-->[androidx.lifecycle:lifecycle-process:2.9.4] /home/odity/.gradle/caches/9.1.0/transforms/f5613f7376ff12fba4d53cb00d949556/transformed/lifecycle-process-2.9.4/AndroidManifest.xml:30:17-78
-164                android:value="androidx.startup" />
-164-->[androidx.lifecycle:lifecycle-process:2.9.4] /home/odity/.gradle/caches/9.1.0/transforms/f5613f7376ff12fba4d53cb00d949556/transformed/lifecycle-process-2.9.4/AndroidManifest.xml:31:17-49
-165            <meta-data
-165-->[com.squareup.okhttp3:okhttp-android:5.3.2] /home/odity/.gradle/caches/9.1.0/transforms/cd8af13036bccc37bd8cd0b5e1165770/transformed/okhttp-release/AndroidManifest.xml:16:13-18:52
-166                android:name="okhttp3.internal.platform.PlatformInitializer"
-166-->[com.squareup.okhttp3:okhttp-android:5.3.2] /home/odity/.gradle/caches/9.1.0/transforms/cd8af13036bccc37bd8cd0b5e1165770/transformed/okhttp-release/AndroidManifest.xml:17:17-77
-167                android:value="androidx.startup" />
-167-->[com.squareup.okhttp3:okhttp-android:5.3.2] /home/odity/.gradle/caches/9.1.0/transforms/cd8af13036bccc37bd8cd0b5e1165770/transformed/okhttp-release/AndroidManifest.xml:18:17-49
-168            <meta-data
-168-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:29:13-31:52
-169                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
-169-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:30:17-85
-170                android:value="androidx.startup" />
-170-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:31:17-49
-171        </provider>
-172
-173        <uses-library
-173-->[androidx.window:window:1.5.0] /home/odity/.gradle/caches/9.1.0/transforms/6e4549e205b2b225c993edfff8f7e4ce/transformed/window-1.5.0/AndroidManifest.xml:23:9-25:40
-174            android:name="androidx.window.extensions"
-174-->[androidx.window:window:1.5.0] /home/odity/.gradle/caches/9.1.0/transforms/6e4549e205b2b225c993edfff8f7e4ce/transformed/window-1.5.0/AndroidManifest.xml:24:13-54
-175            android:required="false" />
-175-->[androidx.window:window:1.5.0] /home/odity/.gradle/caches/9.1.0/transforms/6e4549e205b2b225c993edfff8f7e4ce/transformed/window-1.5.0/AndroidManifest.xml:25:13-37
-176        <uses-library
-176-->[androidx.window:window:1.5.0] /home/odity/.gradle/caches/9.1.0/transforms/6e4549e205b2b225c993edfff8f7e4ce/transformed/window-1.5.0/AndroidManifest.xml:26:9-28:40
-177            android:name="androidx.window.sidecar"
-177-->[androidx.window:window:1.5.0] /home/odity/.gradle/caches/9.1.0/transforms/6e4549e205b2b225c993edfff8f7e4ce/transformed/window-1.5.0/AndroidManifest.xml:27:13-51
-178            android:required="false" />
-178-->[androidx.window:window:1.5.0] /home/odity/.gradle/caches/9.1.0/transforms/6e4549e205b2b225c993edfff8f7e4ce/transformed/window-1.5.0/AndroidManifest.xml:28:13-37
-179
-180        <meta-data
-180-->[com.google.android.gms:play-services-basement:18.9.0] /home/odity/.gradle/caches/9.1.0/transforms/9f0b20ad89d8c9354897389e80f432aa/transformed/play-services-basement-18.9.0/AndroidManifest.xml:21:9-23:69
-181            android:name="com.google.android.gms.version"
-181-->[com.google.android.gms:play-services-basement:18.9.0] /home/odity/.gradle/caches/9.1.0/transforms/9f0b20ad89d8c9354897389e80f432aa/transformed/play-services-basement-18.9.0/AndroidManifest.xml:22:13-58
-182            android:value="@integer/google_play_services_version" />
-182-->[com.google.android.gms:play-services-basement:18.9.0] /home/odity/.gradle/caches/9.1.0/transforms/9f0b20ad89d8c9354897389e80f432aa/transformed/play-services-basement-18.9.0/AndroidManifest.xml:23:13-66
-183
-184        <receiver
-184-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:34:9-52:20
-185            android:name="androidx.profileinstaller.ProfileInstallReceiver"
-185-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:35:13-76
-186            android:directBootAware="false"
-186-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:36:13-44
-187            android:enabled="true"
-187-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:37:13-35
-188            android:exported="true"
-188-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:38:13-36
-189            android:permission="android.permission.DUMP" >
-189-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:39:13-57
-190            <intent-filter>
-190-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:40:13-42:29
-191                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
-191-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:41:17-91
-191-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:41:25-88
-192            </intent-filter>
-193            <intent-filter>
-193-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:43:13-45:29
-194                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
-194-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:44:17-85
-194-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:44:25-82
-195            </intent-filter>
-196            <intent-filter>
-196-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:46:13-48:29
-197                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
-197-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:47:17-88
-197-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:47:25-85
-198            </intent-filter>
-199            <intent-filter>
-199-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:49:13-51:29
-200                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
-200-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:50:17-95
-200-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:50:25-92
-201            </intent-filter>
-202        </receiver>
-203    </application>
-204
-205</manifest>
+29    <uses-permission android:name="android.permission.WAKE_LOCK" />
+29-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:25:5-68
+29-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:25:22-65
+30    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+30-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:21:5-81
+30-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:21:22-78
+31    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+31-->[androidx.media3:media3-common:1.9.2] /home/odity/.gradle/caches/9.1.0/transforms/8102c8aa68b1c93da093628a5a30305c/transformed/media3-common-1.9.2/AndroidManifest.xml:22:5-79
+31-->[androidx.media3:media3-common:1.9.2] /home/odity/.gradle/caches/9.1.0/transforms/8102c8aa68b1c93da093628a5a30305c/transformed/media3-common-1.9.2/AndroidManifest.xml:22:22-76
+32    <uses-permission android:name="android.permission.INTERNET" />
+32-->[com.google.firebase:firebase-database:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/c8cbd78716e2939aea82278650263cff/transformed/firebase-database-21.0.0/AndroidManifest.xml:23:5-67
+32-->[com.google.firebase:firebase-database:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/c8cbd78716e2939aea82278650263cff/transformed/firebase-database-21.0.0/AndroidManifest.xml:23:22-64
+33
+34    <permission
+34-->[androidx.core:core:1.16.0] /home/odity/.gradle/caches/9.1.0/transforms/c9e65b4f6f94437ea11aa0d56b36334b/transformed/core-1.16.0/AndroidManifest.xml:22:5-24:47
+35        android:name="com.example.blocktel.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+35-->[androidx.core:core:1.16.0] /home/odity/.gradle/caches/9.1.0/transforms/c9e65b4f6f94437ea11aa0d56b36334b/transformed/core-1.16.0/AndroidManifest.xml:23:9-81
+36        android:protectionLevel="signature" />
+36-->[androidx.core:core:1.16.0] /home/odity/.gradle/caches/9.1.0/transforms/c9e65b4f6f94437ea11aa0d56b36334b/transformed/core-1.16.0/AndroidManifest.xml:24:9-44
+37
+38    <uses-permission android:name="com.example.blocktel.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+38-->[androidx.core:core:1.16.0] /home/odity/.gradle/caches/9.1.0/transforms/c9e65b4f6f94437ea11aa0d56b36334b/transformed/core-1.16.0/AndroidManifest.xml:26:5-97
+38-->[androidx.core:core:1.16.0] /home/odity/.gradle/caches/9.1.0/transforms/c9e65b4f6f94437ea11aa0d56b36334b/transformed/core-1.16.0/AndroidManifest.xml:26:22-94
+39
+40    <application
+40-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:28:5-86:19
+41        android:allowBackup="true"
+41-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:29:9-35
+42        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+42-->[androidx.core:core:1.16.0] /home/odity/.gradle/caches/9.1.0/transforms/c9e65b4f6f94437ea11aa0d56b36334b/transformed/core-1.16.0/AndroidManifest.xml:28:18-86
+43        android:debuggable="true"
+44        android:extractNativeLibs="false"
+45        android:icon="@mipmap/ic_launcher"
+45-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:30:9-43
+46        android:label="@string/app_name"
+46-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:31:9-41
+47        android:roundIcon="@mipmap/ic_launcher_round"
+47-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:32:9-54
+48        android:supportsRtl="true"
+48-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:33:9-35
+49        android:theme="@style/Theme.BlockTel1" >
+49-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:34:9-47
+50        <activity
+50-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:36:9-56:20
+51            android:name="com.example.blocktel1.MainActivity"
+51-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:37:13-41
+52            android:exported="true"
+52-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:38:13-36
+53            android:launchMode="singleTask" >
+53-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:39:13-44
+54            <intent-filter>
+54-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:41:13-44:29
+55                <action android:name="android.intent.action.MAIN" />
+55-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:42:17-69
+55-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:42:25-66
+56
+57                <category android:name="android.intent.category.LAUNCHER" />
+57-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:43:17-77
+57-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:43:27-74
+58            </intent-filter>
+59
+60            <!-- Для приложения по умолчанию -->
+61            <intent-filter>
+61-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:47:13-50:29
+62                <action android:name="android.intent.action.DIAL" />
+62-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:48:17-69
+62-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:48:25-66
+63
+64                <category android:name="android.intent.category.DEFAULT" />
+64-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:49:17-76
+64-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:49:27-73
+65            </intent-filter>
+66            <intent-filter>
+66-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:51:13-55:29
+67                <action android:name="android.intent.action.DIAL" />
+67-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:48:17-69
+67-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:48:25-66
+68
+69                <category android:name="android.intent.category.DEFAULT" />
+69-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:49:17-76
+69-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:49:27-73
+70
+71                <data android:scheme="tel" />
+71-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:54:17-46
+71-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:54:23-43
+72            </intent-filter>
+73        </activity>
+74
+75        <service
+75-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:58:9-62:57
+76            android:name="com.example.blocktel1.CallBlockingService"
+76-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:59:13-48
+77            android:enabled="true"
+77-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:60:13-35
+78            android:exported="false"
+78-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:61:13-37
+79            android:foregroundServiceType="phoneCall" />
+79-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:62:13-54
+80        <service
+80-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:64:9-72:19
+81            android:name="com.example.blocktel1.MyCallScreeningService"
+81-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:65:13-51
+82            android:enabled="true"
+82-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:67:13-35
+83            android:exported="true"
+83-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:68:13-36
+84            android:permission="android.permission.BIND_SCREENING_SERVICE" >
+84-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:66:13-75
+85            <intent-filter>
+85-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:69:13-71:29
+86                <action android:name="android.telecom.CallScreeningService" />
+86-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:70:17-79
+86-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:70:25-76
+87            </intent-filter>
+88        </service>
+89        <service
+89-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:74:9-84:19
+90            android:name="com.example.blocktel1.MyInCallService"
+90-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:75:13-44
+91            android:exported="true"
+91-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:77:13-36
+92            android:permission="android.permission.BIND_INCALL_SERVICE" >
+92-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:76:13-72
+93            <meta-data
+93-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:78:13-80:40
+94                android:name="android.telecom.IN_CALL_SERVICE_UI"
+94-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:79:17-66
+95                android:value="true" />
+95-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:80:17-37
+96
+97            <intent-filter>
+97-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:81:13-83:29
+98                <action android:name="android.telecom.InCallService" />
+98-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:82:17-72
+98-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:82:25-69
+99            </intent-filter>
+100        </service>
+101
+102        <activity
+102-->[com.google.android.gms:play-services-auth:21.5.1] /home/odity/.gradle/caches/9.1.0/transforms/1be0cffe3591067b8249047fd822a5b4/transformed/play-services-auth-21.5.1/AndroidManifest.xml:23:9-27:75
+103            android:name="com.google.android.gms.auth.api.signin.internal.SignInHubActivity"
+103-->[com.google.android.gms:play-services-auth:21.5.1] /home/odity/.gradle/caches/9.1.0/transforms/1be0cffe3591067b8249047fd822a5b4/transformed/play-services-auth-21.5.1/AndroidManifest.xml:24:13-93
+104            android:excludeFromRecents="true"
+104-->[com.google.android.gms:play-services-auth:21.5.1] /home/odity/.gradle/caches/9.1.0/transforms/1be0cffe3591067b8249047fd822a5b4/transformed/play-services-auth-21.5.1/AndroidManifest.xml:25:13-46
+105            android:exported="false"
+105-->[com.google.android.gms:play-services-auth:21.5.1] /home/odity/.gradle/caches/9.1.0/transforms/1be0cffe3591067b8249047fd822a5b4/transformed/play-services-auth-21.5.1/AndroidManifest.xml:26:13-37
+106            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+106-->[com.google.android.gms:play-services-auth:21.5.1] /home/odity/.gradle/caches/9.1.0/transforms/1be0cffe3591067b8249047fd822a5b4/transformed/play-services-auth-21.5.1/AndroidManifest.xml:27:13-72
+107        <!--
+108            Service handling Google Sign-In user revocation. For apps that do not integrate with
+109            Google Sign-In, this service will never be started.
+110        -->
+111        <service
+111-->[com.google.android.gms:play-services-auth:21.5.1] /home/odity/.gradle/caches/9.1.0/transforms/1be0cffe3591067b8249047fd822a5b4/transformed/play-services-auth-21.5.1/AndroidManifest.xml:33:9-37:51
+112            android:name="com.google.android.gms.auth.api.signin.RevocationBoundService"
+112-->[com.google.android.gms:play-services-auth:21.5.1] /home/odity/.gradle/caches/9.1.0/transforms/1be0cffe3591067b8249047fd822a5b4/transformed/play-services-auth-21.5.1/AndroidManifest.xml:34:13-89
+113            android:exported="true"
+113-->[com.google.android.gms:play-services-auth:21.5.1] /home/odity/.gradle/caches/9.1.0/transforms/1be0cffe3591067b8249047fd822a5b4/transformed/play-services-auth-21.5.1/AndroidManifest.xml:35:13-36
+114            android:permission="com.google.android.gms.auth.api.signin.permission.REVOCATION_NOTIFICATION"
+114-->[com.google.android.gms:play-services-auth:21.5.1] /home/odity/.gradle/caches/9.1.0/transforms/1be0cffe3591067b8249047fd822a5b4/transformed/play-services-auth-21.5.1/AndroidManifest.xml:36:13-107
+115            android:visibleToInstantApps="true" />
+115-->[com.google.android.gms:play-services-auth:21.5.1] /home/odity/.gradle/caches/9.1.0/transforms/1be0cffe3591067b8249047fd822a5b4/transformed/play-services-auth-21.5.1/AndroidManifest.xml:37:13-48
+116        <service
+116-->[com.google.firebase:firebase-database-ktx:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/94a0e781647a804f7563e95a5e1dab74/transformed/firebase-database-ktx-21.0.0/AndroidManifest.xml:9:9-15:19
+117            android:name="com.google.firebase.components.ComponentDiscoveryService"
+117-->[com.google.firebase:firebase-database-ktx:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/94a0e781647a804f7563e95a5e1dab74/transformed/firebase-database-ktx-21.0.0/AndroidManifest.xml:10:13-84
+118            android:directBootAware="true"
+118-->[com.google.firebase:firebase-common:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/cb6dff032423709dfbf65977152005fc/transformed/firebase-common-21.0.0/AndroidManifest.xml:32:13-43
+119            android:exported="false" >
+119-->[com.google.firebase:firebase-database-ktx:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/94a0e781647a804f7563e95a5e1dab74/transformed/firebase-database-ktx-21.0.0/AndroidManifest.xml:11:13-37
+120            <meta-data
+120-->[com.google.firebase:firebase-database-ktx:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/94a0e781647a804f7563e95a5e1dab74/transformed/firebase-database-ktx-21.0.0/AndroidManifest.xml:12:13-14:85
+121                android:name="com.google.firebase.components:com.google.firebase.database.ktx.FirebaseDatabaseLegacyRegistrar"
+121-->[com.google.firebase:firebase-database-ktx:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/94a0e781647a804f7563e95a5e1dab74/transformed/firebase-database-ktx-21.0.0/AndroidManifest.xml:13:17-127
+122                android:value="com.google.firebase.components.ComponentRegistrar" />
+122-->[com.google.firebase:firebase-database-ktx:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/94a0e781647a804f7563e95a5e1dab74/transformed/firebase-database-ktx-21.0.0/AndroidManifest.xml:14:17-82
+123            <meta-data
+123-->[com.google.firebase:firebase-database:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/c8cbd78716e2939aea82278650263cff/transformed/firebase-database-21.0.0/AndroidManifest.xml:29:13-31:85
+124                android:name="com.google.firebase.components:com.google.firebase.database.FirebaseDatabaseKtxRegistrar"
+124-->[com.google.firebase:firebase-database:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/c8cbd78716e2939aea82278650263cff/transformed/firebase-database-21.0.0/AndroidManifest.xml:30:17-120
+125                android:value="com.google.firebase.components.ComponentRegistrar" />
+125-->[com.google.firebase:firebase-database:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/c8cbd78716e2939aea82278650263cff/transformed/firebase-database-21.0.0/AndroidManifest.xml:31:17-82
+126            <meta-data
+126-->[com.google.firebase:firebase-database:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/c8cbd78716e2939aea82278650263cff/transformed/firebase-database-21.0.0/AndroidManifest.xml:32:13-34:85
+127                android:name="com.google.firebase.components:com.google.firebase.database.DatabaseRegistrar"
+127-->[com.google.firebase:firebase-database:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/c8cbd78716e2939aea82278650263cff/transformed/firebase-database-21.0.0/AndroidManifest.xml:33:17-109
+128                android:value="com.google.firebase.components.ComponentRegistrar" />
+128-->[com.google.firebase:firebase-database:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/c8cbd78716e2939aea82278650263cff/transformed/firebase-database-21.0.0/AndroidManifest.xml:34:17-82
+129            <meta-data
+129-->[com.google.firebase:firebase-common-ktx:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/c953391b078888a6c435108e1f188fb1/transformed/firebase-common-ktx-21.0.0/AndroidManifest.xml:12:13-14:85
+130                android:name="com.google.firebase.components:com.google.firebase.ktx.FirebaseCommonLegacyRegistrar"
+130-->[com.google.firebase:firebase-common-ktx:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/c953391b078888a6c435108e1f188fb1/transformed/firebase-common-ktx-21.0.0/AndroidManifest.xml:13:17-116
+131                android:value="com.google.firebase.components.ComponentRegistrar" />
+131-->[com.google.firebase:firebase-common-ktx:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/c953391b078888a6c435108e1f188fb1/transformed/firebase-common-ktx-21.0.0/AndroidManifest.xml:14:17-82
+132            <meta-data
+132-->[com.google.firebase:firebase-common:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/cb6dff032423709dfbf65977152005fc/transformed/firebase-common-21.0.0/AndroidManifest.xml:35:13-37:85
+133                android:name="com.google.firebase.components:com.google.firebase.FirebaseCommonKtxRegistrar"
+133-->[com.google.firebase:firebase-common:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/cb6dff032423709dfbf65977152005fc/transformed/firebase-common-21.0.0/AndroidManifest.xml:36:17-109
+134                android:value="com.google.firebase.components.ComponentRegistrar" />
+134-->[com.google.firebase:firebase-common:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/cb6dff032423709dfbf65977152005fc/transformed/firebase-common-21.0.0/AndroidManifest.xml:37:17-82
+135        </service>
+136
+137        <provider
+137-->[com.google.firebase:firebase-common:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/cb6dff032423709dfbf65977152005fc/transformed/firebase-common-21.0.0/AndroidManifest.xml:23:9-28:39
+138            android:name="com.google.firebase.provider.FirebaseInitProvider"
+138-->[com.google.firebase:firebase-common:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/cb6dff032423709dfbf65977152005fc/transformed/firebase-common-21.0.0/AndroidManifest.xml:24:13-77
+139            android:authorities="com.example.blocktel.firebaseinitprovider"
+139-->[com.google.firebase:firebase-common:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/cb6dff032423709dfbf65977152005fc/transformed/firebase-common-21.0.0/AndroidManifest.xml:25:13-72
+140            android:directBootAware="true"
+140-->[com.google.firebase:firebase-common:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/cb6dff032423709dfbf65977152005fc/transformed/firebase-common-21.0.0/AndroidManifest.xml:26:13-43
+141            android:exported="false"
+141-->[com.google.firebase:firebase-common:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/cb6dff032423709dfbf65977152005fc/transformed/firebase-common-21.0.0/AndroidManifest.xml:27:13-37
+142            android:initOrder="100" />
+142-->[com.google.firebase:firebase-common:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/cb6dff032423709dfbf65977152005fc/transformed/firebase-common-21.0.0/AndroidManifest.xml:28:13-36
+143
+144        <activity
+144-->[com.google.android.gms:play-services-base:18.5.0] /home/odity/.gradle/caches/9.1.0/transforms/e7e0a6727daebe466fcfd1d258a7a1a3/transformed/play-services-base-18.5.0/AndroidManifest.xml:5:9-173
+145            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+145-->[com.google.android.gms:play-services-base:18.5.0] /home/odity/.gradle/caches/9.1.0/transforms/e7e0a6727daebe466fcfd1d258a7a1a3/transformed/play-services-base-18.5.0/AndroidManifest.xml:5:19-85
+146            android:exported="false"
+146-->[com.google.android.gms:play-services-base:18.5.0] /home/odity/.gradle/caches/9.1.0/transforms/e7e0a6727daebe466fcfd1d258a7a1a3/transformed/play-services-base-18.5.0/AndroidManifest.xml:5:146-170
+147            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+147-->[com.google.android.gms:play-services-base:18.5.0] /home/odity/.gradle/caches/9.1.0/transforms/e7e0a6727daebe466fcfd1d258a7a1a3/transformed/play-services-base-18.5.0/AndroidManifest.xml:5:86-145
+148        <activity
+148-->[androidx.compose.ui:ui-test-manifest:1.10.5] /home/odity/.gradle/caches/9.1.0/transforms/1360ee0a6c75f315c07933333a515918/transformed/ui-test-manifest-1.10.5/AndroidManifest.xml:23:9-26:79
+149            android:name="androidx.activity.ComponentActivity"
+149-->[androidx.compose.ui:ui-test-manifest:1.10.5] /home/odity/.gradle/caches/9.1.0/transforms/1360ee0a6c75f315c07933333a515918/transformed/ui-test-manifest-1.10.5/AndroidManifest.xml:24:13-63
+150            android:exported="true"
+150-->[androidx.compose.ui:ui-test-manifest:1.10.5] /home/odity/.gradle/caches/9.1.0/transforms/1360ee0a6c75f315c07933333a515918/transformed/ui-test-manifest-1.10.5/AndroidManifest.xml:25:13-36
+151            android:theme="@android:style/Theme.Material.Light.NoActionBar" />
+151-->[androidx.compose.ui:ui-test-manifest:1.10.5] /home/odity/.gradle/caches/9.1.0/transforms/1360ee0a6c75f315c07933333a515918/transformed/ui-test-manifest-1.10.5/AndroidManifest.xml:26:13-76
+152        <activity
+152-->[androidx.compose.ui:ui-tooling-android:1.10.5] /home/odity/.gradle/caches/9.1.0/transforms/d6947bd705f9c8d9b68357323a52e2fe/transformed/ui-tooling/AndroidManifest.xml:23:9-25:39
+153            android:name="androidx.compose.ui.tooling.PreviewActivity"
+153-->[androidx.compose.ui:ui-tooling-android:1.10.5] /home/odity/.gradle/caches/9.1.0/transforms/d6947bd705f9c8d9b68357323a52e2fe/transformed/ui-tooling/AndroidManifest.xml:24:13-71
+154            android:exported="true" />
+154-->[androidx.compose.ui:ui-tooling-android:1.10.5] /home/odity/.gradle/caches/9.1.0/transforms/d6947bd705f9c8d9b68357323a52e2fe/transformed/ui-tooling/AndroidManifest.xml:25:13-36
+155
+156        <provider
+156-->[androidx.emoji2:emoji2:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/93d9c6109747430f952ac09f92730c16/transformed/emoji2-1.4.0/AndroidManifest.xml:24:9-32:20
+157            android:name="androidx.startup.InitializationProvider"
+157-->[androidx.emoji2:emoji2:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/93d9c6109747430f952ac09f92730c16/transformed/emoji2-1.4.0/AndroidManifest.xml:25:13-67
+158            android:authorities="com.example.blocktel.androidx-startup"
+158-->[androidx.emoji2:emoji2:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/93d9c6109747430f952ac09f92730c16/transformed/emoji2-1.4.0/AndroidManifest.xml:26:13-68
+159            android:exported="false" >
+159-->[androidx.emoji2:emoji2:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/93d9c6109747430f952ac09f92730c16/transformed/emoji2-1.4.0/AndroidManifest.xml:27:13-37
+160            <meta-data
+160-->[androidx.emoji2:emoji2:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/93d9c6109747430f952ac09f92730c16/transformed/emoji2-1.4.0/AndroidManifest.xml:29:13-31:52
+161                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+161-->[androidx.emoji2:emoji2:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/93d9c6109747430f952ac09f92730c16/transformed/emoji2-1.4.0/AndroidManifest.xml:30:17-75
+162                android:value="androidx.startup" />
+162-->[androidx.emoji2:emoji2:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/93d9c6109747430f952ac09f92730c16/transformed/emoji2-1.4.0/AndroidManifest.xml:31:17-49
+163            <meta-data
+163-->[androidx.lifecycle:lifecycle-process:2.9.4] /home/odity/.gradle/caches/9.1.0/transforms/f5613f7376ff12fba4d53cb00d949556/transformed/lifecycle-process-2.9.4/AndroidManifest.xml:29:13-31:52
+164                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+164-->[androidx.lifecycle:lifecycle-process:2.9.4] /home/odity/.gradle/caches/9.1.0/transforms/f5613f7376ff12fba4d53cb00d949556/transformed/lifecycle-process-2.9.4/AndroidManifest.xml:30:17-78
+165                android:value="androidx.startup" />
+165-->[androidx.lifecycle:lifecycle-process:2.9.4] /home/odity/.gradle/caches/9.1.0/transforms/f5613f7376ff12fba4d53cb00d949556/transformed/lifecycle-process-2.9.4/AndroidManifest.xml:31:17-49
+166            <meta-data
+166-->[com.squareup.okhttp3:okhttp-android:5.3.2] /home/odity/.gradle/caches/9.1.0/transforms/cd8af13036bccc37bd8cd0b5e1165770/transformed/okhttp-release/AndroidManifest.xml:16:13-18:52
+167                android:name="okhttp3.internal.platform.PlatformInitializer"
+167-->[com.squareup.okhttp3:okhttp-android:5.3.2] /home/odity/.gradle/caches/9.1.0/transforms/cd8af13036bccc37bd8cd0b5e1165770/transformed/okhttp-release/AndroidManifest.xml:17:17-77
+168                android:value="androidx.startup" />
+168-->[com.squareup.okhttp3:okhttp-android:5.3.2] /home/odity/.gradle/caches/9.1.0/transforms/cd8af13036bccc37bd8cd0b5e1165770/transformed/okhttp-release/AndroidManifest.xml:18:17-49
+169            <meta-data
+169-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:29:13-31:52
+170                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+170-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:30:17-85
+171                android:value="androidx.startup" />
+171-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:31:17-49
+172        </provider>
+173
+174        <uses-library
+174-->[androidx.window:window:1.5.0] /home/odity/.gradle/caches/9.1.0/transforms/6e4549e205b2b225c993edfff8f7e4ce/transformed/window-1.5.0/AndroidManifest.xml:23:9-25:40
+175            android:name="androidx.window.extensions"
+175-->[androidx.window:window:1.5.0] /home/odity/.gradle/caches/9.1.0/transforms/6e4549e205b2b225c993edfff8f7e4ce/transformed/window-1.5.0/AndroidManifest.xml:24:13-54
+176            android:required="false" />
+176-->[androidx.window:window:1.5.0] /home/odity/.gradle/caches/9.1.0/transforms/6e4549e205b2b225c993edfff8f7e4ce/transformed/window-1.5.0/AndroidManifest.xml:25:13-37
+177        <uses-library
+177-->[androidx.window:window:1.5.0] /home/odity/.gradle/caches/9.1.0/transforms/6e4549e205b2b225c993edfff8f7e4ce/transformed/window-1.5.0/AndroidManifest.xml:26:9-28:40
+178            android:name="androidx.window.sidecar"
+178-->[androidx.window:window:1.5.0] /home/odity/.gradle/caches/9.1.0/transforms/6e4549e205b2b225c993edfff8f7e4ce/transformed/window-1.5.0/AndroidManifest.xml:27:13-51
+179            android:required="false" />
+179-->[androidx.window:window:1.5.0] /home/odity/.gradle/caches/9.1.0/transforms/6e4549e205b2b225c993edfff8f7e4ce/transformed/window-1.5.0/AndroidManifest.xml:28:13-37
+180
+181        <meta-data
+181-->[com.google.android.gms:play-services-basement:18.9.0] /home/odity/.gradle/caches/9.1.0/transforms/9f0b20ad89d8c9354897389e80f432aa/transformed/play-services-basement-18.9.0/AndroidManifest.xml:21:9-23:69
+182            android:name="com.google.android.gms.version"
+182-->[com.google.android.gms:play-services-basement:18.9.0] /home/odity/.gradle/caches/9.1.0/transforms/9f0b20ad89d8c9354897389e80f432aa/transformed/play-services-basement-18.9.0/AndroidManifest.xml:22:13-58
+183            android:value="@integer/google_play_services_version" />
+183-->[com.google.android.gms:play-services-basement:18.9.0] /home/odity/.gradle/caches/9.1.0/transforms/9f0b20ad89d8c9354897389e80f432aa/transformed/play-services-basement-18.9.0/AndroidManifest.xml:23:13-66
+184
+185        <receiver
+185-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:34:9-52:20
+186            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+186-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:35:13-76
+187            android:directBootAware="false"
+187-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:36:13-44
+188            android:enabled="true"
+188-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:37:13-35
+189            android:exported="true"
+189-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:38:13-36
+190            android:permission="android.permission.DUMP" >
+190-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:39:13-57
+191            <intent-filter>
+191-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:40:13-42:29
+192                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+192-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:41:17-91
+192-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:41:25-88
+193            </intent-filter>
+194            <intent-filter>
+194-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:43:13-45:29
+195                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+195-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:44:17-85
+195-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:44:25-82
+196            </intent-filter>
+197            <intent-filter>
+197-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:46:13-48:29
+198                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+198-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:47:17-88
+198-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:47:25-85
+199            </intent-filter>
+200            <intent-filter>
+200-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:49:13-51:29
+201                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+201-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:50:17-95
+201-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.gradle/caches/9.1.0/transforms/7093e0d095a97d6aa0f30dbe60e92a69/transformed/profileinstaller-1.4.0/AndroidManifest.xml:50:25-92
+202            </intent-filter>
+203        </receiver>
+204    </application>
+205
+206</manifest>
