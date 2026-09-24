@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2">
+    <string msgid="8719607706653693137" name="androidx_compose_foundation_autofill">"Autofill"</string>
+    <string msgid="1150566100598813236" name="androidx_compose_ui_autofill">"Autofill"</string>
     <string msgid="881409763997275156" name="call_notification_answer_action">"Answer"</string>
     <string msgid="8793775615905189152" name="call_notification_answer_video_action">"Video"</string>
     <string msgid="3229508546291798546" name="call_notification_decline_action">"Decline"</string>
@@ -76,6 +78,7 @@
     <string msgid="5941395253238309765" name="range_end">"Range end"</string>
     <string msgid="7097486360902471446" name="range_start">"Range start"</string>
     <string msgid="6043586758067023" name="selected">"Selected"</string>
+    <string msgid="2792228137354697160" name="snackbar_pane_title">"Alert"</string>
     <string msgid="4139871816613051306" name="state_empty">"Empty"</string>
     <string msgid="5834637030682409883" name="state_off">"Off"</string>
     <string msgid="1490883874751719580" name="state_on">"On"</string>

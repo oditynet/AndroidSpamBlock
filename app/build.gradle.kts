@@ -47,6 +47,9 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.google.firebase.database.ktx)
+    implementation(libs.com.google.firebase.firebase.database.ktx)
+    implementation(libs.androidx.compose.foundation)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -54,5 +57,13 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:okhttp:5.3.2")
+
+    //implementation(libs.firebase.bom)
+    //implementation(libs.firebase.database.ktx)
+    //implementation(libs.firebase.auth.ktx)
+
+    // Для определения номера телефона
+    implementation(libs.play.services.auth)
+    implementation(libs.play.services.identity)
 }

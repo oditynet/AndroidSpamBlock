@@ -8,44 +8,51 @@ import android.telecom.Call
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
+import android.provider.ContactsContract
+import android.content.Context
 
 @RequiresApi(Build.VERSION_CODES.N)
 class MyCallScreeningService : CallScreeningService() {
 
     private companion object {
-        const val VERIFICATION_NOT_VERIFIED = 0
-        const val VERIFICATION_PASSED = 1
-        const val VERIFICATION_FAILED = 2
         const val NOTIFICATION_CHANNEL_ID = "call_block"
+        const val TAG = "CallScreeningService"
     }
 
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
+        Log.d(TAG, "CallScreeningService created")
     }
 
     override fun onScreenCall(callDetails: Call.Details) {
         val phoneNumber = callDetails.handle?.schemeSpecificPart ?: ""
+        val cleanNumber = phoneNumber.replace(Regex("[^0-9+]"), "")
 
-        // 1. STIR/SHAKEN проверка
-        val verificationStatus = getStirShakenStatus(callDetails)
-        val isSpoofed = verificationStatus == VERIFICATION_FAILED
+        Log.d(TAG, "=== ВХОДЯЩИЙ ЗВОНОК ===")
+        Log.d(TAG, "Номер: $phoneNumber")
 
-        // 2. Проверка по паттернам
-        val isInPatternList = shouldBlockByPatterns(phoneNumber)
+        val contactName = getContactName(cleanNumber)
+        Log.d(TAG, "Имя: ${contactName ?: "Не найдено"}")
 
-        // 3. Определяем блокировку
-        val shouldBlock = isSpoofed || isInPatternList
+        val settings = loadSettings(this)
+        val blockedPatterns = loadBlockedPatterns(this)
 
-        // 4. Показываем уведомление если заблокирован
+        val shouldBlock = shouldBlockCall(
+            phoneNumber,
+            contactName,
+            blockedPatterns,
+            settings,
+            this
+        )
+
+        Log.d(TAG, "Блокировать: $shouldBlock")
+
         if (shouldBlock) {
-            val reason = if (isSpoofed) "STIR/SHAKEN" else "паттерн-список"
-            showBlockNotification(phoneNumber, reason)
+            showBlockNotification(contactName ?: phoneNumber)
         }
 
-        // 5. Отвечаем системе
         val response = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            // Используем Builder для API 29+
             CallScreeningService.CallResponse.Builder()
                 .setDisallowCall(shouldBlock)
                 .setRejectCall(shouldBlock)
@@ -53,7 +60,6 @@ class MyCallScreeningService : CallScreeningService() {
                 .setSkipNotification(shouldBlock)
                 .build()
         } else {
-            // Для более старых API используем базовый Builder
             CallScreeningService.CallResponse.Builder()
                 .setDisallowCall(shouldBlock)
                 .setRejectCall(shouldBlock)
@@ -63,57 +69,41 @@ class MyCallScreeningService : CallScreeningService() {
         respondToCall(callDetails, response)
     }
 
-    private fun getStirShakenStatus(callDetails: Call.Details): Int {
+    private fun getContactName(phoneNumber: String): String? {
+        if (phoneNumber.isEmpty()) return null
+
         return try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                @Suppress("DEPRECATION")
-                callDetails.callerNumberVerificationStatus
-            } else {
-                VERIFICATION_NOT_VERIFIED
+            val cleanNumber = phoneNumber.replace(Regex("[^0-9+]"), "")
+
+            val uri = ContactsContract.PhoneLookup.CONTENT_FILTER_URI.buildUpon()
+                .appendPath(cleanNumber)
+                .build()
+
+            val projection = arrayOf(ContactsContract.PhoneLookup.DISPLAY_NAME)
+
+            contentResolver.query(uri, projection, null, null, null)?.use { cursor ->
+                if (cursor.moveToFirst()) {
+                    val nameIndex = cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME)
+                    if (nameIndex != -1) {
+                        return cursor.getString(nameIndex)
+                    }
+                }
             }
+            null
         } catch (e: Exception) {
-            VERIFICATION_NOT_VERIFIED
+            Log.e(TAG, "Error getting contact name", e)
+            null
         }
     }
 
-    private fun shouldBlockByPatterns(phoneNumber: String): Boolean {
-        return try {
-            val context = applicationContext
-            val prefs = context.getSharedPreferences("blocktel_prefs", android.content.Context.MODE_PRIVATE)
-            val settings = AppSettings(
-                callLogLimit = prefs.getInt("call_log_limit", 20),
-                allowContacts = prefs.getBoolean("allow_contacts", false),
-                blockHiddenNumbers = prefs.getBoolean("block_hidden", false),
-                blockInternational = prefs.getBoolean("block_international", false)
-            )
-
-            val blockedPatterns = loadBlockedPatterns(context)
-
-            shouldBlockCall(
-                phoneNumber,
-                null,
-                blockedPatterns,
-                settings,
-                context
-            )
-        } catch (e: Exception) {
-            false
-        }
-    }
-
-    private fun showBlockNotification(phoneNumber: String, reason: String) {
+    private fun showBlockNotification(displayInfo: String) {
         try {
             val notificationManager = getSystemService(NotificationManager::class.java)
 
-            val title = when (reason) {
-                "STIR/SHAKEN" -> "Заблокировано по STIR/SHAKEN"
-                else -> "Заблокировано (паттерн-список)"
-            }
-
             val notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setSmallIcon(android.R.drawable.ic_lock_lock)
-                .setContentTitle(title)
-                .setContentText(phoneNumber)
+                .setContentTitle("🚫 Заблокированный звонок")
+                .setContentText(displayInfo)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true)
                 .build()
@@ -121,7 +111,7 @@ class MyCallScreeningService : CallScreeningService() {
             notificationManager.notify(System.currentTimeMillis().toInt(), notification)
 
         } catch (e: Exception) {
-            Log.e("Notification", "Ошибка: ${e.message}")
+            Log.e(TAG, "Error showing notification", e)
         }
     }
 
@@ -134,9 +124,7 @@ class MyCallScreeningService : CallScreeningService() {
             ).apply {
                 description = "Уведомления о заблокированных звонках"
             }
-
-            val notificationManager = getSystemService(NotificationManager::class.java)
-            notificationManager.createNotificationChannel(channel)
+            getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
         }
     }
 }
