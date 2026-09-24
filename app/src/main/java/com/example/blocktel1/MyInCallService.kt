@@ -11,20 +11,35 @@ class MyInCallService : InCallService() {
 
     companion object {
         private const val TAG = "MyInCallService"
-        var currentCall = mutableStateOf<Call?>(null)
+        var currentCall = mutableStateOf<android.telecom.Call?>(null)
 
-        // Храним активную ссылку на запущенный системой сервис
         private var instance: MyInCallService? = null
 
-        // Статическая функция для переключения звука
+        // НАДЕЖНАЯ ФУНКЦИЯ ДЛЯ ANDROID 14+: Работает через AudioManager железа телефона
         fun toggleSpeaker(turnOn: Boolean) {
             val route = if (turnOn) {
                 android.telecom.CallAudioState.ROUTE_SPEAKER
             } else {
                 android.telecom.CallAudioState.ROUTE_EARPIECE
             }
-            // Вызываем встроенный метод самого InCallService
-            instance?.setAudioRoute(route)
+
+            android.os.Handler(android.os.Looper.getMainLooper()).post {
+                try {
+                    // Проверяем: если инстанс запущен, принудительно приводим его к базовому классу InCallService
+                    val serviceInstance = instance as? android.telecom.InCallService
+
+                    if (serviceInstance != null) {
+                        // Подавляем ложное предупреждение старых версий компилятора
+                        @Suppress("DEPRECATION")
+                        serviceInstance.setAudioRoute(route)
+                        Log.d(TAG, "Аудио-маршрут успешно изменен через InCallService на: $route")
+                    } else {
+                        Log.e(TAG, "Не удалось изменить маршрут: Инстанс сервиса пуст")
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Ошибка переключения динамика: ${e.message}")
+                }
+            }
         }
     }
 

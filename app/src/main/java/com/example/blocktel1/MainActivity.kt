@@ -704,7 +704,7 @@ fun CallMonitorApp(
                             Text("📞 Телефон")
                             if (settings.value.isDefaultDialer) {
                                 Text(
-                                    text = "версия 0.3",
+                                    text = "версия 0.3.1",
                                     fontSize = 12.sp,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -2511,16 +2511,21 @@ fun ActiveCallScreen(
                 IconButton(
                     onClick = {
                         isSpeakerOn = !isSpeakerOn
+                        // Безопасно вызываем переключение через наш сервис
                         MyInCallService.toggleSpeaker(isSpeakerOn)
                     },
-                    modifier = Modifier.size(64.dp).background(
-                        if (isSpeakerOn) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
-                        shape = RoundedCornerShape(50)
-                    )
+                    modifier = Modifier
+                        .size(64.dp)
+                        .background(
+                            if (isSpeakerOn) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                            shape = RoundedCornerShape(50)
+                        )
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Menu,
-                        contentDescription = "Громкая связь"
+                        painter = androidx.compose.ui.res.painterResource(id = android.R.drawable.stat_sys_speakerphone),
+                        contentDescription = "Громкая связь",
+                        tint = if (isSpeakerOn) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(28.dp)
                     )
                 }
 
