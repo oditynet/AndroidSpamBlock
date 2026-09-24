@@ -1,5 +1,5 @@
 # AndroidSpamBlock
-Android block spam
+Android block spam становится полноценным телефоном для звонков. Поддерживаются 2 симкарты. Пока криво работает ввод номера и коррекция. 
 
 # DEVELOP 
 
