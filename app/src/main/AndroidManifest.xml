@@ -25,6 +25,17 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
+    <!-- Разрешение на автозапуск после перезагрузки -->
+<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+<!-- Разрешение на запрос исключения из оптимизации батареи -->
+<uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+<!-- Разрешение на конкретный тип Foreground Service для Android 14+ -->
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -32,6 +43,45 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BlockTel1">
+
+        <!-- 1. Регистрируем BootReceiver для автозапуска -->
+        <receiver
+            android:name=".BootReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+
+        <!-- 2. Обновляем описание CallBlockingService, добавляя тип службы -->
+        <service
+            android:name=".CallBlockingService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+        <!-- Внутри тега service можно добавить описание для Google Play (требуется для specialUse) -->
+            <meta-data
+                android:name="android.telecom.IN_CALL_SERVICE_UI"
+                android:value="true" />
+
+            <!-- КРИТИЧЕСКИЙ ФЛАГ 1: Отключает стандартный системный рингтон по умолчанию -->
+            <meta-data
+                android:name="android.telecom.IN_CALL_SERVICE_RINGING"
+                android:value="true" />
+
+            <!-- КРИТИЧЕСКИЙ ФЛАГ 2: Запрещает системе вмешиваться в аудиопоток звонка -->
+            <meta-data
+                android:name="android.telecom.IN_CALL_SERVICE_AUDIO_NOTIFY"
+                android:value="true"/>
+            <intent-filter>
+                <action android:name="android.telecom.InCallService" />
+            </intent-filter>
+        <property
+            android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+            android:value="Spam call blocking and background monitoring service" />
+        </service>
 
         <activity
             android:name=".MainActivity"
@@ -55,11 +105,7 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".CallBlockingService"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="phoneCall" />
+
 
         <service
             android:name=".MyCallScreeningService"

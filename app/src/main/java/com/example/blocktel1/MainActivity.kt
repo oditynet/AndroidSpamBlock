@@ -143,7 +143,8 @@ data class AppSettings(
     val allowContacts: Boolean = false,
     val blockHiddenNumbers: Boolean = false,
     val blockInternational: Boolean = false,
-    val isDefaultDialer: Boolean = false
+    val isDefaultDialer: Boolean = false,
+    val vibrationEnabled: Boolean = true // Добавили галку по умолчанию "Включ
 )
 
 class MainActivity : ComponentActivity() {
@@ -158,8 +159,38 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+
     private val permissionGranted = mutableStateOf(false)
     private val isDefaultDialerState = mutableStateOf(false)
+
+    private val batteryOptimizationLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        // Здесь можно повторно проверить статус, если необходимо
+        Log.d("MainActivity", "Вернулись из настроек оптимизации батареи")
+    }
+
+    // Функция проверки (можно вызывать в onCreate или onResume)
+    fun isIgnoringBatteryOptimizations(context: Context): Boolean {
+        val pm = context.getSystemService(Context.POWER_SERVICE) as android.os.PowerManager
+        return pm.isIgnoringBatteryOptimizations(context.packageName)
+    }
+
+    // Функция запроса разрешения
+    fun requestIgnoreBatteryOptimizations(context: Context) {
+        if (!isIgnoringBatteryOptimizations(context)) {
+            try {
+                val intent = Intent(android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                    data = Uri.parse("package:${context.packageName}")
+                }
+                batteryOptimizationLauncher.launch(intent)
+            } catch (e: Exception) {
+                // На некоторых прошивках прямая ссылка может не работать, открываем общий список
+                val intent = Intent(android.provider.Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                batteryOptimizationLauncher.launch(intent)
+            }
+        }
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -184,6 +215,15 @@ class MainActivity : ComponentActivity() {
         checkDefaultDialer()
         if (permissionGranted.value) {
             startCallBlockingService()
+
+            // ДОБАВЬТЕ ЭТОТ БЛОК: Инициализируем SIM-карты на уровне приложения
+            val cards = getActiveSimCards(this)
+            MainActivity.globalSimCards.value = cards
+
+            // ВАЖНО: Выбираем карту ОДИН РАЗ, только если до этого вообще ничего не было выбрано (например, при самом первом холодном старте)
+            if (cards.isNotEmpty() && MainActivity.globalSelectedSim.value == null) {
+                MainActivity.globalSelectedSim.value = cards.first()
+            }
         }
     }
 
@@ -247,6 +287,11 @@ class MainActivity : ComponentActivity() {
 
     companion object {
         const val REQUEST_CODE_SET_DEFAULT_DIALER = 1001
+        // Глобальное состояние выбранной SIM-карты (сохраняется между вкладками)
+        var globalSelectedSim = mutableStateOf<SimCardInfo?>(null)
+
+        // Глобальный список всех доступных SIM-карт в телефоне
+        var globalSimCards = mutableStateOf<List<SimCardInfo>>(emptyList())
     }
 }
 
@@ -259,6 +304,7 @@ fun saveSettings(context: Context, settings: AppSettings) {
     editor.putBoolean("block_hidden", settings.blockHiddenNumbers)
     editor.putBoolean("block_international", settings.blockInternational)
     editor.putBoolean("is_default_dialer", settings.isDefaultDialer)
+    editor.putBoolean("vibration_enabled", settings.vibrationEnabled)
     editor.apply()
 }
 
@@ -269,7 +315,8 @@ fun loadSettings(context: Context): AppSettings {
         allowContacts = prefs.getBoolean("allow_contacts", false),
         blockHiddenNumbers = prefs.getBoolean("block_hidden", false),
         blockInternational = prefs.getBoolean("block_international", false),
-        isDefaultDialer = prefs.getBoolean("is_default_dialer", false)
+        isDefaultDialer = prefs.getBoolean("is_default_dialer", false),
+        vibrationEnabled = prefs.getBoolean("vibration_enabled", true)
     )
 }
 
@@ -324,7 +371,8 @@ fun shouldBlockCall(
     settings: AppSettings,
     context: Context
 ): Boolean {
-    val cleanNumber = number.replace(Regex("[^0-9+]"), "")
+    //val cleanNumber = number.replace(Regex("[^0-9+]"), "")
+    val cleanNumber = number.filter { it.isDigit() || it == '+' }
 
     // 1. Проверка по паттернам
     if (blockedPatterns.isNotEmpty()) {
@@ -444,23 +492,27 @@ fun loadCallHistory(context: Context, blockedPatterns: List<String>, limit: Int 
 }
 
 // Получение имени из телефонной книги
-fun getContactNameFromPhoneBook(context: Context, phoneNumber: String): String? {
-    if (phoneNumber.isEmpty()) return null
+/*fun getContactNameFromPhoneBook(context: Context, phoneNumber: String): String? {
+    if (phoneNumber.isNullOrBlank()) return null
 
     return try {
-        val cleanNumber = phoneNumber.replace(Regex("[^0-9+]"), "")
-
-        val uri = ContactsContract.PhoneLookup.CONTENT_FILTER_URI.buildUpon()
-            .appendPath(cleanNumber)
+        // КРИТИЧЕСКИ ВАЖНО: Не очищаем номер вручную через регулярные выражения!
+        // Передаем исходную строку номера и обязательно кодируем её для URI.
+        // Системный PhoneLookup сам разберется с форматами +7 / 8 / 7.
+        val lookupUri = ContactsContract.PhoneLookup.CONTENT_FILTER_URI.buildUpon()
+            .appendPath(Uri.encode(phoneNumber))
             .build()
 
         val projection = arrayOf(ContactsContract.PhoneLookup.DISPLAY_NAME)
 
-        context.contentResolver.query(uri, projection, null, null, null)?.use { cursor ->
+        context.contentResolver.query(lookupUri, projection, null, null, null)?.use { cursor ->
             if (cursor.moveToFirst()) {
                 val nameIndex = cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME)
                 if (nameIndex != -1) {
-                    return cursor.getString(nameIndex)
+                    val name = cursor.getString(nameIndex)
+                    if (!name.isNullOrBlank()) {
+                        return name
+                    }
                 }
             }
         }
@@ -470,7 +522,41 @@ fun getContactNameFromPhoneBook(context: Context, phoneNumber: String): String? 
         null
     }
 }
+ */
 
+fun getContactNameFromPhoneBook(context: Context, phoneNumber: String?): String? {
+
+    if (phoneNumber.isNullOrBlank()) return null
+
+    return try {
+        // УДАЛЕНО: val encodedPath = Uri.encode(phoneNumber)
+
+        // Передаем phoneNumber НАПРЯМУЮ в appendPath.
+        // Система сама правильно экранирует плюс один раз!
+        val lookupUri = ContactsContract.PhoneLookup.CONTENT_FILTER_URI.buildUpon()
+            .appendPath(phoneNumber) // <--- ИСПРАВЛЕНО ЗДЕСЬ
+            .build()
+
+        val projection = arrayOf(ContactsContract.PhoneLookup.DISPLAY_NAME)
+
+        context.contentResolver.query(lookupUri, projection, null, null, null)?.use { cursor ->
+
+            if (cursor.moveToFirst()) {
+                val nameIndex = cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME)
+                if (nameIndex != -1) {
+                    val name = cursor.getString(nameIndex)
+                    if (!name.isNullOrBlank()) {
+                        return name
+                    }
+                }
+            }
+        }
+        null
+    } catch (e: Exception) {
+        Log.e("CONTACT_DEBUG", "Ошибка в getContactNameFromPhoneBook: ${e.message}")
+        null
+    }
+}
 // Загрузка контактов
 fun loadContacts(context: Context, searchQuery: String = ""): List<Contact> {
     val contacts = mutableListOf<Contact>()
@@ -704,7 +790,7 @@ fun CallMonitorApp(
                             Text("📞 Телефон")
                             if (settings.value.isDefaultDialer) {
                                 Text(
-                                    text = "версия 0.3.1.1",
+                                    text = "версия 0.3.2",
                                     fontSize = 12.sp,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -775,40 +861,33 @@ fun DialerScreen(
     val focusRequester = remember { FocusRequester() }
 
     // Переменные для поддержки нескольких SIM-карт
-    val simCards = remember { mutableStateOf(listOf<SimCardInfo>()) }
+    //val simCards = remember { mutableStateOf(listOf<SimCardInfo>()) }
     var showSimDialog by remember { mutableStateOf(false) }
+    // Читаем список карт и выбранную карту НАПРЯМУЮ из глобального стабильного хранилища MainActivity
+    val simCards = MainActivity.globalSimCards
+    var selectedSim by MainActivity.globalSelectedSim
 
     // Храним выбранную SIM-карту (null означает "SIM по умолчанию")
-    var selectedSim by remember { mutableStateOf<SimCardInfo?>(null) }
+    //var selectedSim by remember { mutableStateOf<SimCardInfo?>(null) }
     // Управление показом выпадающего меню
     var dropdownExpanded by remember { mutableStateOf(false) }
+
+        //var selectedSimCont by MainActivity.globalSelectedSim
 
     LaunchedEffect(Unit) {
         val settings = loadSettings(context)
         isDefault = settings.isDefaultDialer
     }
 
-    // Загрузка активных SIM-карт
-    LaunchedEffect(permissionGranted) {
-        if (permissionGranted) {
-            val cards = getActiveSimCards(context)
-            simCards.value = cards
-            // Автоматически выбираем первую SIM-карту, если они доступны
-            if (cards.isNotEmpty() && selectedSim == null) {
-                selectedSim = cards.first()
-            }
-        }
-    }
 
     LaunchedEffect(phoneNumber) {
         if (phoneNumber.length >= 2) {
-            val cleanNumber = phoneNumber.replace(Regex("[^0-9+]"), "")
+            val cleanNumber = phoneNumber.filter { it.isDigit() || it == '+' }
             suggestions = loadContacts(context, cleanNumber).take(3)
         } else {
             suggestions = emptyList()
         }
     }
-
     LaunchedEffect(phoneNumber) {
         if (phoneNumber.length >= 2) {
             val cleanNumber = phoneNumber.replace(Regex("[^0-9+]"), "")
@@ -1304,6 +1383,7 @@ fun ContactsScreen() {
     val contacts = remember { mutableStateListOf<Contact>() }
     var searchQuery by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
+    val currentSim by MainActivity.globalSelectedSim
 
     LaunchedEffect(searchQuery) {
         isLoading = true
@@ -1356,7 +1436,35 @@ fun ContactsScreen() {
                                     val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
                                     val uri = Uri.fromParts("tel", cleanNumber, null)
                                     val extras = Bundle()
+                                    //telecomManager.placeCall(uri, extras)
+
+                                    if (currentSim != null) {
+                                        val callCapableAccounts = telecomManager.getCallCapablePhoneAccounts()
+
+                                        // Ищем системный идентификатор Handle для нашего слота SIM
+                                        val matchedHandle = callCapableAccounts.find { handle ->
+                                            handle.id.contains(currentSim!!.id.toString()) ||
+                                                    handle.id.contains(currentSim!!.slotIndex.toString())
+                                        }
+
+                                        if (matchedHandle != null) {
+                                            extras.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, matchedHandle)
+                                        }
+
+                                        // Дублируем скрытые флаги слотов для различных вендорных прошивок (Xiaomi, Samsung)
+                                        extras.putInt("com.android.phone.extra.slot", currentSim!!.slotIndex)
+                                        extras.putInt("simSlot", currentSim!!.slotIndex)
+
+                                        Log.d("ContactsCall", "Инициализация звонка из Контактов через SIM ${currentSim!!.slotIndex + 1}")
+                                    } else {
+                                        Log.d("ContactsCall", "Глобальная SIM не задана, звонок идет через системную SIM по умолчанию")
+                                    }
+                                    // Флаг, чтобы открывалась клавиатура во время звонка, если необходимо
+                                    extras.putInt("android.telecom.extra.START_CALL_WITH_KEYPAD", 1)
+
+                                    // Совершаем реальный вызов
                                     telecomManager.placeCall(uri, extras)
+
                                 }
                             } catch (e: SecurityException) {
                                 Log.e("Contacts", "Security error: ${e.message}")
@@ -2178,41 +2286,47 @@ fun SettingsScreen() {
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        Card(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
+        val powerManager = context.getSystemService(Context.POWER_SERVICE) as android.os.PowerManager
+        var isBatteryIgnored by remember {
+            mutableStateOf(powerManager.isIgnoringBatteryOptimizations(context.packageName))
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = "Приложение по умолчанию",
+                    text = "Работа в фоновом режиме",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
-
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = if (settings.value.isDefaultDialer)
-                            "✅ Приложение установлено по умолчанию"
-                        else
-                            "❌ Не является приложением по умолчанию"
+                        text = if (isBatteryIgnored) "✅ Защита от отключения активна"
+                        else "⚠️ Система может закрыть приложение",
+                        modifier = Modifier.weight(1f).padding(end = 8.dp)
                     )
-                    if (!settings.value.isDefaultDialer) {
+                    if (!isBatteryIgnored) {
                         Button(
-                            onClick = { openPhoneAppSettings(context) }
+                            onClick = {
+                                val activity = context as? MainActivity
+                                activity?.requestIgnoreBatteryOptimizations(context)
+                            }
                         ) {
-                            Text("Назначить")
+                            Text("Разрешить")
                         }
                     }
                 }
             }
         }
 
+
         Spacer(modifier = Modifier.height(16.dp))
+
 
         Card(
             modifier = Modifier.fillMaxWidth()
@@ -2277,6 +2391,24 @@ fun SettingsScreen() {
                     )
                 }
             }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+        var vibrationEnabled by remember { mutableStateOf(settings.value.vibrationEnabled) }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text("Вибрация при входящем звонке")
+            Switch(
+                checked = vibrationEnabled,
+                onCheckedChange = {
+                    vibrationEnabled = it
+                    settings.value = settings.value.copy(vibrationEnabled = it)
+                    saveSettings(context, settings.value)
+                }
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -2416,29 +2548,40 @@ fun ActiveCallScreen(
     var callState by remember { mutableStateOf(call.state) }
 
     // Получаем номер телефона из параметров вызова
-    val number = call.details.handle?.schemeSpecificPart ?: "Неизвестный номер"
-    val isIdVerified = call.details.callerDisplayNamePresentation == TelecomManager.PRESENTATION_ALLOWED
+        //val number = call.details.handle?.schemeSpecificPart ?: "Неизвестный номер"
+
+    val rawNumber = call.details.handle?.schemeSpecificPart ?: "Неизвестный номер"
+    val number = android.net.Uri.decode(rawNumber)
+    Log.d("CONTACT_DEBUG", "Входной phoneNumber: "+call.details.handle?.schemeSpecificPart)
+
+    //val isIdVerified = call.details.callerDisplayNamePresentation == TelecomManager.PRESENTATION_ALLOWED
+    val isIdVerified = call.details.callerDisplayNamePresentation == android.telecom.TelecomManager.PRESENTATION_ALLOWED
 
     // ПЕРЕМЕННАЯ ДЛЯ ХРАНЕНИЯ ОПРЕДЕЛЕННОГО ИМЕНИ АБОНЕНТА
     var displayName by remember { mutableStateOf("Загрузка...") }
 
     // ПОИСК ИМЕНИ ПО ЦЕПОЧКЕ: КОНТАКТЫ -> АОН -> НЕИЗВЕСТНЫЙ
     LaunchedEffect(call, number) {
-        // Шаг 1: Ищем в локальной телефонной книге устройства
-        val cleanNumber = number.replace(Regex("[^0-9+]"), "")
-        val localContactName = getContactNameFromPhoneBook(context, cleanNumber)
+        // Шаг 1: Переключаемся на фоновый поток для работы с базой данных контактов
+        val localContactName = withContext(kotlinx.coroutines.Dispatchers.IO) {
+            // Передаем СЫРОЙ номер напрямую, без кастомных regex-очисток!
+            getContactNameFromPhoneBook(context, number)
+        }
 
         if (!localContactName.isNullOrBlank()) {
             displayName = localContactName
+            Log.d("CONTACT_DEBUG", "!!!!!Входной phoneNumber: '$displayName'")
         } else {
             // Шаг 2: Если в контактах нет, проверяем имя из системного АОН (Google/Telecom)
             val systemAonName = call.details.callerDisplayName
 
             if (isIdVerified && !systemAonName.isNullOrBlank()) {
                 displayName = systemAonName
+                Log.d("CONTACT_DEBUG", "222222Входной phoneNumber: '$displayName'")
             } else {
-                // Шаг 3: Если и АОН пустой, выводим "Неизвестный"
+                // Шаг 3: Если и АОН пустой
                 displayName = "Неизвестный"
+                Log.d("CONTACT_DEBUG", "2222223333323")
             }
         }
     }
@@ -2483,6 +2626,17 @@ fun ActiveCallScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
 
+            // КРУПНОЕ ИМЯ АБОНЕНТА (Или "Неизвестный", если контакта нет)
+            Text(
+                text = displayName,
+                fontSize = 36.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground,
+                maxLines = 1
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
             // КРУПНЫЙ НОМЕР ТЕЛЕФОНА
             Text(
                 text = number,
@@ -2492,6 +2646,7 @@ fun ActiveCallScreen(
             )
 
             Spacer(modifier = Modifier.height(8.dp))
+
 
             // ТЕКСТ СТАТУСА В ЗАВИСИМОСТИ ОТ СОСТОЯНИЯ
             val statusText = when (callState) {
@@ -2519,7 +2674,7 @@ fun ActiveCallScreen(
                         call.reject(false, null)
                         onDisconnect()
                     },
-                    modifier = Modifier.size(72.dp).background(
+                    modifier = Modifier.size(96.dp).background(
                         MaterialTheme.colorScheme.error,
                         shape = RoundedCornerShape(50)
                     )
@@ -2530,9 +2685,12 @@ fun ActiveCallScreen(
                 // КНОПКА ОТВЕТИТЬ / ПОДНЯТЬ ТРУБКУ (Зеленая)
                 IconButton(
                     onClick = {
+                        // ОБЯЗАТЕЛЬНО ВЫКЛЮЧАЕМ РИНГТОН ПРИ ПОДНЯТИИ ТРУБКИ
+                        MyInCallService.stopRingtone()
+                        MyInCallService.stopVibration()
                         call.answer(android.telecom.VideoProfile.STATE_AUDIO_ONLY)
                     },
-                    modifier = Modifier.size(72.dp).background(
+                    modifier = Modifier.size(96.dp).background(
                         androidx.compose.ui.graphics.Color(0xFF4CAF50), // Насыщенный зеленый цвет
                         shape = RoundedCornerShape(50)
                     )

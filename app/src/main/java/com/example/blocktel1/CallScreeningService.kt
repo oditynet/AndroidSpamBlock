@@ -29,8 +29,6 @@ class MyCallScreeningService : CallScreeningService() {
         val phoneNumber = callDetails.handle?.schemeSpecificPart ?: ""
         val cleanNumber = phoneNumber.replace(Regex("[^0-9+]"), "")
 
-        Log.d(TAG, "=== ВХОДЯЩИЙ ЗВОНОК ===")
-        Log.d(TAG, "Номер: $phoneNumber")
 
         val contactName = getContactName(cleanNumber)
         Log.d(TAG, "Имя: ${contactName ?: "Не найдено"}")

@@ -27,7 +27,7 @@ class CallBlockingService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d(TAG, "Service started")
-        return START_STICKY
+        return START_NOT_STICKY //START_STICKY
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -54,8 +54,19 @@ class CallBlockingService : Service() {
     private fun startForegroundService() {
         try {
             val notification = createNotification()
-            startForeground(NOTIFICATION_ID, notification)
-            Log.d(TAG, "Foreground service started")
+
+            // УЛУЧШЕНИЕ ДЛЯ ANDROID 14+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                startForeground(
+                    NOTIFICATION_ID,
+                    notification,
+                    android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+                )
+            } else {
+                startForeground(NOTIFICATION_ID, notification)
+            }
+
+            Log.d(TAG, "Foreground service started with type")
         } catch (e: Exception) {
             Log.e(TAG, "Error starting foreground service", e)
         }

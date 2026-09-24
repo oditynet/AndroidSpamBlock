@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:2:1-87:12
-INJECTED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:2:1-87:12
-INJECTED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:2:1-87:12
-INJECTED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:2:1-87:12
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:2:1-133:12
+INJECTED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:2:1-133:12
+INJECTED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:2:1-133:12
+INJECTED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:2:1-133:12
 MERGED from [androidx.media3:media3-extractor:1.9.2] /home/odity/.gradle/caches/9.1.0/transforms/00693e3b126d683254673e1e5f7adf1d/transformed/media3-extractor-1.9.2/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.media3:media3-container:1.9.2] /home/odity/.gradle/caches/9.1.0/transforms/3584c1fedbf8b0f280042905f8a3b6b0/transformed/media3-container-1.9.2/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.media3:media3-datasource:1.9.2] /home/odity/.gradle/caches/9.1.0/transforms/18da46ab5a864eaaf8ba4db6403a948b/transformed/media3-datasource-1.9.2/AndroidManifest.xml:17:1-22:12
@@ -93,79 +93,95 @@ MERGED from [androidx.print:print:1.0.0] /home/odity/.gradle/caches/9.1.0/transf
 MERGED from [androidx.arch.core:core-runtime:2.2.0] /home/odity/.gradle/caches/9.1.0/transforms/d5abf819b44a57027601cd37fdb7664e/transformed/core-runtime-2.2.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.core:core-viewtree:1.0.0] /home/odity/.gradle/caches/9.1.0/transforms/32844c0b3c5b4e9f641eb66e20ffb759/transformed/core-viewtree-1.0.0/AndroidManifest.xml:2:1-7:12
 	package
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:3:5-36
-		INJECTED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:3:5-36
+		INJECTED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml
 	android:versionName
-		INJECTED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml
+		INJECTED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml
 	android:versionCode
-		INJECTED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml
+		INJECTED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml
 	xmlns:android
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:2:11-69
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:2:11-69
 uses-permission#android.permission.READ_CONTACTS
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:6:5-72
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:6:5-72
 	android:name
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:6:22-69
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:6:22-69
 uses-permission#android.permission.READ_CALL_LOG
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:7:5-72
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:7:5-72
 	android:name
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:7:22-69
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:7:22-69
 uses-permission#android.permission.READ_PHONE_STATE
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:8:5-75
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:8:5-75
 	android:name
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:8:22-72
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:8:22-72
 uses-permission#android.permission.ANSWER_PHONE_CALLS
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:9:5-77
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:9:5-77
 	android:name
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:9:22-74
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:9:22-74
 uses-permission#android.permission.POST_NOTIFICATIONS
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:10:5-77
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:10:5-77
 	android:name
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:10:22-74
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:10:22-74
 uses-permission#android.permission.FOREGROUND_SERVICE
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:11:5-77
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:11:5-77
 	android:name
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:11:22-74
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:11:22-74
 uses-permission#android.permission.FOREGROUND_SERVICE_PHONE_CALL
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:12:5-88
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:12:5-88
 	android:name
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:12:22-85
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:12:22-85
 uses-permission#android.permission.CALL_PHONE
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:13:5-69
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:13:5-69
 	android:name
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:13:22-66
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:13:22-66
 uses-permission#android.permission.MANAGE_OWN_CALLS
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:14:5-75
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:14:5-75
 	android:name
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:14:22-72
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:14:22-72
 uses-permission#android.permission.BIND_SCREENING_SERVICE
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:15:5-81
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:15:5-81
 	android:name
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:15:22-78
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:15:22-78
 uses-permission#android.permission.BIND_INCALL_SERVICE
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:16:5-78
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:16:5-78
 	android:name
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:16:22-75
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:16:22-75
 uses-permission#android.permission.SYSTEM_ALERT_WINDOW
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:20:5-77
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:20:5-77
 	android:name
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:20:22-75
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:20:22-75
 uses-permission#android.permission.USE_FULL_SCREEN_INTENT
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:21:5-81
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:21:5-81
 	android:name
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:21:22-78
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:21:22-78
 uses-permission#android.permission.MODIFY_AUDIO_SETTINGS
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:23:5-80
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:23:5-80
 	android:name
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:23:22-77
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:23:22-77
 uses-permission#android.permission.WAKE_LOCK
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:25:5-68
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:25:5-68
 MERGED from [androidx.media3:media3-exoplayer:1.9.2] /home/odity/.gradle/caches/9.1.0/transforms/87a5434fdc8e5b9cb1e7d16ab5b0ef1e/transformed/media3-exoplayer-1.9.2/AndroidManifest.xml:23:5-68
 MERGED from [androidx.media3:media3-exoplayer:1.9.2] /home/odity/.gradle/caches/9.1.0/transforms/87a5434fdc8e5b9cb1e7d16ab5b0ef1e/transformed/media3-exoplayer-1.9.2/AndroidManifest.xml:23:5-68
 	android:name
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:25:22-65
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:25:22-65
+uses-permission#android.permission.RECEIVE_BOOT_COMPLETED
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:29:1-77
+	android:name
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:29:18-74
+uses-permission#android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:32:1-91
+	android:name
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:32:18-88
+uses-permission#android.permission.FOREGROUND_SERVICE_SPECIAL_USE
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:35:1-85
+	android:name
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:35:18-82
+uses-permission#android.permission.VIBRATE
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:37:5-66
+	android:name
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:37:22-63
 application
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:28:5-86:19
-INJECTED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:28:5-86:19
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:39:5-132:19
+INJECTED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:39:5-132:19
 MERGED from [com.google.android.gms:play-services-auth:21.5.1] /home/odity/.gradle/caches/9.1.0/transforms/1be0cffe3591067b8249047fd822a5b4/transformed/play-services-auth-21.5.1/AndroidManifest.xml:22:5-38:19
 MERGED from [com.google.android.gms:play-services-auth:21.5.1] /home/odity/.gradle/caches/9.1.0/transforms/1be0cffe3591067b8249047fd822a5b4/transformed/play-services-auth-21.5.1/AndroidManifest.xml:22:5-38:19
 MERGED from [com.google.firebase:firebase-database-ktx:21.0.0] /home/odity/.gradle/caches/9.1.0/transforms/94a0e781647a804f7563e95a5e1dab74/transformed/firebase-database-ktx-21.0.0/AndroidManifest.xml:8:5-16:19
@@ -211,105 +227,137 @@ MERGED from [androidx.profileinstaller:profileinstaller:1.4.0] /home/odity/.grad
 MERGED from [androidx.startup:startup-runtime:1.2.0] /home/odity/.gradle/caches/9.1.0/transforms/fb0539a16c92145c29d51692af0ae40c/transformed/startup-runtime-1.2.0/AndroidManifest.xml:23:5-29:19
 MERGED from [androidx.startup:startup-runtime:1.2.0] /home/odity/.gradle/caches/9.1.0/transforms/fb0539a16c92145c29d51692af0ae40c/transformed/startup-runtime-1.2.0/AndroidManifest.xml:23:5-29:19
 	android:extractNativeLibs
-		INJECTED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml
+		INJECTED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.16.0] /home/odity/.gradle/caches/9.1.0/transforms/c9e65b4f6f94437ea11aa0d56b36334b/transformed/core-1.16.0/AndroidManifest.xml:28:18-86
 	android:supportsRtl
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:33:9-35
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:44:9-35
 	android:label
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:31:9-41
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:42:9-41
 	android:roundIcon
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:32:9-54
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:43:9-54
 	android:icon
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:30:9-43
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:41:9-43
 	android:allowBackup
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:29:9-35
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:40:9-35
 	android:theme
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:34:9-47
-activity#com.example.blocktel1.MainActivity
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:36:9-56:20
-	android:launchMode
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:39:13-44
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:45:9-47
+receiver#com.example.blocktel1.BootReceiver
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:48:9-56:20
+	android:enabled
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:50:13-35
 	android:exported
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:38:13-36
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:51:13-36
 	android:name
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:37:13-41
-intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:41:13-44:29
-action#android.intent.action.MAIN
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:42:17-69
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:49:13-41
+intent-filter#action:name:android.intent.action.BOOT_COMPLETED+category:name:android.intent.category.DEFAULT
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:52:13-55:29
+action#android.intent.action.BOOT_COMPLETED
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:53:17-79
 	android:name
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:42:25-66
-category#android.intent.category.LAUNCHER
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:43:17-77
-	android:name
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:43:27-74
-intent-filter#action:name:android.intent.action.DIAL+category:name:android.intent.category.DEFAULT
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:47:13-50:29
-action#android.intent.action.DIAL
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:48:17-69
-	android:name
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:48:25-66
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:53:25-76
 category#android.intent.category.DEFAULT
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:49:17-76
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:54:17-76
 	android:name
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:49:27-73
-intent-filter#action:name:android.intent.action.DIAL+category:name:android.intent.category.DEFAULT+data:scheme:tel
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:51:13-55:29
-data
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:54:17-46
-	android:scheme
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:54:23-43
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:54:27-73
 service#com.example.blocktel1.CallBlockingService
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:58:9-62:57
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:59:9-84:19
 	android:enabled
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:60:13-35
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:61:13-35
 	android:exported
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:61:13-37
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:62:13-37
 	android:foregroundServiceType
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:62:13-54
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:63:13-55
 	android:name
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:59:13-48
-service#com.example.blocktel1.MyCallScreeningService
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:64:9-72:19
-	android:enabled
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:67:13-35
-	android:exported
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:68:13-36
-	android:permission
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:66:13-75
-	android:name
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:65:13-51
-intent-filter#action:name:android.telecom.CallScreeningService
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:69:13-71:29
-action#android.telecom.CallScreeningService
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:70:17-79
-	android:name
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:70:25-76
-service#com.example.blocktel1.MyInCallService
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:74:9-84:19
-	android:exported
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:77:13-36
-	android:permission
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:76:13-72
-	android:name
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:75:13-44
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:60:13-48
 meta-data#android.telecom.IN_CALL_SERVICE_UI
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:78:13-80:40
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:65:13-67:40
 	android:value
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:80:17-37
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:67:17-37
 	android:name
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:79:17-66
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:66:17-66
+meta-data#android.telecom.IN_CALL_SERVICE_RINGING
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:70:13-72:40
+	android:value
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:72:17-37
+	android:name
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:71:17-71
+meta-data#android.telecom.IN_CALL_SERVICE_AUDIO_NOTIFY
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:75:13-77:39
+	android:value
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:77:17-37
+	android:name
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:76:17-76
 intent-filter#action:name:android.telecom.InCallService
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:81:13-83:29
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:78:13-80:29
 action#android.telecom.InCallService
-ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:82:17-72
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:79:17-72
 	android:name
-		ADDED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:82:25-69
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:79:25-69
+property#android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:81:9-83:84
+	android:value
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:83:13-81
+	android:name
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:82:13-72
+activity#com.example.blocktel1.MainActivity
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:86:9-106:20
+	android:launchMode
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:89:13-44
+	android:exported
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:88:13-36
+	android:name
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:87:13-41
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:91:13-94:29
+action#android.intent.action.MAIN
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:92:17-69
+	android:name
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:92:25-66
+category#android.intent.category.LAUNCHER
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:93:17-77
+	android:name
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:93:27-74
+intent-filter#action:name:android.intent.action.DIAL+category:name:android.intent.category.DEFAULT
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:97:13-100:29
+action#android.intent.action.DIAL
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:98:17-69
+	android:name
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:98:25-66
+intent-filter#action:name:android.intent.action.DIAL+category:name:android.intent.category.DEFAULT+data:scheme:tel
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:101:13-105:29
+data
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:104:17-46
+	android:scheme
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:104:23-43
+service#com.example.blocktel1.MyCallScreeningService
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:110:9-118:19
+	android:enabled
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:113:13-35
+	android:exported
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:114:13-36
+	android:permission
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:112:13-75
+	android:name
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:111:13-51
+intent-filter#action:name:android.telecom.CallScreeningService
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:115:13-117:29
+action#android.telecom.CallScreeningService
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:116:17-79
+	android:name
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:116:25-76
+service#com.example.blocktel1.MyInCallService
+ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:120:9-130:19
+	android:exported
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:123:13-36
+	android:permission
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:122:13-72
+	android:name
+		ADDED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:121:13-44
 uses-sdk
-INJECTED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
-INJECTED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml
-INJECTED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml
+INJECTED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml
+INJECTED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml
 MERGED from [androidx.media3:media3-extractor:1.9.2] /home/odity/.gradle/caches/9.1.0/transforms/00693e3b126d683254673e1e5f7adf1d/transformed/media3-extractor-1.9.2/AndroidManifest.xml:20:5-44
 MERGED from [androidx.media3:media3-extractor:1.9.2] /home/odity/.gradle/caches/9.1.0/transforms/00693e3b126d683254673e1e5f7adf1d/transformed/media3-extractor-1.9.2/AndroidManifest.xml:20:5-44
 MERGED from [androidx.media3:media3-container:1.9.2] /home/odity/.gradle/caches/9.1.0/transforms/3584c1fedbf8b0f280042905f8a3b6b0/transformed/media3-container-1.9.2/AndroidManifest.xml:20:5-44
@@ -487,9 +535,9 @@ MERGED from [androidx.arch.core:core-runtime:2.2.0] /home/odity/.gradle/caches/9
 MERGED from [androidx.core:core-viewtree:1.0.0] /home/odity/.gradle/caches/9.1.0/transforms/32844c0b3c5b4e9f641eb66e20ffb759/transformed/core-viewtree-1.0.0/AndroidManifest.xml:5:5-44
 MERGED from [androidx.core:core-viewtree:1.0.0] /home/odity/.gradle/caches/9.1.0/transforms/32844c0b3c5b4e9f641eb66e20ffb759/transformed/core-viewtree-1.0.0/AndroidManifest.xml:5:5-44
 	android:targetSdkVersion
-		INJECTED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml
+		INJECTED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml
 	android:minSdkVersion
-		INJECTED from /home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml
+		INJECTED from /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml
 uses-permission#android.permission.ACCESS_NETWORK_STATE
 ADDED from [androidx.media3:media3-common:1.9.2] /home/odity/.gradle/caches/9.1.0/transforms/8102c8aa68b1c93da093628a5a30305c/transformed/media3-common-1.9.2/AndroidManifest.xml:22:5-79
 MERGED from [androidx.media3:media3-exoplayer:1.9.2] /home/odity/.gradle/caches/9.1.0/transforms/87a5434fdc8e5b9cb1e7d16ab5b0ef1e/transformed/media3-exoplayer-1.9.2/AndroidManifest.xml:22:5-79

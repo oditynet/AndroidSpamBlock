@@ -12,9 +12,138 @@ class MyInCallService : InCallService() {
     companion object {
         private const val TAG = "MyInCallService"
         var currentCall = mutableStateOf<android.telecom.Call?>(null)
-
         private var instance: MyInCallService? = null
 
+        // Плеер для воспроизведения системного рингтона
+        private var mediaPlayer: android.media.MediaPlayer? = null
+        // Объект для управления вибрацией железа телефона
+        private var vibrator: android.os.Vibrator? = null
+
+        // ФУНКЦИЯ ДЛЯ ВКЛЮЧЕНИЯ ВИБРАЦИИ
+        fun startVibration(context: android.content.Context) {
+            try {
+                val settings = loadSettings(context)
+                // Проверяем галку в настройках, которую выбрал пользователь
+                if (!settings.vibrationEnabled) {
+                    Log.d(TAG, "Вибрация отключена пользователем в настройках")
+                    return
+                }
+
+                if (vibrator == null) {
+                    vibrator = context.getSystemService(android.content.Context.VIBRATOR_SERVICE) as android.os.Vibrator
+                }
+
+                // Паттерн прерывистого звонка: 0мс ждем, 1000мс вибрируем, 1000мс отдыхаем
+                val pattern = longArrayOf(0, 1000, 1000)
+
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    // Для современных Android (8.0 и до Android 14/15/16)
+                    // 0 означает зациклить паттерн с самого начала
+                    val effect = android.os.VibrationEffect.createWaveform(pattern, 0)
+
+                    // Привязываем вибрацию к типу "Звонок", чтобы учитывался режим "Не беспокоить"
+                    val attributes = android.media.AudioAttributes.Builder()
+                        .setUsage(android.media.AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
+                        .build()
+
+                    vibrator?.vibrate(effect, attributes)
+                } else {
+                    // Для очень старых версий Android
+                    @Suppress("DEPRECATION")
+                    vibrator?.vibrate(pattern, 0)
+                }
+                Log.d(TAG, "Вибрация успешно запущена в такт звонку")
+            } catch (e: Exception) {
+                Log.e(TAG, "Ошибка запуска вибрации: ${e.message}")
+            }
+        }
+
+        // ФУНКЦИЯ ДЛЯ СТОПА ВИБРАЦИИ
+        fun stopVibration() {
+            try {
+                vibrator?.let {
+                    it.cancel() // Программный стоп мотора вибрации
+                    Log.d(TAG, "Вибрация остановлена")
+                }
+                vibrator = null
+            } catch (e: Exception) {
+                Log.e(TAG, "Ошибка остановки вибрации: ${e.message}")
+            }
+        }
+
+
+        // ФУНКЦИЯ ДЛЯ ЗАПУСКА СИСТЕМНОЙ МЕЛОДИИ ЗВОНКА
+        fun startRingtone(context: android.content.Context) {
+            try {
+                if (mediaPlayer != null) return // Уже играет
+
+                // 1. Запрашиваем у системы URI мелодии, которую выбрал пользователь
+                val ringtoneUri: android.net.Uri = android.media.RingtoneManager.getActualDefaultRingtoneUri(
+                    context,
+                    android.media.RingtoneManager.TYPE_RINGTONE
+                ) ?: android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_RINGTONE)
+
+                // 2. Инициализируем плеер
+                mediaPlayer = android.media.MediaPlayer().apply {
+                    setDataSource(context, ringtoneUri)
+                    isLooping = true // Зацикливаем проигрывание
+
+                    // 3. Указываем Android, что этот звук — именно входящий вызов
+                    // Это автоматически применит громкость рингтона и учтет режим "Не беспокоить"
+                    val audioAttributes = android.media.AudioAttributes.Builder()
+                        .setUsage(android.media.AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
+                        .setContentType(android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .build()
+                    setAudioAttributes(audioAttributes)
+
+                    prepare()
+                    start()
+                }
+                Log.d(TAG, "Системный рингтон успешно запущен: $ringtoneUri")
+            } catch (e: Exception) {
+                Log.e(TAG, "Ошибка воспроизведения системного рингтона: ${e.message}")
+
+                // Резервный вариант на случай ошибки доступа к кастомному файлу
+                playFallbackRington(context)
+            }
+        }
+
+        // Резервный запуск стандартного звука, если к выбранному файлу нет доступа
+        private fun playFallbackRington(context: android.content.Context) {
+            try {
+                val fallbackUri = android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_RINGTONE)
+                mediaPlayer = android.media.MediaPlayer().apply {
+                    setDataSource(context, fallbackUri)
+                    isLooping = true
+                    setAudioAttributes(
+                        android.media.AudioAttributes.Builder()
+                            .setUsage(android.media.AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
+                            .setContentType(android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                            .build()
+                    )
+                    prepare()
+                    start()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Даже резервный рингтон не запустился: ${e.message}")
+            }
+        }
+
+        // ФУНКЦИЯ ДЛЯ ОСТАНОВКИ МЕЛОДИИ
+        fun stopRingtone() {
+            try {
+                mediaPlayer?.let {
+                    if (it.isPlaying) {
+                        it.stop()
+                    }
+                    it.release()
+                }
+                mediaPlayer = null
+                Log.d(TAG, "Рингтон остановлен")
+            } catch (e: Exception) {
+                Log.e(TAG, "Ошибка при остановке рингтона: ${e.message}")
+            }
+        }
         // НАДЕЖНАЯ ФУНКЦИЯ ДЛЯ ANDROID 14+: Работает через AudioManager железа телефона
         fun toggleSpeaker(turnOn: Boolean) {
             val route = if (turnOn) {
@@ -56,7 +185,11 @@ class MyInCallService : InCallService() {
         super.onCallAdded(call)
         Log.d(TAG, "Call added: ${call.details.handle}")
 
-        val phoneNumber = call.details.handle?.schemeSpecificPart ?: ""
+        // Считываем сырую строку (например, "+79209224243" или "%2B79209224243")
+        val rawPhoneNumber = call.details.handle?.schemeSpecificPart ?: ""
+
+        // КРИТИЧЕСКИ ВАЖНО: Декодируем %2B обратно в знак +
+        val phoneNumber = android.net.Uri.decode(rawPhoneNumber)
         val contactName = getContactNameFromPhoneBook(this, phoneNumber)
 
         val settings = loadSettings(this)
@@ -82,6 +215,18 @@ class MyInCallService : InCallService() {
             // Если звонок нормальный — сохраняем его и открываем приложение
             currentCall.value = call
 
+            val isIncoming = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                call.details.callDirection == Call.Details.DIRECTION_INCOMING
+            } else {
+                call.state == Call.STATE_RINGING
+            }
+
+            if (!shouldBlock && isIncoming) {
+                startRingtone(this)
+                startVibration(this)
+            }
+
+
             val intent = Intent(this, MainActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             }
@@ -91,6 +236,8 @@ class MyInCallService : InCallService() {
 
     override fun onCallRemoved(call: Call) {
         super.onCallRemoved(call)
+        stopRingtone()
+        stopVibration()
         Log.d(TAG, "Call removed")
         currentCall.value = null
     }

@@ -40,10 +40,10 @@ com.example.blocktel1.app-activity-compose-1.8.2-38 /home/odity/.gradle/caches/9
 com.example.blocktel1.app-play-services-base-18.5.0-39 /home/odity/.gradle/caches/9.1.0/transforms/e7e0a6727daebe466fcfd1d258a7a1a3/transformed/play-services-base-18.5.0/res
 com.example.blocktel1.app-lifecycle-process-2.9.4-40 /home/odity/.gradle/caches/9.1.0/transforms/f5613f7376ff12fba4d53cb00d949556/transformed/lifecycle-process-2.9.4/res
 com.example.blocktel1.app-startup-runtime-1.2.0-41 /home/odity/.gradle/caches/9.1.0/transforms/fb0539a16c92145c29d51692af0ae40c/transformed/startup-runtime-1.2.0/res
-com.example.blocktel1.app-pngs-42 /home/odity/bin/AndroidSpamBlock/app/build/generated/res/pngs/debug
-com.example.blocktel1.app-updated_navigation_xml-43 /home/odity/bin/AndroidSpamBlock/app/build/generated/updated_navigation_xml/debug
-com.example.blocktel1.app-packageDebugResources-44 /home/odity/bin/AndroidSpamBlock/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
-com.example.blocktel1.app-packageDebugResources-45 /home/odity/bin/AndroidSpamBlock/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
-com.example.blocktel1.app-debug-46 /home/odity/bin/AndroidSpamBlock/app/build/intermediates/merged_res/debug/mergeDebugResources
-com.example.blocktel1.app-debug-47 /home/odity/bin/AndroidSpamBlock/app/src/debug/res
-com.example.blocktel1.app-main-48 /home/odity/bin/AndroidSpamBlock/app/src/main/res
+com.example.blocktel1.app-pngs-42 /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/generated/res/pngs/debug
+com.example.blocktel1.app-updated_navigation_xml-43 /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/generated/updated_navigation_xml/debug
+com.example.blocktel1.app-packageDebugResources-44 /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
+com.example.blocktel1.app-packageDebugResources-45 /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
+com.example.blocktel1.app-debug-46 /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/intermediates/merged_res/debug/mergeDebugResources
+com.example.blocktel1.app-debug-47 /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/debug/res
+com.example.blocktel1.app-main-48 /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/res

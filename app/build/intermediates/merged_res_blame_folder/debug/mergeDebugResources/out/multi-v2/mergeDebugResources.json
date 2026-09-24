@@ -2844,23 +2844,6 @@
             "outputFile": "com.example.blocktel1.app-debug-45:/values_values.arsc.flat",
             "map": [
                 {
-                    "source": "/home/odity/bin/AndroidSpamBlock/app/src/main/res/values/themes.xml",
-                    "from": {
-                        "startLines": "3",
-                        "startColumns": "4",
-                        "startOffsets": "56",
-                        "endColumns": "86",
-                        "endOffsets": "138"
-                    },
-                    "to": {
-                        "startLines": "360",
-                        "startColumns": "4",
-                        "startOffsets": "21797",
-                        "endColumns": "85",
-                        "endOffsets": "21878"
-                    }
-                },
-                {
                     "source": "/home/odity/.gradle/caches/9.1.0/transforms/18cae190ae39c2496aed9620e2a3ca96/transformed/transition-1.6.0/res/values/values.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14",
@@ -2916,6 +2899,40 @@
                     }
                 },
                 {
+                    "source": "/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/res/values/themes.xml",
+                    "from": {
+                        "startLines": "3",
+                        "startColumns": "4",
+                        "startOffsets": "56",
+                        "endColumns": "86",
+                        "endOffsets": "138"
+                    },
+                    "to": {
+                        "startLines": "360",
+                        "startColumns": "4",
+                        "startOffsets": "21797",
+                        "endColumns": "85",
+                        "endOffsets": "21878"
+                    }
+                },
+                {
+                    "source": "/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/res/values/strings.xml",
+                    "from": {
+                        "startLines": "1",
+                        "startColumns": "4",
+                        "startOffsets": "16",
+                        "endColumns": "46",
+                        "endOffsets": "58"
+                    },
+                    "to": {
+                        "startLines": "211",
+                        "startColumns": "4",
+                        "startOffsets": "10640",
+                        "endColumns": "46",
+                        "endOffsets": "10682"
+                    }
+                },
+                {
                     "source": "/home/odity/.gradle/caches/9.1.0/transforms/2dc97e4ce2fffa13d6edf0fe8bf697cf/transformed/ui/res/values/values.xml",
                     "from": {
                         "startLines": "34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,64",
@@ -2951,23 +2968,6 @@
                         "endLines": "157,171,203,469,473",
                         "endColumns": "56,64,63,24,24",
                         "endOffsets": "7740,8442,10148,26224,26373"
-                    }
-                },
-                {
-                    "source": "/home/odity/bin/AndroidSpamBlock/app/src/main/res/values/strings.xml",
-                    "from": {
-                        "startLines": "1",
-                        "startColumns": "4",
-                        "startOffsets": "16",
-                        "endColumns": "46",
-                        "endOffsets": "58"
-                    },
-                    "to": {
-                        "startLines": "211",
-                        "startColumns": "4",
-                        "startOffsets": "10640",
-                        "endColumns": "46",
-                        "endOffsets": "10682"
                     }
                 },
                 {
@@ -3041,23 +3041,6 @@
                     }
                 },
                 {
-                    "source": "/home/odity/bin/AndroidSpamBlock/app/src/main/res/values/colors.xml",
-                    "from": {
-                        "startLines": "7,2,3,4,5,6,8",
-                        "startColumns": "4,4,4,4,4,4,4",
-                        "startOffsets": "286,55,102,149,196,241,328",
-                        "endColumns": "41,46,46,46,44,44,41",
-                        "endOffsets": "323,97,144,191,236,281,365"
-                    },
-                    "to": {
-                        "startLines": "75,88,89,90,91,92,93",
-                        "startColumns": "4,4,4,4,4,4,4",
-                        "startOffsets": "2488,3464,3511,3558,3605,3650,3695",
-                        "endColumns": "41,46,46,46,44,44,41",
-                        "endOffsets": "2525,3506,3553,3600,3645,3690,3732"
-                    }
-                },
-                {
                     "source": "/home/odity/.gradle/caches/9.1.0/transforms/64c9cd32597dd2914704da945b634fc3/transformed/ui-graphics/res/values/values.xml",
                     "from": {
                         "startLines": "2",
@@ -3072,6 +3055,23 @@
                         "startOffsets": "7832",
                         "endColumns": "65",
                         "endOffsets": "7893"
+                    }
+                },
+                {
+                    "source": "/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/res/values/colors.xml",
+                    "from": {
+                        "startLines": "7,2,3,4,5,6,8",
+                        "startColumns": "4,4,4,4,4,4,4",
+                        "startOffsets": "286,55,102,149,196,241,328",
+                        "endColumns": "41,46,46,46,44,44,41",
+                        "endOffsets": "323,97,144,191,236,281,365"
+                    },
+                    "to": {
+                        "startLines": "75,88,89,90,91,92,93",
+                        "startColumns": "4,4,4,4,4,4,4",
+                        "startOffsets": "2488,3464,3511,3558,3605,3650,3695",
+                        "endColumns": "41,46,46,46,44,44,41",
+                        "endOffsets": "2525,3506,3553,3600,3645,3690,3732"
                     }
                 },
                 {
