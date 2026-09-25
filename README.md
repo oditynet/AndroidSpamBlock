@@ -51,7 +51,6 @@ Ver 0.1:
   <tr>
     <td><img src="https://github.com/oditynet/AndroidSpamBlock/blob/main/out1.jpg" width="300" height="auto" /></td>
     <td><img src="https://github.com/oditynet/AndroidSpamBlock/blob/main/out2.jpg" width="300" height="auto" /></td>
-    <td><img src="https://github.com/oditynet/AndroidSpamBlock/blob/main/out3.jpg" width="300" height="auto" /></td>
            <td><img src="https://github.com/oditynet/AndroidSpamBlock/blob/main/out4.png" width="300" height="auto" /></td>
            <td><img src="https://github.com/oditynet/AndroidSpamBlock/blob/main/out5.png" width="300" height="auto" /></td>
   </tr>
