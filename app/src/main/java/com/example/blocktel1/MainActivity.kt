@@ -60,6 +60,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.ui.draw.alpha
 
 // Модель для хранения информации о SIM-карте
 data class SimCardInfo(
@@ -126,7 +127,9 @@ data class CallLog(
     val timestamp: String,
     val type: String,
     val duration: String = "",
-    val shouldBlock: Boolean = false
+    val shouldBlock: Boolean = false,
+    val capabilities: Int = 0, // <-- Добавлено для хранения TechCode (GSM/VoIP)
+    val properties: Int = 0 // <-- Добавлено для хранения NetCode (4G/LTE)
 )
 
 // Модель контакта
@@ -144,7 +147,13 @@ data class AppSettings(
     val blockHiddenNumbers: Boolean = false,
     val blockInternational: Boolean = false,
     val isDefaultDialer: Boolean = false,
-    val vibrationEnabled: Boolean = true // Добавили галку по умолчанию "Включ
+    val vibrationEnabled: Boolean = true,
+
+    val nightModeEnabled: Boolean = false,
+    val nightStartHour: Int = 22,
+    val nightStartMinute: Int = 0,
+    val nightEndHour: Int = 7,
+    val nightEndMinute: Int = 0
 )
 
 class MainActivity : ComponentActivity() {
@@ -305,6 +314,12 @@ fun saveSettings(context: Context, settings: AppSettings) {
     editor.putBoolean("block_international", settings.blockInternational)
     editor.putBoolean("is_default_dialer", settings.isDefaultDialer)
     editor.putBoolean("vibration_enabled", settings.vibrationEnabled)
+
+    editor.putBoolean("night_mode_enabled", settings.nightModeEnabled)
+    editor.putInt("night_start_hour", settings.nightStartHour)
+    editor.putInt("night_start_minute", settings.nightStartMinute)
+    editor.putInt("night_end_hour", settings.nightEndHour)
+    editor.putInt("night_end_minute", settings.nightEndMinute)
     editor.apply()
 }
 
@@ -316,7 +331,13 @@ fun loadSettings(context: Context): AppSettings {
         blockHiddenNumbers = prefs.getBoolean("block_hidden", false),
         blockInternational = prefs.getBoolean("block_international", false),
         isDefaultDialer = prefs.getBoolean("is_default_dialer", false),
-        vibrationEnabled = prefs.getBoolean("vibration_enabled", true)
+        vibrationEnabled = prefs.getBoolean("vibration_enabled", true),
+
+        nightModeEnabled = prefs.getBoolean("night_mode_enabled", false),
+        nightStartHour = prefs.getInt("night_start_hour", 22),
+        nightStartMinute = prefs.getInt("night_start_minute", 0),
+        nightEndHour = prefs.getInt("night_end_hour", 6),
+        nightEndMinute = prefs.getInt("night_end_minute", 0)
     )
 }
 
@@ -373,6 +394,40 @@ fun shouldBlockCall(
 ): Boolean {
     //val cleanNumber = number.replace(Regex("[^0-9+]"), "")
     val cleanNumber = number.filter { it.isDigit() || it == '+' }
+    val isContact = name != null && name != number && name != "Неизвестный" && name != "Загрузка..." // [2]
+
+    // === ПРОВЕРКА 1: ЗАЩИТА ОТ МАССОВОГО ОБЗВОНА (ПОСЛЕДНИЕ 4 ЦИФРЫ) ===
+    if (shouldBlockByMassCallRule(context, cleanNumber, blockedPatterns)) {
+        Log.d("CallBlocker", "Звонок сброшен автоматически: сработал триггер массового обзвона спамеров.")
+        return true
+    }
+
+
+    // === ПРОВЕРКА НОЧНОГО ПЕРИОДА (С УЧЕТОМ ГАЛКИ) ===
+    if (settings.nightModeEnabled) { // Сначала проверяем, включена ли функция в настройках
+        val calendar = Calendar.getInstance()
+        val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
+        val currentMinute = calendar.get(Calendar.MINUTE)
+
+        val currentTimeInMinutes = currentHour * 60 + currentMinute
+        val startTimeInMinutes = settings.nightStartHour * 60 + settings.nightStartMinute
+        val endTimeInMinutes = settings.nightEndHour * 60 + settings.nightEndMinute
+
+        val isNightModeActive = if (startTimeInMinutes <= endTimeInMinutes) {
+            currentTimeInMinutes in startTimeInMinutes..endTimeInMinutes
+        } else {
+            currentTimeInMinutes >= startTimeInMinutes || currentTimeInMinutes <= endTimeInMinutes
+        }
+
+        // Если сейчас ночь и это НЕ контакт — принудительно блокируем
+        if (isNightModeActive && !isContact) {
+            Log.d("CallBlocker", "Блокировка: Ночной режим активен. Звонок от не-контакта сброшен.")
+            return true
+        }
+    }
+
+
+
 
     // 1. Проверка по паттернам
     if (blockedPatterns.isNotEmpty()) {
@@ -391,7 +446,7 @@ fun shouldBlockCall(
     }
 
     // 2. Проверка: является ли номер контактом
-    val isContact = name != null && name != number
+        //val isContact = name != null && name != number
 
     if (isContact && settings.allowContacts) {
         return false
@@ -435,6 +490,10 @@ fun loadCallHistory(context: Context, blockedPatterns: List<String>, limit: Int 
             val typeIndex = c.getColumnIndex(android.provider.CallLog.Calls.TYPE)
             val durationIndex = c.getColumnIndex(android.provider.CallLog.Calls.DURATION)
 
+            //val durationIndex = c.getColumnIndex(android.provider.CallLog.Calls.DURATION)
+            val featuresIndex = c.getColumnIndex(android.provider.CallLog.Calls.FEATURES)
+
+
             val dateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
 
             var count = 0
@@ -471,6 +530,18 @@ fun loadCallHistory(context: Context, blockedPatterns: List<String>, limit: Int 
                 val durationText = if (duration.toIntOrNull() ?: 0 > 0) {
                     "${duration.toInt() / 60}:${String.format("%02d", duration.toInt() % 60)}"
                 } else "0:00"
+// ИСПРАВЛЕНИЕ: Четко объявляем rawFeatures, чтобы компилятор его видел
+                val rawFeatures = if (featuresIndex != -1) c.getInt(featuresIndex) else 0
+
+// ИСПРАВЛЕНИЕ: Менеджер SharedPreferences теперь инициализируется строго ДО чтения переменных
+val prefs = context.getSharedPreferences("blocktel_prefs", Context.MODE_PRIVATE)
+
+// Читаем сохраненные вашим InCallService "живые" коды технологий
+val techType1: Int = prefs.getInt("tech_type_$cleanNumber", 0)
+val netType1: Int = prefs.getInt("net_type_$cleanNumber", rawFeatures) // Если данных нет, берем системный rawFeatures
+
+
+
 
                 callLogs.add(CallLog(
                     number = formattedNumber,
@@ -479,7 +550,9 @@ fun loadCallHistory(context: Context, blockedPatterns: List<String>, limit: Int 
                     timestamp = date,
                     type = typeText,
                     duration = durationText,
-                    shouldBlock = shouldBlock
+                    shouldBlock = shouldBlock,
+                    capabilities = techType1,
+                    properties = netType1
                 ))
                 count++
             }
@@ -790,7 +863,7 @@ fun CallMonitorApp(
                             Text("📞 Телефон")
                             if (settings.value.isDefaultDialer) {
                                 Text(
-                                    text = "версия 0.3.2",
+                                    text = "версия 0.3.3",
                                     fontSize = 12.sp,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -1604,12 +1677,19 @@ fun CallHistoryScreen() {
                         onAddToPatterns = {
                             if (call.cleanNumber.isNotBlank()) {
                                 val userPattern = "user_${call.cleanNumber}"
+
+
                                 if (!blockedPatterns.contains(userPattern)) {
                                     blockedPatterns.add(userPattern)
                                     saveBlockedPatterns(context, blockedPatterns)
+
+                                    // СОХРАНЯЕМ ВРЕМЯ ДОБАВЛЕНИЯ ДЛЯ МАССОВОГО ОБЗВОНА
+                                    val prefs = context.getSharedPreferences("blocktel_prefs", Context.MODE_PRIVATE)
+                                    prefs.edit().putLong("mass_spam_time_${call.cleanNumber}", System.currentTimeMillis()).apply()
+
                                     android.widget.Toast.makeText(
                                         context,
-                                        "Номер добавлен в блокировку",
+                                        "Номер добавлен в блокировку защиты от обзвона",
                                         android.widget.Toast.LENGTH_SHORT
                                     ).show()
                                 }
@@ -1665,6 +1745,38 @@ fun CallHistoryItem(
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                         )
                     }
+
+                    // === ИСПРАВЛЕНИЕ: ТЕХНИЧЕСКИЙ БЛОК ВЫНЕСЕН СЮДА (СТРОКИ ~1670) ===
+            val techDescription = when (call.capabilities) {
+                1 -> "GSM"
+                2 -> "CDMA"
+                3 -> "SIP/VoIP"
+                else -> "Неизвестно"
+            }
+
+            val netDescription = when (call.properties) {
+                13 -> "4G/LTE"
+                20 -> "5G"
+                3, 8, 9, 10, 15 -> "3G"
+                1, 2, 4, 7, 11 -> "2G"
+                else -> "Смешанная"
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "📡 Сеть: $netDescription ($techDescription) TechCode: ${call.capabilities}, NetCode: ${call.properties}",
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+            }
+            Spacer(modifier = Modifier.height(4.dp))
+            // ===
+
+
+
+
                 }
 
                 if (!call.cleanNumber.isNullOrBlank()) {
@@ -1776,11 +1888,16 @@ fun BlockingPatternsScreen() {
             confirmButton = {
                 Button(
                     onClick = {
+                        val cleanNumber = patternToDelete.removePrefix("user_")
                         blockedPatterns.remove(patternToDelete)
                         saveBlockedPatterns(context, blockedPatterns)
+
+                        // УДАЛЯЕМ ТЕМПОРУ СВЯЗАННОЙ МАССОВОЙ БЛОКИРОВКИ
+                        val prefs = context.getSharedPreferences("blocktel_prefs", Context.MODE_PRIVATE)
+                        prefs.edit().remove("mass_spam_time_$cleanNumber").apply()
+
                         showDeleteDialog = false
                         patternToDelete = ""
-                        //showToast(context, "Паттерн удален")
                     }
                 ) {
                     Text("Удалить")
@@ -1855,10 +1972,9 @@ fun BlockingPatternsScreen() {
                     Button(
                         onClick = {
                             if (newPattern.isNotBlank()) {
-                                val cleanPattern = newPattern.trim()
+                                val cleanPattern = newPattern.trim().filter { it.isDigit() || it == '+' }
                                 val userPattern = "user_$cleanPattern"
 
-                                // Проверяем, нет ли уже такого паттерна
                                 val alreadyExists = blockedPatterns.any { pattern ->
                                     val cleanExisting = if (pattern.startsWith("user_")) pattern.removePrefix("user_") else pattern
                                     cleanExisting.equals(cleanPattern, ignoreCase = true)
@@ -1867,8 +1983,12 @@ fun BlockingPatternsScreen() {
                                 if (!alreadyExists) {
                                     blockedPatterns.add(userPattern)
                                     saveBlockedPatterns(context, blockedPatterns)
+
+                                    // СОХРАНЯЕМ ВРЕМЯ ДОБАВЛЕНИЯ ДЛЯ МАССОВОГО ОБЗВОНА
+                                    val prefs = context.getSharedPreferences("blocktel_prefs", Context.MODE_PRIVATE)
+                                    prefs.edit().putLong("mass_spam_time_$cleanPattern", System.currentTimeMillis()).apply()
+
                                     newPattern = ""
-                                   // showToast(context, "Паттерн добавлен!")
                                 }
                             }
                         },
@@ -2270,190 +2390,350 @@ fun PatternItem(
 
 // Экран настроек
 @Composable
+fun TimeArrowSelector(
+    label: String,
+    value: Int,
+    maxValue: Int, // 23 для часов, 59 для минут
+    onValueChange: (Int) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(text = label, fontSize = 14.sp)
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            // Кнопка Уменьшить
+            IconButton(
+                onClick = {
+                    val newValue = if (value - 1 < 0) maxValue else value - 1
+                    onValueChange(newValue)
+                },
+                modifier = Modifier.size(36.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowDown,
+                    contentDescription = "Меньше"
+                )
+            }
+
+            // Вывод числа с красивым форматированием (например, 05 вместо 5)
+            Box(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surfaceVariant, shape = RoundedCornerShape(8.dp))
+                    .padding(horizontal = 12.dp, vertical = 6.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = String.format("%02d", value),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            // Кнопка Увеличить
+            IconButton(
+                onClick = {
+                    val newValue = if (value + 1 > maxValue) 0 else value + 1
+                    onValueChange(newValue)
+                },
+                modifier = Modifier.size(36.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowUp,
+                    contentDescription = "Больше"
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun SettingsScreen() {
     val context = LocalContext.current
     val settings = remember { mutableStateOf(loadSettings(context)) }
 
-    Column(
+    // ИСПРАВЛЕНИЕ: Выносим логику PowerManager на самый верх Composable-функции,
+    // чтобы переменные состояния не объявлялись внутри тела LazyColumn некорректно
+    val powerManager = remember { context.getSystemService(Context.POWER_SERVICE) as android.os.PowerManager }
+    var isBatteryIgnored by remember {
+        mutableStateOf(powerManager.isIgnoringBatteryOptimizations(context.packageName))
+    }
+
+    // Контейнер со скроллом, чтобы настройки не вылезали за экран на маленьких телефонах
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(
-            text = "Настройки",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        val powerManager = context.getSystemService(Context.POWER_SERVICE) as android.os.PowerManager
-        var isBatteryIgnored by remember {
-            mutableStateOf(powerManager.isIgnoringBatteryOptimizations(context.packageName))
+        // ЗАГОЛОВОК ЭКРАНА
+        item {
+            Text(
+                text = "Настройки",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Card(modifier = Modifier.fillMaxWidth()) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    text = "Работа в фоновом режиме",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
+        // БЛОК 1: ОПТИМИЗАЦИЯ БАТАРЕИ
+        item {
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        text = if (isBatteryIgnored) "✅ Защита от отключения активна"
-                        else "⚠️ Система может закрыть приложение",
-                        modifier = Modifier.weight(1f).padding(end = 8.dp)
+                        text = "Работа в фоновом режиме",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
                     )
-                    if (!isBatteryIgnored) {
-                        Button(
-                            onClick = {
-                                val activity = context as? MainActivity
-                                activity?.requestIgnoreBatteryOptimizations(context)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = if (isBatteryIgnored) "✅ Защита от отключения активна"
+                            else "⚠️ Система может закрыть приложение",
+                            modifier = Modifier.weight(1f).padding(end = 8.dp)
+                        )
+                        if (!isBatteryIgnored) {
+                            Button(
+                                onClick = {
+                                    val activity = context as? MainActivity
+                                    activity?.requestIgnoreBatteryOptimizations(context)
+                                }
+                            ) {
+                                Text("Разрешить")
                             }
-                        ) {
-                            Text("Разрешить")
                         }
                     }
                 }
             }
         }
 
+        // БЛОК 2: НОЧНОЙ РЕЖИМ СБРОСА (С ГАЛКОЙ И СЕЛЕКТОРАМИ)
+        item {
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    // Главная строка: Заголовок + Галка (Switch)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Ночной режим сброса",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
 
-        Spacer(modifier = Modifier.height(16.dp))
+                        var nightModeEnabled by remember { mutableStateOf(settings.value.nightModeEnabled) }
+                        Switch(
+                            checked = nightModeEnabled,
+                            onCheckedChange = {
+                                nightModeEnabled = it
+                                settings.value = settings.value.copy(nightModeEnabled = it)
+                                saveSettings(context, settings.value)
+                            }
+                        )
+                    }
 
-
-        Card(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text(
-                    text = "Параметры блокировки",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
-                )
-
-                var allowContacts by remember { mutableStateOf(settings.value.allowContacts) }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text("Разрешить звонки из контактов")
-                    Switch(
-                        checked = allowContacts,
-                        onCheckedChange = {
-                            allowContacts = it
-                            settings.value = settings.value.copy(allowContacts = it)
-                            saveSettings(context, settings.value)
-                        }
+                    Text(
+                        text = "В выбранный период все входящие вызовы, которых нет в вашей записной книге, будут автоматически сброшены.",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        modifier = Modifier.padding(bottom = 12.dp)
                     )
-                }
 
-                var blockHidden by remember { mutableStateOf(settings.value.blockHiddenNumbers) }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text("Блокировать скрытые номера")
-                    Switch(
-                        checked = blockHidden,
-                        onCheckedChange = {
-                            blockHidden = it
-                            settings.value = settings.value.copy(blockHiddenNumbers = it)
-                            saveSettings(context, settings.value)
-                        }
-                    )
-                }
+                    // Сетка настроек времени (затухает, если галка выключена)
+                    val isNightEnabled = settings.value.nightModeEnabled
+                    Box(modifier = Modifier.alpha(if (isNightEnabled) 1f else 0.5f)) {
+                        Column {
+                            // 1. Часы Начала
+                            TimeArrowSelector(
+                                label = "Часы (00-23)",
+                                value = settings.value.nightStartHour,
+                                maxValue = 23,
+                                onValueChange = {
+                                    if (isNightEnabled) {
+                                        settings.value = settings.value.copy(nightStartHour = it)
+                                        saveSettings(context, settings.value)
+                                    }
+                                }
+                            )
 
-                var blockInternational by remember { mutableStateOf(settings.value.blockInternational) }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text("Блокировать международные звонки")
-                    Switch(
-                        checked = blockInternational,
-                        onCheckedChange = {
-                            blockInternational = it
-                            settings.value = settings.value.copy(blockInternational = it)
-                            saveSettings(context, settings.value)
+                            // 2. Минуты Начала
+                            TimeArrowSelector(
+                                label = "Минуты (00-59)",
+                                value = settings.value.nightStartMinute,
+                                maxValue = 59,
+                                onValueChange = {
+                                    if (isNightEnabled) {
+                                        settings.value = settings.value.copy(nightStartMinute = it)
+                                        saveSettings(context, settings.value)
+                                    }
+                                }
+                            )
+
+                            Divider(
+                                modifier = Modifier.padding(vertical = 8.dp),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+                            )
+
+                            // 3. Часы Конца
+                            TimeArrowSelector(
+                                label = "Часы (00-23)",
+                                value = settings.value.nightEndHour,
+                                maxValue = 23,
+                                onValueChange = {
+                                    if (isNightEnabled) {
+                                        settings.value = settings.value.copy(nightEndHour = it)
+                                        saveSettings(context, settings.value)
+                                    }
+                                }
+                            )
+
+                            // 4. Минуты Конца
+                            TimeArrowSelector(
+                                label = "Минуты (00-59)",
+                                value = settings.value.nightEndMinute,
+                                maxValue = 59,
+                                onValueChange = {
+                                    if (isNightEnabled) {
+                                        settings.value = settings.value.copy(nightEndMinute = it)
+                                        saveSettings(context, settings.value)
+                                    }
+                                }
+                            )
                         }
-                    )
+                    }
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
-        var vibrationEnabled by remember { mutableStateOf(settings.value.vibrationEnabled) }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text("Вибрация при входящем звонке")
-            Switch(
-                checked = vibrationEnabled,
-                onCheckedChange = {
-                    vibrationEnabled = it
-                    settings.value = settings.value.copy(vibrationEnabled = it)
-                    saveSettings(context, settings.value)
-                }
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Card(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text(
-                    text = "Лимит истории звонков",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
-                )
-
-                var sliderValue by remember { mutableStateOf(settings.value.callLogLimit.toFloat()) }
-
-                Slider(
-                    value = sliderValue,
-                    onValueChange = { sliderValue = it },
-                    valueRange = 10f..100f,
-                    steps = 9,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Text(
-                    text = "${sliderValue.toInt()} звонков",
-                    fontSize = 14.sp,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
-
-                Button(
-                    onClick = {
-                        settings.value = settings.value.copy(callLogLimit = sliderValue.toInt())
-                        saveSettings(context, settings.value)
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Сохранить лимит")
-                }
-            }
-        }
-    }
+        // БЛОК 3: ПАРАМЕТРЫ БЛОКИРОВКИ ЦЕЛИКОМ
+        item {
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = "Параметры блокировки",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 8.dp)
+)
+var allowContacts by remember { mutableStateOf(settings.value.allowContacts) }
+Row(
+modifier = Modifier.fillMaxWidth(),
+verticalAlignment = Alignment.CenterVertically,
+horizontalArrangement = Arrangement.SpaceBetween
+) {
+Text("Разрешить звонки из контактов")
+Switch(
+checked = allowContacts,
+onCheckedChange = {
+allowContacts = it
+settings.value = settings.value.copy(allowContacts = it)
+saveSettings(context, settings.value)
 }
+)
+}
+var blockHidden by remember { mutableStateOf(settings.value.blockHiddenNumbers) }
+Row(
+modifier = Modifier.fillMaxWidth(),
+verticalAlignment = Alignment.CenterVertically,
+horizontalArrangement = Arrangement.SpaceBetween
+) {
+Text("Блокировать скрытые номера")
+Switch(
+checked = blockHidden,
+onCheckedChange = {
+blockHidden = it
+settings.value = settings.value.copy(blockHiddenNumbers = it)
+saveSettings(context, settings.value)
+}
+)
+}
+var blockInternational by remember { mutableStateOf(settings.value.blockInternational) }
+Row(
+modifier = Modifier.fillMaxWidth(),
+verticalAlignment = Alignment.CenterVertically,
+horizontalArrangement = Arrangement.SpaceBetween
+) {
+Text("Блокировать международные звонки")
+Switch(
+checked = blockInternational,
+onCheckedChange = {
+blockInternational = it
+settings.value = settings.value.copy(blockInternational = it)
+saveSettings(context, settings.value)
+}
+)
+}
+}
+}
+}
+// БЛОК 4: ВИБРАЦИЯ ЖЕЛЕЗА
+item {
+var vibrationEnabled by remember { mutableStateOf(settings.value.vibrationEnabled) }
+Row(
+modifier = Modifier.fillMaxWidth(),
+verticalAlignment = Alignment.CenterVertically,
+horizontalArrangement = Arrangement.SpaceBetween
+) {
+Text("Вибрация при входящем звонке")
+Switch(
+checked = vibrationEnabled,
+onCheckedChange = {
+vibrationEnabled = it
+settings.value = settings.value.copy(vibrationEnabled = it)
+saveSettings(context, settings.value)
+}
+)
+}
+}
+// БЛОК 5: ЛИМИТ ЖУРНАЛА ИСТОРИИ
+item {
+Card(modifier = Modifier.fillMaxWidth()) {
+Column(modifier = Modifier.padding(16.dp)) {
+Text(
+text = "Лимит истории звонков",
+fontSize = 16.sp,
+fontWeight = FontWeight.Bold
+)
+var sliderValue by remember { mutableStateOf(settings.value.callLogLimit.toFloat()) }
+Slider(
+value = sliderValue,
+onValueChange = { sliderValue = it },
+valueRange = 10f..100f,
+steps = 9,
+modifier = Modifier.fillMaxWidth()
+)
+Text(
+text = "${sliderValue.toInt()} звонков",
+fontSize = 14.sp,
+modifier = Modifier.align(Alignment.CenterHorizontally)
+)
+Button(
+onClick = {
+settings.value = settings.value.copy(callLogLimit = sliderValue.toInt())
+saveSettings(context, settings.value)
+},
+modifier = Modifier.fillMaxWidth()
+) {
+Text("Сохранить лимит")
+}
+}
+}
+}
+}
+}
+
 
 @Composable
 fun PermissionRequestScreen(onRequestPermissions: () -> Unit) {
@@ -2787,4 +3067,45 @@ fun SimSelectionDialog(
             TextButton(onClick = onDismiss) { Text("Отмена") }
         }
     )
+}
+
+// Функция для генерации маски номера (заменяет последние 4 цифры на регулярное выражение или шаблон)
+// Например, "+79991234567" превратит в "+7999123"
+fun getSpamMask(phoneNumber: String): String {
+    val clean = phoneNumber.filter { it.isDigit() || it == '+' }
+    return if (clean.length > 4) {
+        clean.dropLast(4)
+    } else {
+        clean
+    }
+}
+
+// Проверка: нужно ли автоматически заблокировать номер по правилу 7 дней массового обзвона
+fun shouldBlockByMassCallRule(context: Context, incomingNumber: String, blockedPatterns: List<String>): Boolean {
+    val cleanIncoming = incomingNumber.filter { it.isDigit() || it == '+' }
+    if (cleanIncoming.isBlank()) return false
+
+    val prefs = context.getSharedPreferences("blocktel_prefs", Context.MODE_PRIVATE)
+    val currentTime = System.currentTimeMillis()
+    val sevenDaysInMillis = 7L * 24 * 60 * 60 * 1000
+
+    // Проверяем все номера, которые сейчас находятся в пользовательском черном списке
+    val userNumbers = blockedPatterns.filter { it.startsWith("user_") }.map { it.removePrefix("user_") }
+
+    for (spamNumber in userNumbers) {
+        val mask = getSpamMask(spamNumber)
+
+        // Если входящий номер начинается так же, как маска спам-номера (отличаются только последние 4 цифры)
+        if (mask.isNotBlank() && cleanIncoming.startsWith(mask) && cleanIncoming.length == spamNumber.length) {
+            // Проверяем, когда этот базовый номер был добавлен
+            val addedTime = prefs.getLong("mass_spam_time_$spamNumber", 0L)
+
+            // Если 7 дней еще не прошло — блокируем входящий
+            if (addedTime > 0L && (currentTime - addedTime) < sevenDaysInMillis) {
+                Log.d("MassCallProtection", "Авто-блокировка звонка $incomingNumber по маске спамера $spamNumber (Осталось дней: ${(sevenDaysInMillis - (currentTime - addedTime)) / (24 * 60 * 60 * 1000)})")
+                return true
+            }
+        }
+    }
+    return false
 }

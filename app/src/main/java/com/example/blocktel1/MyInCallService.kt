@@ -183,6 +183,49 @@ class MyInCallService : InCallService() {
     }
     override fun onCallAdded(call: Call) {
         super.onCallAdded(call)
+
+        Log.d(TAG, "Call added: ${call.details.handle}")
+
+        // 1. Считываем сырую строку (Используем оригинальные переменные ОДИН раз)
+        val rawPhoneNumber1 = call.details.handle?.schemeSpecificPart ?: ""
+        val phoneNumber1 = android.net.Uri.decode(rawPhoneNumber1)
+        val cleanNumber = phoneNumber1.filter { it.isDigit() || it == '+' }
+
+        // === ИСПРАВЛЕНИЕ: БЛОК АНАЛИЗА СЕТИ (БЕЗ ДУБЛИРОВАНИЯ ПЕРЕМЕННЫХ) ===
+        try {
+            val telephonyManager = getSystemService(android.content.Context.TELEPHONY_SERVICE) as android.telephony.TelephonyManager
+
+            // Получаем Technology Type (GSM = 1, CDMA = 2, SIP/VoIP = 3)
+            val techType = telephonyManager.phoneType
+
+            // Получаем Network Type (LTE = 13, 3G = 3, 2G = 1 и т.д.) через правильный ContextCompat
+            val networkType = if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_PHONE_STATE) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                    telephonyManager.dataNetworkType
+                } else {
+                    @Suppress("DEPRECATION") telephonyManager.networkType
+                }
+            } else {
+                0
+            }
+
+            // Получаем презентацию номера (Скрыт = 2, Разрешен = 1)
+            val presentation = call.details.callerDisplayNamePresentation
+
+            // Сохраняем технические параметры в SharedPreferences для истории
+            val prefs = getSharedPreferences("blocktel_prefs", android.content.Context.MODE_PRIVATE)
+            prefs.edit()
+                .putInt("tech_type_$cleanNumber", techType)
+                .putInt("net_type_$cleanNumber", networkType)
+                .putInt("pres_type_$cleanNumber", presentation)
+                .apply()
+
+            Log.d(TAG, "АНАЛИЗАТОР ЗВОНКА: Номер $cleanNumber | Tech Type: $techType | Net Type: $networkType | Pres: $presentation")
+        } catch (e: Exception) {
+            Log.e(TAG, "Ошибка анализатора сети: ${e.message}")
+        }
+
+
         Log.d(TAG, "Call added: ${call.details.handle}")
 
         // Считываем сырую строку (например, "+79209224243" или "%2B79209224243")
