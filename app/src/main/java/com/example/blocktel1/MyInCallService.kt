@@ -6,6 +6,7 @@ import android.telecom.Call
 import android.telecom.InCallService
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import kotlinx.coroutines.launch
 
 class MyInCallService : InCallService() {
 
@@ -184,97 +185,84 @@ class MyInCallService : InCallService() {
     override fun onCallAdded(call: Call) {
         super.onCallAdded(call)
 
-        Log.d(TAG, "Call added: ${call.details.handle}")
-
-        // 1. Считываем сырую строку (Используем оригинальные переменные ОДИН раз)
-        val rawPhoneNumber1 = call.details.handle?.schemeSpecificPart ?: ""
-        val phoneNumber1 = android.net.Uri.decode(rawPhoneNumber1)
-        val cleanNumber = phoneNumber1.filter { it.isDigit() || it == '+' }
-
-        // === ИСПРАВЛЕНИЕ: БЛОК АНАЛИЗА СЕТИ (БЕЗ ДУБЛИРОВАНИЯ ПЕРЕМЕННЫХ) ===
-        try {
-            val telephonyManager = getSystemService(android.content.Context.TELEPHONY_SERVICE) as android.telephony.TelephonyManager
-
-            // Получаем Technology Type (GSM = 1, CDMA = 2, SIP/VoIP = 3)
-            val techType = telephonyManager.phoneType
-
-            // Получаем Network Type (LTE = 13, 3G = 3, 2G = 1 и т.д.) через правильный ContextCompat
-            val networkType = if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_PHONE_STATE) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                    telephonyManager.dataNetworkType
-                } else {
-                    @Suppress("DEPRECATION") telephonyManager.networkType
-                }
-            } else {
-                0
-            }
-
-            // Получаем презентацию номера (Скрыт = 2, Разрешен = 1)
-            val presentation = call.details.callerDisplayNamePresentation
-
-            // Сохраняем технические параметры в SharedPreferences для истории
-            val prefs = getSharedPreferences("blocktel_prefs", android.content.Context.MODE_PRIVATE)
-            prefs.edit()
-                .putInt("tech_type_$cleanNumber", techType)
-                .putInt("net_type_$cleanNumber", networkType)
-                .putInt("pres_type_$cleanNumber", presentation)
-                .apply()
-
-            Log.d(TAG, "АНАЛИЗАТОР ЗВОНКА: Номер $cleanNumber | Tech Type: $techType | Net Type: $networkType | Pres: $presentation")
-        } catch (e: Exception) {
-            Log.e(TAG, "Ошибка анализатора сети: ${e.message}")
+        // 1. КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Реагируем ТОЛЬКО на состояние входящего звонка (RINGING).
+        // Если ОС присылает события изменения состояния (DISCONNECTING, ACTIVE и т.д.), полностью их игнорируем,
+        // чтобы избежать лавинообразного бесконечного цикла проверок и зависания.
+        if (call.state != android.telecom.Call.STATE_RINGING) {
+            Log.d(TAG, "Игнорируем триггер: вызов находится в состоянии ${call.state}, а не RINGING")
+            return
         }
 
-
-        Log.d(TAG, "Call added: ${call.details.handle}")
-
-        // Считываем сырую строку (например, "+79209224243" или "%2B79209224243")
         val rawPhoneNumber = call.details.handle?.schemeSpecificPart ?: ""
-
-        // КРИТИЧЕСКИ ВАЖНО: Декодируем %2B обратно в знак +
         val phoneNumber = android.net.Uri.decode(rawPhoneNumber)
         val contactName = getContactNameFromPhoneBook(this, phoneNumber)
 
         val settings = loadSettings(this)
         val blockedPatterns = loadBlockedPatterns(this)
 
-        val shouldBlock = shouldBlockCall(
-            phoneNumber,
-            contactName,
-            blockedPatterns,
-            settings,
-            this
-        )
+        // 2. Локальная моментальная проверка (Ваши контакты, Ночной режим, Черный список)
+        val shouldBlockLocally = shouldBlockCall(phoneNumber, contactName, blockedPatterns, settings, this)
 
-        if (shouldBlock) {
-            Log.d(TAG, "Blocking call via InCallService")
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                call.reject(false, "Blocked")
-            } else {
-                call.disconnect()
-            }
+        if (shouldBlockLocally) {
+            Log.d(TAG, "Номер заблокирован локальным правилом приложения.")
+            rejectCallSystem(call)
+            return
         }
-        else {
-            // Если звонок нормальный — сохраняем его и открываем приложение
-            currentCall.value = call
 
-            val isIncoming = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                call.details.callDirection == Call.Details.DIRECTION_INCOMING
-            } else {
-                call.state == Call.STATE_RINGING
+        // 3. Облачная проверка Baserow (только для незнакомых номеров, которых нет в книге контактов)
+        if (contactName == null) {
+            val androidId = android.provider.Settings.Secure.getString(
+                contentResolver, android.provider.Settings.Secure.ANDROID_ID
+            ) ?: "unknown_device"
+
+            // Запускаем асинхронный сетевой запрос строго в фоновом пуле потоков (Dispatchers.IO)
+            kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                val isSpamInCloud = BaserowClient.checkIsSpam(phoneNumber, androidId)
+
+                // Возвращаемся на главный поток UI без использования Handler
+                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+
+                    // Дополнительная проверка: не отменил ли пользователь вызов, пока шел интернет-запрос
+                    if (isSpamInCloud && call.state == android.telecom.Call.STATE_RINGING) {
+                        Log.d(TAG, "Облачный консенсус Baserow велел ЗАБЛОКИРОВАТЬ звонок.")
+                        rejectCallSystem(call)
+                    } else if (!isSpamInCloud && call.state == android.telecom.Call.STATE_RINGING) {
+                        Log.d(TAG, "Облако подтвердило: номер чист. Пропускаем на экран.")
+                        allowCallSystem(call)
+                    }
+                }
             }
-
-            if (!shouldBlock && isIncoming) {
-                startRingtone(this)
-                startVibration(this)
-            }
-
-
-            val intent = Intent(this, MainActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            }
-            startActivity(intent)
+        } else {
+            // Номер из телефонной книги — пускаем вызов мгновенно без интернета
+            allowCallSystem(call)
         }
+    }
+
+    // Вспомогательный метод сброса звонка для чистоты кода
+    private fun rejectCallSystem(call: Call) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            call.reject(false, "Blocked by Cloud Consensus")
+        } else {
+            call.disconnect()
+        }
+    }
+
+    // Вспомогательный метод пропуска звонка (Ваш оригинальный код интерфейса)
+    private fun allowCallSystem(call: Call) {
+        currentCall.value = call
+        val isIncoming = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            call.details.callDirection == Call.Details.DIRECTION_INCOMING
+        } else {
+            call.state == Call.STATE_RINGING
+        }
+        if (isIncoming) {
+            startRingtone(this)
+            startVibration(this)
+        }
+        val intent = Intent(this, MainActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        }
+        startActivity(intent)
     }
 
     override fun onCallRemoved(call: Call) {

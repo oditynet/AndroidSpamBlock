@@ -863,7 +863,7 @@ fun CallMonitorApp(
                             Text("📞 Телефон")
                             if (settings.value.isDefaultDialer) {
                                 Text(
-                                    text = "версия 0.3.3",
+                                    text = "версия 0.3.4",
                                     fontSize = 12.sp,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -1604,10 +1604,13 @@ fun ContactItem(
     }
 }
 
-// Экран истории звонков
 @Composable
 fun CallHistoryScreen() {
     val context = LocalContext.current
+
+    // ВАЖНОЕ ИСПРАВЛЕНИЕ: Создаем scope на самом верху Composable-функции экрана!
+    val scope = rememberCoroutineScope()
+
     val callLogs = remember { mutableStateListOf<CallLog>() }
     var isLoading by remember { mutableStateOf(false) }
     val blockedPatterns = remember { mutableStateListOf<String>() }
@@ -1678,20 +1681,35 @@ fun CallHistoryScreen() {
                             if (call.cleanNumber.isNotBlank()) {
                                 val userPattern = "user_${call.cleanNumber}"
 
-
                                 if (!blockedPatterns.contains(userPattern)) {
-                                    blockedPatterns.add(userPattern)
-                                    saveBlockedPatterns(context, blockedPatterns)
+                                    // Запускаем асинхронный фоновый поток для работы с диском и сетью
+                                    scope.launch {
+                                        // 1. Сохранение паттернов и SharedPreferences переносим в фоновый IO поток
+                                        withContext(Dispatchers.IO) {
+                                            blockedPatterns.add(userPattern)
+                                            saveBlockedPatterns(context, blockedPatterns)
 
-                                    // СОХРАНЯЕМ ВРЕМЯ ДОБАВЛЕНИЯ ДЛЯ МАССОВОГО ОБЗВОНА
-                                    val prefs = context.getSharedPreferences("blocktel_prefs", Context.MODE_PRIVATE)
-                                    prefs.edit().putLong("mass_spam_time_${call.cleanNumber}", System.currentTimeMillis()).apply()
+                                            val prefs = context.getSharedPreferences("blocktel_prefs", Context.MODE_PRIVATE)
+                                            prefs.edit().putLong("mass_spam_time_${call.cleanNumber}", System.currentTimeMillis()).apply()
+                                        }
 
-                                    android.widget.Toast.makeText(
-                                        context,
-                                        "Номер добавлен в блокировку защиты от обзвона",
-                                        android.widget.Toast.LENGTH_SHORT
-                                    ).show()
+                                        // 2. Получение Android ID
+                                        val androidId = android.provider.Settings.Secure.getString(
+                                            context.contentResolver, android.provider.Settings.Secure.ANDROID_ID
+                                        ) ?: "unknown_device"
+
+                                        // 3. Отправка жалобы в облако
+                                        BaserowClient.addSpamVote(call.cleanNumber, androidId, 1)
+
+                                        // 4. Показ Toast-сообщения возвращаем на главный поток интерфейса
+                                        withContext(Dispatchers.Main) {
+                                            android.widget.Toast.makeText(
+                                                context,
+                                                "Номер успешно заблокирован и отправлен в облако",
+                                                android.widget.Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    }
                                 }
                             }
                         }
