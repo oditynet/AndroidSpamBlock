@@ -14,42 +14,43 @@ class MyNotificationListener : NotificationListenerService() {
         const val TAG = "NotificationListener"
     }
 
-    override fun onNotificationPosted(sbn: StatusBarNotification?) {
+    override fun onNotificationPosted(sbn: android.service.notification.StatusBarNotification?) {
         super.onNotificationPosted(sbn)
 
         val context = applicationContext
         val settings = loadSettings(context)
 
-        // Если ночной режим выключен — ничего не делаем
-        if (!settings.nightModeEnabled) return
+        // 1. Если ночной режим выключен тумблером — принудительно разрешаем звуки и выходим
+        if (!settings.nightModeEnabled) {
+            requestInterruptionFilter(INTERRUPTION_FILTER_ALL)
+            return
+        }
 
-        // Проверяем, наступило ли ночное время
-        if (!isNightTimeActive(settings)) {
-            // ИСПРАВЛЕНИЕ: Проверяем текущий фильтр напрямую у сервиса (currentInterruptionFilter)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                currentInterruptionFilter != INTERRUPTION_FILTER_NONE) {
+        // 2. Живой расчёт минут суток прямо на месте
+        val calendar = java.util.Calendar.getInstance()
+        val currentHour = calendar.get(java.util.Calendar.HOUR_OF_DAY)
+        val currentMinute = calendar.get(java.util.Calendar.MINUTE)
 
-                try {
-                    // ИСПРАВЛЕНИЕ: Задаем фильтр тишины напрямую сервису
-                    requestInterruptionFilter(INTERRUPTION_FILTER_NONE)
-                    Log.d(TAG, "Ночной период! Система переведена в режим полной тишины (DND).")
-                } catch (e: Exception) {
-                    Log.e(TAG, "Не удалось переключить режим тишины: ${e.message}")
-                }
-            }
+        val nowMin = currentHour * 60 + currentMinute
+        val startMin = settings.nightStartHour * 60 + settings.nightStartMinute
+        val endMin = settings.nightEndHour * 60 + settings.nightEndMinute
+
+        // Математическое определение: наступила ли ночь (с учётом перехода через 00:00)
+        val isNightNow = if (startMin <= endMin) {
+            nowMin in startMin..endMin
         } else {
-            // Если наступило утро, возвращаем стандартный режим звука
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                currentInterruptionFilter == INTERRUPTION_FILTER_NONE) {
+            nowMin >= startMin || nowMin <= endMin
+        }
 
-                try {
-                    // ИСПРАВЛЕНИЕ: Возвращаем звук напрямую через сервис
-                    requestInterruptionFilter(INTERRUPTION_FILTER_ALL)
-                    Log.d(TAG, "Ночной период завершен. Звуки уведомлений возвращены.")
-                } catch (e: Exception) {
-                    Log.e(TAG, "Ошибка возврата звука: ${e.message}")
-                }
-            }
+        // 3. Прямое управление фильтрами DND без всяких знаков отрицания (!)
+        if (isNightNow) {
+            // СЕЙЧАС НОЧЬ — принудительно запрещаем звуки и включаем тишину
+            requestInterruptionFilter(INTERRUPTION_FILTER_NONE)
+            android.util.Log.d("NightMode", "ЛОГ: Ночное время суток. Звуки смартфона полностью ГЛУШАТСЯ.")
+        } else {
+            // СЕЙЧАС ДЕНЬ — всегда возвращаем стандартный режим и активируем звуки
+            requestInterruptionFilter(INTERRUPTION_FILTER_ALL)
+            android.util.Log.d("NightMode", "ЛОГ: Дневное время суток. Все звуки смартфона РАЗРЕШЕНЫ.")
         }
     }
 

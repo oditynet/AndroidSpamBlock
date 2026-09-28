@@ -1,7 +1,0 @@
-#Mon Sep 28 20:25:51 MSK 2026
-base.0=/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/intermediates/dex/debugAndroidTest/mergeExtDexDebugAndroidTest/classes.dex
-base.1=/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/intermediates/dex/debugAndroidTest/mergeProjectDexDebugAndroidTest/0/classes.dex
-path.0=classes.dex
-path.1=0/classes.dex
-renamed.0=classes.dex
-renamed.1=classes2.dex

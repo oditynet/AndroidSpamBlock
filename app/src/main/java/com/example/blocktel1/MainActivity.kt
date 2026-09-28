@@ -914,7 +914,7 @@ fun CallMonitorApp(
                             Text("📞 Телефон")
                             if (settings.value.isDefaultDialer) {
                                 Text(
-                                    text = "версия 0.3.6.1", //versionName = "0.3.5" nтоже менять в build.gradle.kts APP
+                                    text = "версия 0.3.6.2", //versionName = "0.3.5" nтоже менять в build.gradle.kts APP
                                     fontSize = 12.sp,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -2392,7 +2392,6 @@ fun SettingsScreen() {
             val scope = rememberCoroutineScope()
             val context = LocalContext.current
 
-            // АВТОМАТИЧЕСКОЕ ОПРЕДЕЛЕНИЕ: Считываем версию прямо из операционной системы смартфона
             val currentAppVersion = remember {
                 try {
                     val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
@@ -2402,26 +2401,19 @@ fun SettingsScreen() {
                 }
             }
 
-            var updateStatusText by remember { mutableStateOf("Проверка тегов на GitHub...") }
-            var serverVersionText by remember { mutableStateOf("Загрузка...") }
+            // ИСПРАВЛЕНО: Меняем начальные статусы.
+            // Так как автопроверки больше нет, сразу пишем приглашение нажать кнопку.
+            var updateStatusText by remember { mutableStateOf("Нажмите кнопку для проверки новых релизов") }
+            var serverVersionText by remember { mutableStateOf("Не проверялась") }
             var apkDownloadUrl by remember { mutableStateOf<String?>(null) }
-            var isChecking by remember { mutableStateOf(true) }
+            var isChecking by remember { mutableStateOf(false) } // ИСПРАВЛЕНО: Изначально false
             var isDownloading by remember { mutableStateOf(false) }
 
-            /*LaunchedEffect(Unit) {
-                // Запускаем сверку, передавая автоматически определенную версию из системы
-                val (hasUpdate, urlOrError, githubVersion) = AppUpdateManager.checkLatestVersion(currentAppVersion)
-
-                serverVersionText = if (githubVersion.isNotBlank()) "ver_$githubVersion" else "Неизвестно"
-
-                if (hasUpdate && urlOrError.isNotBlank()) {
-                    apkDownloadUrl = urlOrError
-                    updateStatusText = "Доступно свежее обновление!"
-                } else {
-                    updateStatusText = "У вас установлена актуальная версия."
-                }
-                isChecking = false
-            }*/
+            // ==========================================
+            // Х УДАЛИТЕ ИЛИ ЗАКОММЕНТИРУЙТЕ ВЕСЬ ЭТОТ БЛОК ТУТ:
+            // LaunchedEffect(Unit) { ... }
+            // Он больше не должен запускаться сам при старте экрана!
+            // ==========================================
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -2432,22 +2424,22 @@ fun SettingsScreen() {
                         MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.1f)
                 )
             ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(4.dp) // Небольшой аккуратный зазор между строками
-                ) {
-                    Text(
-                        text = "Текущая на телефоне: ver_$currentAppVersion",
-                        fontSize = 12.sp
-                    )
-                    Text(
-                        text = "Доступная на GitHub: $serverVersionText",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        // Текст загорится красным, если есть обновление (apkDownloadUrl != null)
-                        color = if (apkDownloadUrl != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
-                    )
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(text = "🔄 Обновление приложения", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.height(8.dp))
 
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(text = "Текущая на телефоне: ver_$currentAppVersion", fontSize = 12.sp)
+                        Text(
+                            text = "Доступная на GitHub: $serverVersionText",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (apkDownloadUrl != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
@@ -2460,6 +2452,7 @@ fun SettingsScreen() {
                     Button(
                         onClick = {
                             if (apkDownloadUrl != null && !isDownloading) {
+                                // А: Если проверка уже была выполнена и ссылка найдена — качаем APK
                                 scope.launch {
                                     isDownloading = true
                                     updateStatusText = "Загрузка файла APK с GitHub..."
@@ -2470,16 +2463,20 @@ fun SettingsScreen() {
                                     }
                                 }
                             } else {
+                                // Б: ЕСЛИ НАЖАЛИ ПЕРВЫЙ РАЗ — ЗАПУСКАЕТСЯ РУЧНАЯ ПРОВЕРКА РЕЛИЗОВ
                                 scope.launch {
                                     isChecking = true
-                                    updateStatusText = "Перепроверка релизов..."
+                                    updateStatusText = "Сканирование страницы GitHub..."
                                     val (hasUpdate, urlOrError, githubVersion) = AppUpdateManager.checkLatestVersion(currentAppVersion)
-                                    serverVersionText = if (githubVersion.isNotBlank()) "ver_$githubVersion" else "Неизвестно"
+
+                                    serverVersionText = if (githubVersion.isNotBlank()) "ver_$githubVersion" else "Не найдено"
+
                                     if (hasUpdate && urlOrError.isNotBlank()) {
                                         apkDownloadUrl = urlOrError
-                                        updateStatusText = "Найдено обновление на репозитории!"
+                                        updateStatusText = "Найдено свежее обновление!"
                                     } else {
-                                        updateStatusText = "Обновлений не обнаружено."
+                                        apkDownloadUrl = null // Обнуляем ссылку, если обновлений нет
+                                        updateStatusText = "У вас установлена самая последняя версия."
                                     }
                                     isChecking = false
                                 }
@@ -2494,7 +2491,8 @@ fun SettingsScreen() {
                         if (isChecking || isDownloading) {
                             CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp, color = MaterialTheme.colorScheme.onPrimary)
                         } else {
-                            Text(if (apkDownloadUrl != null) "Скачать и установить свежую версию" else "Проверить обновления вручную")
+                            // Текст кнопки динамически меняется в зависимости от статуса проверки
+                            Text(if (apkDownloadUrl != null) "Скачать и установить свежую версию" else "Проверить наличие обновлений")
                         }
                     }
                 }
