@@ -185,13 +185,25 @@ class MyInCallService : InCallService() {
     override fun onCallAdded(call: Call) {
         super.onCallAdded(call)
 
-        // 1. КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Реагируем ТОЛЬКО на состояние входящего звонка (RINGING).
-        // Если ОС присылает события изменения состояния (DISCONNECTING, ACTIVE и т.д.), полностью их игнорируем,
-        // чтобы избежать лавинообразного бесконечного цикла проверок и зависания.
-        if (call.state != android.telecom.Call.STATE_RINGING) {
-            Log.d(TAG, "Игнорируем триггер: вызов находится в состоянии ${call.state}, а не RINGING")
+        val state = call.state
+        val isIncoming = (state == android.telecom.Call.STATE_RINGING)
+        val isOutgoing = (state == android.telecom.Call.STATE_DIALING || state == android.telecom.Call.STATE_CONNECTING)
+
+        if (!isIncoming && !isOutgoing) {
+            Log.d(TAG, "Игнорируем триггер: вызов находится в промежуточном состоянии $state")
             return
         }
+        // Если это исходящий вызов, то мы его никогда не блокируем, а сразу выводим окно
+        if (isOutgoing) {
+            Log.d(TAG, "Обнаружен исходящий вызов. Открываем ActiveCallScreen.")
+            currentCall.value = call
+            val intent = Intent(this, MainActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            }
+            startActivity(intent)
+            return
+        }
+
 
         val rawPhoneNumber = call.details.handle?.schemeSpecificPart ?: ""
         val phoneNumber = android.net.Uri.decode(rawPhoneNumber)

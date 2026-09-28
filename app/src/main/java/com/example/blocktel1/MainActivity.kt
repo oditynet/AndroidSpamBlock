@@ -61,6 +61,12 @@ import androidx.compose.material3.TextFieldDefaults
 
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.ui.draw.alpha
+import android.app.NotificationManager
+
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.material3.Divider
+
 
 // Модель для хранения информации о SIM-карте
 data class SimCardInfo(
@@ -127,6 +133,8 @@ data class CallLog(
     val timestamp: String,
     val type: String,
     val duration: String = "",
+    val isIncoming: Boolean,
+    val blockReason: String? = null,
     val shouldBlock: Boolean = false,
     val capabilities: Int = 0, // <-- Добавлено для хранения TechCode (GSM/VoIP)
     val properties: Int = 0 // <-- Добавлено для хранения NetCode (4G/LTE)
@@ -489,59 +497,100 @@ fun loadCallHistory(context: Context, blockedPatterns: List<String>, limit: Int 
             val dateIndex = c.getColumnIndex(android.provider.CallLog.Calls.DATE)
             val typeIndex = c.getColumnIndex(android.provider.CallLog.Calls.TYPE)
             val durationIndex = c.getColumnIndex(android.provider.CallLog.Calls.DURATION)
-
-            //val durationIndex = c.getColumnIndex(android.provider.CallLog.Calls.DURATION)
             val featuresIndex = c.getColumnIndex(android.provider.CallLog.Calls.FEATURES)
 
-
             val dateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
-
             var count = 0
+
             while (c.moveToNext() && count < limit) {
                 val number = c.getString(numberIndex) ?: "Неизвестный номер"
                 val cachedName = c.getString(nameIndex)
                 val dateLong = c.getLong(dateIndex)
                 val callType = c.getInt(typeIndex)
                 val duration = if (durationIndex != -1) c.getString(durationIndex) ?: "0" else "0"
-
                 val date = if (dateLong > 0) dateFormat.format(Date(dateLong)) else "Неизвестно"
 
+                // ЧЕТКОЕ ОПРЕДЕЛЕНИЕ СТАТУСА И НАПРАВЛЕНИЯ ЗВONКА
+                var isIncoming = false
                 val typeText = when (callType) {
-                    android.provider.CallLog.Calls.INCOMING_TYPE -> "📥 Входящий"
-                    android.provider.CallLog.Calls.OUTGOING_TYPE -> "📤 Исходящий"
-                    android.provider.CallLog.Calls.MISSED_TYPE -> "❌ Пропущенный"
-                    android.provider.CallLog.Calls.REJECTED_TYPE -> "🚫 Отклоненный"
-                    android.provider.CallLog.Calls.BLOCKED_TYPE -> "⛔ Заблокированный"
-                    else -> "❓ Неизвестно"
+                    android.provider.CallLog.Calls.INCOMING_TYPE -> { isIncoming = true; "📥 Входящий" }
+                    android.provider.CallLog.Calls.MISSED_TYPE -> { isIncoming = true; "❌ Пропущенный" }
+                    android.provider.CallLog.Calls.REJECTED_TYPE -> { isIncoming = true; "🚫 Отклоненный" }
+                    android.provider.CallLog.Calls.BLOCKED_TYPE -> { isIncoming = true; "⛔ Заблокированный" }
+                    android.provider.CallLog.Calls.OUTGOING_TYPE -> { isIncoming = false; "📤 Исходящий" }
+                    else -> { isIncoming = false; "❓ Неизвестно" }
                 }
 
                 val formattedNumber = formatPhoneNumber(number)
-                val cleanNumber = number.replace(Regex("[^0-9+]"), "")
+                val cleanNumber = number.filter { it.isDigit() || it == '+' }
 
                 var displayName = cachedName
                 if (displayName.isNullOrBlank() && cleanNumber.isNotBlank()) {
                     displayName = getContactNameFromPhoneBook(context, cleanNumber)
                 }
 
-                val shouldBlock = shouldBlockCall(
-                    formattedNumber, displayName, blockedPatterns, settings, context
-                )
+                // === ВЫЧИСЛЕНИЕ ТОЧНОЙ ПРИЧИНЫ БЛОКИРОВКИ ===
+                var blockReasonText: String? = null
+                val isContact = !displayName.isNullOrBlank() && displayName != number && displayName != "Неизвестный" && displayName != "Загрузка..."
+
+                // 1. Проверка на скрытый номер
+                if (settings.blockHiddenNumbers && (number.isBlank() || number.contains("Неизвестный"))) {
+                    blockReasonText = "Скрытый/анонимный номер"
+                }
+                // 2. Проверка на международный номер
+                else if (settings.blockInternational && number.startsWith("+") && !number.startsWith("+7")) {
+                    blockReasonText = "Международный вызов (не РФ)"
+                }
+                // 3. Проверка по черным спискам и паттернам
+                else {
+                    if (blockedPatterns.isNotEmpty()) {
+                        val match = blockedPatterns.find { p ->
+                            val cleanP = if (p.startsWith("user_")) p.removePrefix("user_") else p
+                            cleanP.isNotBlank() && cleanNumber.contains(cleanP, ignoreCase = true)
+                        }
+                        if (match != null) {
+                            blockReasonText = "Паттерн совпал: [${match.removePrefix("user_")}]"
+                        }
+                    }
+                }
+
+                // 4. Проверка ночного режима на момент совершения звонка
+                if (blockReasonText == null && settings.nightModeEnabled && isIncoming && !isContact) {
+                    // Используем историческое время звонка из базы данных (dateLong)
+                    val callCalendar = Calendar.getInstance().apply { timeInMillis = dateLong }
+                    val callHour = callCalendar.get(Calendar.HOUR_OF_DAY)
+                    val callMinute = callCalendar.get(Calendar.MINUTE)
+
+                    val callTimeInMinutes = callHour * 60 + callMinute
+                    val startTimeInMinutes = settings.nightStartHour * 60 + settings.nightStartMinute
+                    val endTimeInMinutes = settings.nightEndHour * 60 + settings.nightEndMinute
+
+                    val isCallAtNight = if (startTimeInMinutes <= endTimeInMinutes) {
+                        callTimeInMinutes in startTimeInMinutes..endTimeInMinutes
+                    } else {
+                        callTimeInMinutes >= startTimeInMinutes || callTimeInMinutes <= endTimeInMinutes
+                    }
+
+                    if (isCallAtNight) {
+                        blockReasonText = "Ночной режим сброса (нет в контактах)"
+                    }
+                }
+
+                // Звонок помечается заблокированным, если система сохранила его как заблокированный/отклоненный,
+                // либо если под текущие правила приложения подпадает старый звонок
+                val isActuallyBlocked = (callType == android.provider.CallLog.Calls.BLOCKED_TYPE ||
+                        callType == android.provider.CallLog.Calls.REJECTED_TYPE ||
+                        blockReasonText != null)
+                // ===========================================
 
                 val durationText = if (duration.toIntOrNull() ?: 0 > 0) {
                     "${duration.toInt() / 60}:${String.format("%02d", duration.toInt() % 60)}"
                 } else "0:00"
-// ИСПРАВЛЕНИЕ: Четко объявляем rawFeatures, чтобы компилятор его видел
+
                 val rawFeatures = if (featuresIndex != -1) c.getInt(featuresIndex) else 0
-
-// ИСПРАВЛЕНИЕ: Менеджер SharedPreferences теперь инициализируется строго ДО чтения переменных
-val prefs = context.getSharedPreferences("blocktel_prefs", Context.MODE_PRIVATE)
-
-// Читаем сохраненные вашим InCallService "живые" коды технологий
-val techType1: Int = prefs.getInt("tech_type_$cleanNumber", 0)
-val netType1: Int = prefs.getInt("net_type_$cleanNumber", rawFeatures) // Если данных нет, берем системный rawFeatures
-
-
-
+                val prefs = context.getSharedPreferences("blocktel_prefs", Context.MODE_PRIVATE)
+                val techType1 = prefs.getInt("tech_type_$cleanNumber", 0)
+                val netType1 = prefs.getInt("net_type_$cleanNumber", rawFeatures)
 
                 callLogs.add(CallLog(
                     number = formattedNumber,
@@ -549,8 +598,10 @@ val netType1: Int = prefs.getInt("net_type_$cleanNumber", rawFeatures) // Есл
                     name = displayName,
                     timestamp = date,
                     type = typeText,
+                    isIncoming = isIncoming,
                     duration = durationText,
-                    shouldBlock = shouldBlock,
+                    shouldBlock = isActuallyBlocked,
+                    blockReason = blockReasonText,
                     capabilities = techType1,
                     properties = netType1
                 ))
@@ -863,7 +914,7 @@ fun CallMonitorApp(
                             Text("📞 Телефон")
                             if (settings.value.isDefaultDialer) {
                                 Text(
-                                    text = "версия 0.3.4",
+                                    text = "версия 0.3.5",
                                     fontSize = 12.sp,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -924,476 +975,309 @@ fun CallMonitorApp(
 @Composable
 fun DialerScreen(
     permissionGranted: Boolean,
-   // isDefault: Boolean,
     onRequestPermissions: () -> Unit
 ) {
     val context = LocalContext.current
-    var phoneNumber by remember { mutableStateOf("") }
     var isDefault by remember { mutableStateOf(false) }
     var suggestions by remember { mutableStateOf<List<Contact>>(emptyList()) }
-    val focusRequester = remember { FocusRequester() }
 
-    // Переменные для поддержки нескольких SIM-карт
-    //val simCards = remember { mutableStateOf(listOf<SimCardInfo>()) }
-    var showSimDialog by remember { mutableStateOf(false) }
-    // Читаем список карт и выбранную карту НАПРЯМУЮ из глобального стабильного хранилища MainActivity
+    var phoneNumber by remember { mutableStateOf("") }
+    var cursorPosition by remember { mutableStateOf(0) }
+
+    var dropdownExpanded by remember { mutableStateOf(false) }
     val simCards = MainActivity.globalSimCards
     var selectedSim by MainActivity.globalSelectedSim
 
-    // Храним выбранную SIM-карту (null означает "SIM по умолчанию")
-    //var selectedSim by remember { mutableStateOf<SimCardInfo?>(null) }
-    // Управление показом выпадающего меню
-    var dropdownExpanded by remember { mutableStateOf(false) }
-
-        //var selectedSimCont by MainActivity.globalSelectedSim
-
     LaunchedEffect(Unit) {
-        val settings = loadSettings(context)
-        isDefault = settings.isDefaultDialer
+        isDefault = loadSettings(context).isDefaultDialer
     }
-
 
     LaunchedEffect(phoneNumber) {
         if (phoneNumber.length >= 2) {
-            val cleanNumber = phoneNumber.filter { it.isDigit() || it == '+' }
-            suggestions = loadContacts(context, cleanNumber).take(3)
+            fun normalizeNum(num: String): String {
+                val d = num.filter { it.isDigit() }
+                return if (d.startsWith("8")) "7" + d.drop(1) else d
+            }
+            val queryNormalized = normalizeNum(phoneNumber)
+            suggestions = loadContacts(context, "").filter {
+                normalizeNum(it.phoneNumber).contains(queryNormalized) ||
+                        it.name.contains(phoneNumber, ignoreCase = true)
+            }.take(5)
         } else {
             suggestions = emptyList()
         }
     }
-    LaunchedEffect(phoneNumber) {
-        if (phoneNumber.length >= 2) {
-            val cleanNumber = phoneNumber.replace(Regex("[^0-9+]"), "")
-            suggestions = loadContacts(context, cleanNumber).take(3)
-        } else {
-            suggestions = emptyList()
+
+    fun insertChar(char: String) {
+        phoneNumber = phoneNumber.substring(0, cursorPosition) +
+                char + phoneNumber.substring(cursorPosition, phoneNumber.length)
+        cursorPosition += 1
+    }
+
+    fun deleteChar() {
+        if (cursorPosition > 0 && phoneNumber.isNotEmpty()) {
+            phoneNumber = phoneNumber.substring(0, cursorPosition - 1) +
+                    phoneNumber.substring(cursorPosition, phoneNumber.length)
+            cursorPosition -= 1
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-    ) {
+    val buttonRows = listOf(
+        listOf("1", "2", "3"),
+        listOf("4", "5", "6"),
+        listOf("7", "8", "9"),
+        listOf("*", "0", "#")
+    )
+     Column(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
         if (!permissionGranted) {
             PermissionRequestScreen(onRequestPermissions)
         } else if (!isDefault) {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.errorContainer
-                )
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "⚠️ Приложение не является приложением по умолчанию",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.error
-                    )
+            Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
+                Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(text = "⚠️ Приложение не по умолчанию", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Для совершения звонков установите приложение по умолчанию",
-                        fontSize = 12.sp
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Button(
-                        onClick = { openPhoneAppSettings(context) }
-                    ) {
-                        Text("Открыть настройки")
-                    }
+                    Button(onClick = { openPhoneAppSettings(context) }) { Text("Открыть настройки") }
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-val keyboardController = androidx.compose.ui.platform.LocalSoftwareKeyboardController.current
+         Spacer(modifier = Modifier.weight(0.8f))
 
-        // Поле ввода номера с кнопкой удаления
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Поле ввода со скругленными углами
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(64.dp)
-                    .background(
-                        MaterialTheme.colorScheme.surfaceVariant,
-                        shape = RoundedCornerShape(16.dp)
-                    )
-                    .padding(horizontal = 16.dp)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null
-                    ) { focusRequester.requestFocus() }
-            ) {
-                BasicTextField(
-                    value = phoneNumber,
-                    onValueChange = {
-                        phoneNumber = it.filter { char ->
-                            char.isDigit() || char == '+' || char == '*' || char == '#'
-                        }
-                    },
-                    readOnly = true,
-                    textStyle = LocalTextStyle.current.copy(
-                        fontSize = 24.sp,
-                        color = MaterialTheme.colorScheme.onSurface
-                    ),
-                    decorationBox = { innerTextField ->
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxHeight()
-                        ) {
-                            if (phoneNumber.isEmpty()) {
-                                Text(
-                                    text = "Введите номер",
-                                    fontSize = 16.sp,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                                )
-                            }
-                            innerTextField()
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .focusRequester(focusRequester)
-                )
+         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+             Box(
+                 modifier = Modifier
+                     .weight(1f)
+                     .height(50.dp)
+                     .background(MaterialTheme.colorScheme.surfaceVariant, shape = RoundedCornerShape(12.dp))
+                     .padding(horizontal = 12.dp),
+                 contentAlignment = Alignment.CenterStart
+             ) {
+                 if (phoneNumber.isEmpty()) {
+                     Text(text = "Введите номер", fontSize = 18.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
+                 }
+
+                 // ИСПРАВЛЕНО: Добавлен clickable ко всей строке Row.
+                 // Если кликнуть в любое пустое место справа — курсор упадет в самый конец.
+                 Row(
+                     modifier = Modifier
+                         .fillMaxSize()
+                         .clickable(
+                             interactionSource = remember { MutableInteractionSource() },
+                             indication = null
+                         ) {
+                             cursorPosition = phoneNumber.length
+                         },
+                     verticalAlignment = Alignment.CenterVertically
+                 ) {
+                     // Зона курсора в самом начале строки (перед первой цифрой)
+                     Box(
+                         modifier = Modifier
+                             .fillMaxHeight()
+                             .width(8.dp)
+                             .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) {
+                                 cursorPosition = 0
+                             },
+                         contentAlignment = Alignment.Center
+                     ) {
+                         if (cursorPosition == 0 && phoneNumber.isNotEmpty()) {
+                             Divider(modifier = Modifier.width(2.dp).fillMaxHeight(0.6f), color = MaterialTheme.colorScheme.primary)
+                         }
+                     }
+
+                     // Вывод цифр
+                     phoneNumber.forEachIndexed { index, char ->
+                         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxHeight()) {
+                             Text(
+                                 text = char.toString(),
+                                 fontSize = 20.sp,
+                                 fontWeight = FontWeight.Medium,
+                                 color = MaterialTheme.colorScheme.onSurface,
+                                 modifier = Modifier.clickable(
+                                     interactionSource = remember { MutableInteractionSource() },
+                                     indication = null
+                                 ) {
+                                     cursorPosition = index + 1
+                                 }
+                             )
+                             if (cursorPosition == index + 1) {
+                                 Divider(modifier = Modifier.padding(horizontal = 1.dp).width(2.dp).fillMaxHeight(0.6f), color = MaterialTheme.colorScheme.primary)
+                             }
+                         }
+                     }
+                 }
+             }
+
+             Spacer(modifier = Modifier.width(8.dp))
+
+             Button(
+                 onClick = { deleteChar() },
+                 modifier = Modifier.size(50.dp),
+                 shape = RoundedCornerShape(12.dp),
+                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer, contentColor = MaterialTheme.colorScheme.onSecondaryContainer),
+                 enabled = phoneNumber.isNotEmpty()
+             ) {
+                 // Текстовая стрелка — гарантированно жирная, крупная и никогда не исчезнет
+                 Text(
+                     text = "←",
+                     fontSize = 22.sp,
+                     fontWeight = FontWeight.Bold,
+                     color = MaterialTheme.colorScheme.onSecondaryContainer
+                 )
+             }
+         }
+         if (suggestions.isNotEmpty()) {
+             Spacer(modifier = Modifier.height(8.dp))
+             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                 items(suggestions) { contact ->
+                     // ИСПРАВЛЕНО: используем уникальное имя компонента
+                     ContactSuggestionChip(contact = contact, onClick = {
+                         phoneNumber = contact.phoneNumber.filter { it.isDigit() || it == '+' }
+                         cursorPosition = phoneNumber.length
+                     })
+                 }
+             }
+         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+         Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+             buttonRows.forEach { row ->
+                 // ИСПРАВЛЕНО: Убрали weight(1f), поставили фиксированную высоту 52.dp (кнопки станут ниже)
+                 // При этом fillMaxWidth() оставляет их во всю ширину экрана
+                 Row(modifier = Modifier.fillMaxWidth().height(68.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                     row.forEach { digit ->
+                         if (digit == "0") {
+                             ZeroButton(modifier = Modifier.weight(1f).fillMaxHeight(), onClick = { insertChar("0") }, onLongPress = { insertChar("+") })
+                         } else {
+                             DialerButton(digit = digit, modifier = Modifier.weight(1f).fillMaxHeight(), onClick = { insertChar(digit) })
+                         }
+                     }
+                 }
+             }
+         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Box {
+                Button(onClick = { if (simCards.value.size > 1) dropdownExpanded = true }, modifier = Modifier.height(56.dp).padding(end = 4.dp), shape = RoundedCornerShape(16.dp), colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer, contentColor = MaterialTheme.colorScheme.onSecondaryContainer)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Call, contentDescription = "SIM", modifier = Modifier.size(20.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(text = selectedSim?.let { "SIM ${it.slotIndex + 1}" } ?: "SIM", fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+                DropdownMenu(expanded = dropdownExpanded, onDismissRequest = { dropdownExpanded = false }) {
+                    simCards.value.forEach { sim ->
+                        DropdownMenuItem(text = { Text("Слот ${sim.slotIndex + 1}: ${sim.carrierName}") }, onClick = { selectedSim = sim; dropdownExpanded = false })
+                    }
+                }
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
-
-            // Кнопка удаления справа от поля ввода
             Button(
                 onClick = {
-                    if (phoneNumber.isNotEmpty()) {
-                        phoneNumber = phoneNumber.dropLast(1)
+                    val rawNum = phoneNumber.replace(Regex("[^0-9*#+]"), "")
+                    if (rawNum.isNotBlank()) {
+                        if (rawNum.contains("*") || rawNum.contains("#")) {
+                            startUssdCall(context, rawNum, selectedSim)
+                        } else {
+                            startStandardCall(context, rawNum, selectedSim)
+                        }
                     }
                 },
-                modifier = Modifier
-                    .height(64.dp)
-                    .width(64.dp),
-                shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-                ),
-                enabled = phoneNumber.isNotEmpty()
+                modifier = Modifier.weight(1f).height(56.dp), shape = RoundedCornerShape(16.dp), enabled = phoneNumber.isNotBlank()
             ) {
-                Icon(
-                    Icons.Default.ArrowBack,
-                    contentDescription = "Удалить",
-                    modifier = Modifier.size(24.dp)
-                )
+                Icon(Icons.Default.Call, contentDescription = "Позвонить")
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Позвонить", fontSize = 18.sp, fontWeight = FontWeight.Bold)
             }
-        }
-
-        // Подсказки контактов
-        if (suggestions.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(8.dp))
-
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(suggestions) { contact ->
-                    SuggestionChip(
-                        contact = contact,
-                        onClick = {
-                            val cleanNumber = contact.phoneNumber.replace(Regex("[^0-9+]"), "")
-                            phoneNumber = cleanNumber
-                            suggestions = emptyList()
-                        }
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-        } else {
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-
-        // Кнопки набора
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            // Первый ряд: 1 2 3
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                DialerButton(
-                    digit = "1",
-                    modifier = Modifier.weight(1f).fillMaxHeight(),
-                    onClick = { phoneNumber += "1" }
-                )
-                DialerButton(
-                    digit = "2",
-                    modifier = Modifier.weight(1f).fillMaxHeight(),
-                    onClick = { phoneNumber += "2" }
-                )
-                DialerButton(
-                    digit = "3",
-                    modifier = Modifier.weight(1f).fillMaxHeight(),
-                    onClick = { phoneNumber += "3" }
-                )
-            }
-
-            // Второй ряд: 4 5 6
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                DialerButton(
-                    digit = "4",
-                    modifier = Modifier.weight(1f).fillMaxHeight(),
-                    onClick = { phoneNumber += "4" }
-                )
-                DialerButton(
-                    digit = "5",
-                    modifier = Modifier.weight(1f).fillMaxHeight(),
-                    onClick = { phoneNumber += "5" }
-                )
-                DialerButton(
-                    digit = "6",
-                    modifier = Modifier.weight(1f).fillMaxHeight(),
-                    onClick = { phoneNumber += "6" }
-                )
-            }
-
-            // Третий ряд: 7 8 9
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                DialerButton(
-                    digit = "7",
-                    modifier = Modifier.weight(1f).fillMaxHeight(),
-                    onClick = { phoneNumber += "7" }
-                )
-                DialerButton(
-                    digit = "8",
-                    modifier = Modifier.weight(1f).fillMaxHeight(),
-                    onClick = { phoneNumber += "8" }
-                )
-                DialerButton(
-                    digit = "9",
-                    modifier = Modifier.weight(1f).fillMaxHeight(),
-                    onClick = { phoneNumber += "9" }
-                )
-            }
-
-            // Четвертый ряд: * 0 #
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                // Кнопка *
-                DialerButton(
-                    digit = "*",
-                    modifier = Modifier.weight(1f).fillMaxHeight(),
-                    onClick = { phoneNumber += "*" }
-                )
-
-                // Кнопка 0 с долгим нажатием
-                ZeroButton(
-                    modifier = Modifier.weight(1f).fillMaxHeight(),
-                    onClick = { phoneNumber += "0" },
-                    onLongPress = { phoneNumber += "+" }
-                )
-
-                // Кнопка #
-                DialerButton(
-                    digit = "#",
-                    modifier = Modifier.weight(1f).fillMaxHeight(),
-                    onClick = { phoneNumber += "#" }
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Box {
-    IconButton(
-        onClick = { if (simCards.value.size > 1) dropdownExpanded = true },
-        modifier = Modifier
-            .height(64.dp)
-            .width(56.dp)
-            .background(
-                MaterialTheme.colorScheme.secondaryContainer,
-                shape = RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp)
-            )
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(Icons.Default.Call, contentDescription = "Выбор SIM")
-            Text(
-                text = selectedSim?.let { "SIM ${it.slotIndex + 1}" } ?: "SIM",
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
-    }
-
-    // Всплывающее меню выбора оператора
-    DropdownMenu(
-        expanded = dropdownExpanded,
-        onDismissRequest = { dropdownExpanded = false }
-    ) {
-        simCards.value.forEach { sim ->
-            DropdownMenuItem(
-                text = { Text("Слот ${sim.slotIndex + 1}: ${sim.carrierName}") },
-                onClick = {
-                    selectedSim = sim
-                    dropdownExpanded = false
-                }
-            )
-        }
-    }
-}
-
-        // Кнопка звонка
-        Button(
-            onClick = {
-                if (phoneNumber.isNotBlank()) {
-                    try {
-                        val cleanNumber = phoneNumber.replace(Regex("[^0-9*#+]"), "")
-                        if (cleanNumber.isNotBlank()) {
-
-                            // 1. Проверяем, является ли номер USSD-запросом (содержит * или #)
-                            if (cleanNumber.contains("*") || cleanNumber.contains("#")) {
-                                val encodedNumber = cleanNumber.replace("#", Uri.encode("#"))
-                                val intent = Intent(Intent.ACTION_CALL).apply {
-                                    data = Uri.parse("tel:$encodedNumber")
-                                }
-
-                                // Жестко привязываем слот SIM для USSD через разные форматы прошивок
-                                selectedSim?.let { sim ->
-                                    intent.putExtra("simSlot", sim.slotIndex)
-                                    intent.putExtra("com.android.phone.extra.slot", sim.slotIndex)
-                                    intent.putExtra("phone", sim.slotIndex)
-                                    intent.putExtra("slot", sim.slotIndex)
-
-                                    val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
-                                    val callCapableAccounts = telecomManager.getCallCapablePhoneAccounts()
-                                    val matchedHandle = callCapableAccounts.find { it.id.contains(sim.id.toString()) || it.id.contains(sim.slotIndex.toString()) }
-                                    if (matchedHandle != null) {
-                                        intent.putExtra(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, matchedHandle)
-                                    }
-                                }
-                                context.startActivity(intent)
-
-                                // 2. Для обычных исходящих звонков через TelecomManager
-                            } else {
-                                val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
-                                val uri = Uri.fromParts("tel", cleanNumber, null)
-                                val extras = Bundle()
-
-                                selectedSim?.let { sim ->
-                                    val callCapableAccounts = telecomManager.getCallCapablePhoneAccounts()
-
-                                    // Улучшенный поиск аккаунта: проверяем вхождение как по ID подписки, так и по индексу слота
-                                    val matchedHandle = callCapableAccounts.find { handle ->
-                                        handle.id.contains(sim.id.toString()) ||
-                                                handle.id.contains(sim.slotIndex.toString())
-                                    }
-
-                                    if (matchedHandle != null) {
-                                        extras.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, matchedHandle)
-                                    }
-
-                                    // Дублируем скрытые флаги слотов для вендорных прошивок (MIUI, OneUI)
-                                    extras.putInt("com.android.phone.extra.slot", sim.slotIndex)
-                                    extras.putInt("simSlot", sim.slotIndex)
-                                    extras.putInt("android.telecom.extra.START_CALL_WITH_KEYPAD", 1)
-                                }
-
-                                telecomManager.placeCall(uri, extras)
-                            }
-                        }
-                    } catch (e: SecurityException) {
-                        Log.e("Dialer", "Security error: ${e.message}")
-                        android.widget.Toast.makeText(context, "Нет разрешения на звонки", android.widget.Toast.LENGTH_SHORT).show()
-                    } catch (e: Exception) {
-                        Log.e("Dialer", "Error: ${e.message}")
-                        android.widget.Toast.makeText(context, "Ошибка при звонке", android.widget.Toast.LENGTH_SHORT).show()
-                    }
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            shape = RoundedCornerShape(16.dp),
-            enabled = phoneNumber.isNotBlank(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
-                disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
-            )
-        ) {
-            Icon(Icons.Default.Call, contentDescription = "Позвонить")
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Позвонить", fontSize = 18.sp, fontWeight = FontWeight.Bold)
         }
     }
 }
 
 @Composable
-fun DialerButton(
-    digit: String,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
+fun ContactSuggestionChip(contact: Contact, onClick: () -> Unit) {
+    AssistChip(
+        onClick = onClick,
+        label = {
+            Column {
+                Text(text = contact.name, fontSize = 14.sp, fontWeight = FontWeight.Medium, maxLines = 1)
+                Text(text = contact.phoneNumber, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f), maxLines = 1)
+            }
+        },
+        leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, modifier = Modifier.size(16.dp)) },
+        shape = RoundedCornerShape(16.dp)
+    )
+}
+
+fun startUssdCall(context: Context, number: String, sim: SimCardInfo?) {
+    try {
+        val encoded = number.replace("#", android.net.Uri.encode("#"))
+        val intent = Intent(Intent.ACTION_CALL).apply {
+            data = android.net.Uri.parse("tel:$encoded")
+        }
+        sim?.let {
+            intent.putExtra("simSlot", it.slotIndex)
+            intent.putExtra("com.android.phone.extra.slot", it.slotIndex)
+            val tm = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
+            val matched = tm.getCallCapablePhoneAccounts().find { account ->
+                account.id.contains(it.id.toString()) || account.id.contains(it.slotIndex.toString())
+            }
+            if (matched != null) intent.putExtra(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, matched)
+        }
+        context.startActivity(intent)
+    } catch (e: Exception) {
+        Log.e("Dialer", "USSD Error: ${e.message}")
+    }
+}
+
+fun startStandardCall(context: Context, number: String, sim: SimCardInfo?) {
+    try {
+        val tm = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
+        val uri = android.net.Uri.fromParts("tel", number, null)
+        val extras = Bundle()
+        sim?.let {
+            val matched = tm.getCallCapablePhoneAccounts().find { account ->
+                account.id.contains(it.id.toString()) || account.id.contains(it.slotIndex.toString())
+            }
+            if (matched != null) extras.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, matched)
+            extras.putInt("com.android.phone.extra.slot", it.slotIndex)
+            extras.putInt("simSlot", it.slotIndex)
+        }
+        extras.putInt("android.telecom.extra.START_CALL_WITH_KEYPAD", 1)
+        tm.placeCall(uri, extras)
+    } catch (e: Exception) {
+        Log.e("Dialer", "Call Error: ${e.message}")
+    }
+}
+
+@Composable
+fun DialerButton(digit: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(24.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
             contentColor = MaterialTheme.colorScheme.onSurfaceVariant
         )
     ) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Text(digit, fontSize = 28.sp, fontWeight = FontWeight.Bold)
+        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+            Text(digit, fontSize = 22.sp, fontWeight = FontWeight.Bold)
         }
     }
 }
 
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
-fun ZeroButton(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit,
-    onLongPress: () -> Unit
-) {
+fun ZeroButton(modifier: Modifier = Modifier, onClick: () -> Unit, onLongPress: () -> Unit) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .combinedClickable(
                 onClick = onClick,
-                onLongClick = {
-                    onLongPress()
-                    true
-                },
+                onLongClick = { onLongPress(); true },
                 onLongClickLabel = "Ввести +"
             )
     ) {
@@ -1412,43 +1296,6 @@ fun ZeroButton(
         }
     }
 }
-
-@Composable
-fun SuggestionChip(
-    contact: Contact,
-    onClick: () -> Unit
-) {
-    AssistChip(
-        onClick = onClick,
-        label = {
-            Column {
-                Text(
-                    text = contact.name,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    maxLines = 1
-                )
-                Text(
-                    text = contact.phoneNumber,
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                    maxLines = 1
-                )
-            }
-        },
-        leadingIcon = {
-            Icon(
-                Icons.Default.Person,
-                contentDescription = null,
-                modifier = Modifier.size(16.dp)
-            )
-        },
-        modifier = Modifier.wrapContentWidth(),
-        shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
-    )
-}
-
 // Экран контактов
 @Composable
 fun ContactsScreen() {
@@ -1725,8 +1572,61 @@ fun CallHistoryItem(
     call: CallLog,
     onAddToPatterns: () -> Unit
 ) {
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    // Получаем текущую выбранную SIM-карту из глобального состояния приложения
+    val currentSim by MainActivity.globalSelectedSim
+
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                // === ЛОГИКА ИСХОДЯЩЕГО ЗВOНКА ПРИ КЛИКЕ НА КАРТОЧКУ ===
+                try {
+                    val cleanNumber = call.cleanNumber
+                    if (cleanNumber.isNotBlank()) {
+                        val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
+                        val uri = android.net.Uri.fromParts("tel", cleanNumber, null)
+                        val extras = Bundle()
+
+                        // Если в приложении выбрана конкретная SIM-карта, привязываем звонок к ней
+                        if (currentSim != null) {
+                            val callCapableAccounts = telecomManager.getCallCapablePhoneAccounts()
+
+                            // Ищем системный идентификатор Handle для нашего слота SIM
+                            val matchedHandle = callCapableAccounts.find { handle ->
+                                handle.id.contains(currentSim!!.id.toString()) ||
+                                        handle.id.contains(currentSim!!.slotIndex.toString())
+                            }
+
+                            if (matchedHandle != null) {
+                                extras.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, matchedHandle)
+                            }
+
+                            // Дублируем скрытые флаги слотов для различных вендорных прошивок (Xiaomi, Samsung, Huawei)
+                            extras.putInt("com.android.phone.extra.slot", currentSim!!.slotIndex)
+                            extras.putInt("simSlot", currentSim!!.slotIndex)
+
+                            Log.d("HistoryCall", "Инициализация звонка из Истории через SIM ${currentSim!!.slotIndex + 1}")
+                        } else {
+                            Log.d("HistoryCall", "Глобальная SIM не задана, звонок идет через системную SIM по умолчанию")
+                        }
+
+                        // Флаг, чтобы открывалась клавиатура во время звонка, если необходимо
+                        extras.putInt("android.telecom.extra.START_CALL_WITH_KEYPAD", 1)
+
+                        // Совершаем реальный вызов (откроется ваш ActiveCallScreen)
+                        telecomManager.placeCall(uri, extras)
+                    }
+                } catch (e: SecurityException) {
+                    Log.e("HistoryCall", "Security error: ${e.message}")
+                    android.widget.Toast.makeText(context, "Нет разрешения на звонки", android.widget.Toast.LENGTH_SHORT).show()
+                } catch (e: Exception) {
+                    Log.e("HistoryCall", "Error: ${e.message}")
+                    android.widget.Toast.makeText(context, "Ошибка при совершении звонка", android.widget.Toast.LENGTH_SHORT).show()
+                }
+            },
         colors = CardDefaults.cardColors(
             containerColor = if (call.shouldBlock)
                 MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)
@@ -1735,7 +1635,7 @@ fun CallHistoryItem(
         )
     ) {
         Column(
-            modifier = Modifier.padding(10.dp)
+            modifier = Modifier.padding(12.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -1758,45 +1658,48 @@ fun CallHistoryItem(
 
                     if (!call.number.contains("Неизвестный")) {
                         Text(
-                            text = call.number,
+                            text = "${call.number} (${if (call.isIncoming) "Входящий" else "Исходящий"})",
                             fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                         )
                     }
 
-                    // === ИСПРАВЛЕНИЕ: ТЕХНИЧЕСКИЙ БЛОК ВЫНЕСЕН СЮДА (СТРОКИ ~1670) ===
-            val techDescription = when (call.capabilities) {
-                1 -> "GSM"
-                2 -> "CDMA"
-                3 -> "SIP/VoIP"
-                else -> "Неизвестно"
-            }
-
-            val netDescription = when (call.properties) {
-                13 -> "4G/LTE"
-                20 -> "5G"
-                3, 8, 9, 10, 15 -> "3G"
-                1, 2, 4, 7, 11 -> "2G"
-                else -> "Смешанная"
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = "📡 Сеть: $netDescription ($techDescription) TechCode: ${call.capabilities}, NetCode: ${call.properties}",
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-            }
-            Spacer(modifier = Modifier.height(4.dp))
-            // ===
-
-
+                    // Отображение красной плашки с причиной блокировки
+                    if (call.shouldBlock && !call.blockReason.isNullOrBlank()) {
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.6f)
+                            ),
+                            shape = RoundedCornerShape(6.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription = "Защита",
+                                    tint = MaterialTheme.colorScheme.error,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = "🛡️ Будет сброшен: ${call.blockReason}",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onErrorContainer
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
 
 
                 }
 
+                // Кнопка быстрой отправки в черный список (плюс) справа
                 if (!call.cleanNumber.isNullOrBlank()) {
                     IconButton(
                         onClick = onAddToPatterns,
@@ -1806,12 +1709,15 @@ fun CallHistoryItem(
                             Icons.Default.AddCircle,
                             contentDescription = "Заблокировать",
                             tint = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(22.dp)
                         )
                     }
                 }
             }
 
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Нижняя информационная строка
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -1822,47 +1728,24 @@ fun CallHistoryItem(
                         text = call.type,
                         fontSize = 12.sp,
                         color = when {
-                            call.type.contains("Пропущенный") -> MaterialTheme.colorScheme.error
+                            call.shouldBlock || call.type.contains("Пропущенный") || call.type.contains("Отклоненный") -> MaterialTheme.colorScheme.error
                             else -> MaterialTheme.colorScheme.primary
                         }
                     )
                     if (call.duration != "0:00") {
                         Text(
-                            text = "⏱️ ${call.duration}",
+                            text = "⏱️ Разговор: ${call.duration}",
                             fontSize = 10.sp,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         )
                     }
                 }
 
-                Column(
-                    horizontalAlignment = Alignment.End
-                ) {
-                    Text(
-                        text = call.timestamp,
-                        fontSize = 11.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
-                    )
-
-                    if (call.shouldBlock) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                Icons.Default.Close,
-                                contentDescription = "Заблокировано",
-                                tint = MaterialTheme.colorScheme.error,
-                                modifier = Modifier.size(12.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = "Будет заблокирован",
-                                fontSize = 10.sp,
-                                color = MaterialTheme.colorScheme.error
-                            )
-                        }
-                    }
-                }
+                Text(
+                    text = call.timestamp,
+                    fontSize = 11.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+                )
             }
         }
     }
@@ -2477,14 +2360,16 @@ fun SettingsScreen() {
     val context = LocalContext.current
     val settings = remember { mutableStateOf(loadSettings(context)) }
 
-    // ИСПРАВЛЕНИЕ: Выносим логику PowerManager на самый верх Composable-функции,
-    // чтобы переменные состояния не объявлялись внутри тела LazyColumn некорректно
+    // Проверка статуса оптимизации батареи (работа в фоне)
     val powerManager = remember { context.getSystemService(Context.POWER_SERVICE) as android.os.PowerManager }
-    var isBatteryIgnored by remember {
-        mutableStateOf(powerManager.isIgnoringBatteryOptimizations(context.packageName))
-    }
+    val isBatteryIgnored = powerManager.isIgnoringBatteryOptimizations(context.packageName)
 
-    // Контейнер со скроллом, чтобы настройки не вылезали за экран на маленьких телефонах
+    // Проверка статуса доступа к режиму "Не беспокоить" (DND)
+    val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    val hasNotificationPolicyAccess = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        notificationManager.isNotificationPolicyAccessGranted
+    } else true
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -2501,26 +2386,32 @@ fun SettingsScreen() {
             )
         }
 
-        // БЛОК 1: ОПТИМИЗАЦИЯ БАТАРЕИ
-        item {
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = "Работа в фоновом режиме",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
+        // БЛОК 1: ОПТИМИЗАЦИЯ БАТАРЕИ (Показывается ТОЛЬКО если разрешение НЕ дано)
+        if (!isBatteryIgnored) {
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.2f)
                     )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            text = if (isBatteryIgnored) "✅ Защита от отключения активна"
-                            else "⚠️ Система может закрыть приложение",
-                            modifier = Modifier.weight(1f).padding(end = 8.dp)
+                            text = "Работа в фоновом режиме",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.error
                         )
-                        if (!isBatteryIgnored) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "⚠️ Система может закрыть приложение в фоне и пропустить спам-звонок.",
+                                modifier = Modifier.weight(1f).padding(end = 8.dp),
+                                fontSize = 13.sp
+                            )
                             Button(
                                 onClick = {
                                     val activity = context as? MainActivity
@@ -2535,7 +2426,7 @@ fun SettingsScreen() {
             }
         }
 
-        // БЛОК 2: НОЧНОЙ РЕЖИМ СБРОСА (С ГАЛКОЙ И СЕЛЕКТОРАМИ)
+        // БЛОК 2: НОЧНОЙ РЕЖИМ СБРОСА И ГЛУШЕНИЯ УВЕДОМЛЕНИЙ
         item {
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -2563,13 +2454,49 @@ fun SettingsScreen() {
                     }
 
                     Text(
-                        text = "В выбранный период все входящие вызовы, которых нет в вашей записной книге, будут автоматически сброшены.",
+                        text = "В выбранный период все входящие вызовы не из контактов будут автоматически сброшены, а звук уведомлений заглушен.",
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
 
-                    // Сетка настроек времени (затухает, если галка выключена)
+                    // ПОД-БЛОК: Кнопка запроса DND. Показывается ТОЛЬКО если разрешение НЕ дано
+                    if (!hasNotificationPolicyAccess) {
+                        Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f)
+                            ),
+                            modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "⚠️ Требуется доступ к звуку для глушения сообщений.",
+                                    fontSize = 12.sp,
+                                    modifier = Modifier.weight(1f).padding(end = 4.dp)
+                                )
+                                Button(
+                                    onClick = {
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !notificationManager.isNotificationPolicyAccessGranted) {
+                                            val intent = Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
+                                            context.startActivity(intent)
+                                        } else {
+                                            val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
+                                            context.startActivity(intent)
+                                        }
+                                    },
+                                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                                ) {
+                                    Text("Дать доступ", fontSize = 12.sp)
+                                }
+                            }
+                        }
+                    }
+
+                    // Сетка настроек времени (визуально затухает, если галка ночного режима выключена)
                     val isNightEnabled = settings.value.nightModeEnabled
                     Box(modifier = Modifier.alpha(if (isNightEnabled) 1f else 0.5f)) {
                         Column {
@@ -2634,7 +2561,6 @@ fun SettingsScreen() {
                 }
             }
         }
-
         // БЛОК 3: ПАРАМЕТРЫ БЛОКИРОВКИ ЦЕЛИКОМ
         item {
             Card(modifier = Modifier.fillMaxWidth()) {
@@ -2812,90 +2738,74 @@ fun ActiveCallScreen(
     onDisconnect: () -> Unit
 ) {
     val context = LocalContext.current
+    val activity = context as? android.app.Activity
 
-    // === КОД ДЛЯ ПРОБУЖДЕНИЯ ЭКРАНА И ОБХОДА БЛОКИРОВКИ ===
+    // ИСПРАВЛЕНИЕ: Объявляем недостающие переменные состояния
+    var isSpeakerOn by remember { mutableStateOf(false) }
+    var isMuted by remember { mutableStateOf(false) }
+    var callState by remember { mutableStateOf(call.state) }
+    var durationInSeconds by remember { mutableStateOf(0) }
+
+    // Управление экраном блокировки
     LaunchedEffect(call) {
-        // Находим Activity из текущего контекста Compose
-        val activity = context as? android.app.Activity
         activity?.window?.let { window ->
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O_MR1) {
-                // Для Android 8.1 и новее (включая Android 14/15/16)
                 activity.setShowWhenLocked(true)
                 activity.setTurnScreenOn(true)
-
-                // Просим систему временно разблокировать экран для нашего звонка
-                val keyguardManager = context.getSystemService(android.content.Context.KEYGUARD_SERVICE) as android.app.KeyguardManager
-                keyguardManager.requestDismissKeyguard(activity, null)
             } else {
-                // Для старых версий Android (до Android 8)
                 @Suppress("DEPRECATION")
                 window.addFlags(
                     android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-                    android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
-                    android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
-                    android.view.WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+                            android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
+                            android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
                 )
             }
         }
     }
 
-
-    var isSpeakerOn by remember { mutableStateOf(false) }
-
-    // Наблюдаем за системным состоянием звонка в реальном времени
-    var callState by remember { mutableStateOf(call.state) }
-
-    // Получаем номер телефона из параметров вызова
-        //val number = call.details.handle?.schemeSpecificPart ?: "Неизвестный номер"
-
-    val rawNumber = call.details.handle?.schemeSpecificPart ?: "Неизвестный номер"
-    val number = android.net.Uri.decode(rawNumber)
-    Log.d("CONTACT_DEBUG", "Входной phoneNumber: "+call.details.handle?.schemeSpecificPart)
-
-    //val isIdVerified = call.details.callerDisplayNamePresentation == TelecomManager.PRESENTATION_ALLOWED
-    val isIdVerified = call.details.callerDisplayNamePresentation == android.telecom.TelecomManager.PRESENTATION_ALLOWED
-
-    // ПЕРЕМЕННАЯ ДЛЯ ХРАНЕНИЯ ОПРЕДЕЛЕННОГО ИМЕНИ АБОНЕНТА
-    var displayName by remember { mutableStateOf("Загрузка...") }
-
-    // ПОИСК ИМЕНИ ПО ЦЕПОЧКЕ: КОНТАКТЫ -> АОН -> НЕИЗВЕСТНЫЙ
-    LaunchedEffect(call, number) {
-        // Шаг 1: Переключаемся на фоновый поток для работы с базой данных контактов
-        val localContactName = withContext(kotlinx.coroutines.Dispatchers.IO) {
-            // Передаем СЫРОЙ номер напрямую, без кастомных regex-очисток!
-            getContactNameFromPhoneBook(context, number)
-        }
-
-        if (!localContactName.isNullOrBlank()) {
-            displayName = localContactName
-            Log.d("CONTACT_DEBUG", "!!!!!Входной phoneNumber: '$displayName'")
-        } else {
-            // Шаг 2: Если в контактах нет, проверяем имя из системного АОН (Google/Telecom)
-            val systemAonName = call.details.callerDisplayName
-
-            if (isIdVerified && !systemAonName.isNullOrBlank()) {
-                displayName = systemAonName
-                Log.d("CONTACT_DEBUG", "222222Входной phoneNumber: '$displayName'")
-            } else {
-                // Шаг 3: Если и АОН пустой
-                displayName = "Неизвестный"
-                Log.d("CONTACT_DEBUG", "2222223333323")
+    // Слушатель тикания секунд разговора
+    LaunchedEffect(callState) {
+        if (callState == android.telecom.Call.STATE_ACTIVE) {
+            while (true) {
+                kotlinx.coroutines.delay(1000)
+                durationInSeconds++
             }
+        } else {
+            durationInSeconds = 0
         }
     }
 
-    // Слушатель изменения состояния звонка (оставляем как был)
+    val liveDurationText = String.format("%02d:%02d", durationInSeconds / 60, durationInSeconds % 60)
+    val rawNumber = call.details.handle?.schemeSpecificPart ?: "Неизвестный номер"
+    val number = android.net.Uri.decode(rawNumber)
+    val isIdVerified = call.details.callerDisplayNamePresentation == android.telecom.TelecomManager.PRESENTATION_ALLOWED
+
+    var displayName by remember { mutableStateOf("Загрузка...") }
+
+    LaunchedEffect(call, number) {
+        val localContactName = withContext(kotlinx.coroutines.Dispatchers.IO) {
+            getContactNameFromPhoneBook(context, number)
+        }
+        if (!localContactName.isNullOrBlank()) {
+            displayName = localContactName
+        } else {
+            val systemAonName = call.details.callerDisplayName
+            displayName = if (isIdVerified && !systemAonName.isNullOrBlank()) systemAonName else "Неизвестный"
+        }
+    }
+
     DisposableEffect(call) {
         val callback = object : android.telecom.Call.Callback() {
             override fun onStateChanged(call: android.telecom.Call, state: Int) {
                 callState = state
+                if (state == android.telecom.Call.STATE_DISCONNECTED) {
+                    onDisconnect()
+                }
             }
         }
         call.registerCallback(callback)
         onDispose {
             call.unregisterCallback(callback)
-            // СБРАСЫВАЕМ ФЛАГИ ПРОБУЖДЕНИЯ ПРИ УНИЧТОЖЕНИИ ЭКРАНА ЗВОНКА
-            val activity = context as? android.app.Activity
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O_MR1) {
                 activity?.setShowWhenLocked(false)
                 activity?.setTurnScreenOn(false)
@@ -2911,7 +2821,7 @@ fun ActiveCallScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        // 1. ИНФОРМАЦИЯ О ЗВОНКЕ (Номер и Статус всегда сверху)
+        // Верхний блок: Имя и Номер
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(top = 48.dp)
@@ -2924,86 +2834,117 @@ fun ActiveCallScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            // КРУПНОЕ ИМЯ АБОНЕНТА (Или "Неизвестный", если контакта нет)
             Text(
                 text = displayName,
-                fontSize = 36.sp,
+                fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground,
                 maxLines = 1
             )
-
             Spacer(modifier = Modifier.height(8.dp))
-
-            // КРУПНЫЙ НОМЕР ТЕЛЕФОНА
             Text(
                 text = number,
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground
+                fontSize = 24.sp,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
             )
+            Spacer(modifier = Modifier.height(24.dp))
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-
-            // ТЕКСТ СТАТУСА В ЗАВИСИМОСТИ ОТ СОСТОЯНИЯ
-            val statusText = when (callState) {
-                android.telecom.Call.STATE_RINGING -> "Входящий звонок..."
-                android.telecom.Call.STATE_DIALING -> "Набор номера..."
-                android.telecom.Call.STATE_ACTIVE -> "Разговор..."
-                android.telecom.Call.STATE_HOLDING -> "Удержание..."
-                else -> "Соединение..."
+            // ТЕКСТ СТАТУСА ИЛИ ЖИВОЙ ТАЙМЕР
+            if (callState == android.telecom.Call.STATE_ACTIVE) {
+                // Если разговариваем — крупно показываем время «01:23»
+                Text(
+                    text = liveDurationText,
+                    fontSize = 42.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            } else {
+                // Если идет набор или соединение — пишем статус текстом
+                val statusText = when (callState) {
+                    android.telecom.Call.STATE_RINGING -> "Входящий звонок..."
+                    android.telecom.Call.STATE_DIALING -> "Набор номера..."
+                    android.telecom.Call.STATE_CONNECTING -> "Соединение..."
+                    android.telecom.Call.STATE_HOLDING -> "Удержание..."
+                    android.telecom.Call.STATE_DISCONNECTED -> "Вызов завершен"
+                    else -> "Соединение..."
+                }
+                Text(
+                    text = statusText,
+                    fontSize = 18.sp,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Medium
+                )
             }
-            Text(text = statusText, fontSize = 16.sp, color = MaterialTheme.colorScheme.primary)
         }
 
-        // 2. ДИНАМИЧЕСКИЕ КНОПКИ УПРАВЛЕНИЯ
+        // Нижний блок динамических кнопок (Остается как в прошлой правке)
         Row(
             modifier = Modifier.fillMaxWidth().padding(bottom = 48.dp),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // ЕСЛИ ЗВОНОК ТОЛЬКО ПОСТУПАЕТ (STATE_RINGING — показываем ДВЕ кнопки: Принять и Сбросить)
             if (callState == android.telecom.Call.STATE_RINGING) {
-
-                // КНОПКА ОТКЛОНИТЬ (Красная)
+                // Кнопка сброса входящего (Красная)
                 IconButton(
                     onClick = {
                         call.reject(false, null)
                         onDisconnect()
                     },
-                    modifier = Modifier.size(96.dp).background(
-                        MaterialTheme.colorScheme.error,
-                        shape = RoundedCornerShape(50)
-                    )
+                    modifier = Modifier.size(84.dp).background(MaterialTheme.colorScheme.error, shape = RoundedCornerShape(50))
                 ) {
-                    Icon(Icons.Default.Close, contentDescription = "Отклонить", tint = MaterialTheme.colorScheme.onError)
+                    Icon(Icons.Default.Close, contentDescription = "Отклонить", tint = MaterialTheme.colorScheme.onError, modifier = Modifier.size(36.dp))
                 }
 
-                // КНОПКА ОТВЕТИТЬ / ПОДНЯТЬ ТРУБКУ (Зеленая)
+                // Кнопка принять входящий (Зеленая)
                 IconButton(
                     onClick = {
-                        // ОБЯЗАТЕЛЬНО ВЫКЛЮЧАЕМ РИНГТОН ПРИ ПОДНЯТИИ ТРУБКИ
                         MyInCallService.stopRingtone()
                         MyInCallService.stopVibration()
                         call.answer(android.telecom.VideoProfile.STATE_AUDIO_ONLY)
                     },
-                    modifier = Modifier.size(96.dp).background(
-                        androidx.compose.ui.graphics.Color(0xFF4CAF50), // Насыщенный зеленый цвет
-                        shape = RoundedCornerShape(50)
-                    )
+                    modifier = Modifier.size(84.dp).background(androidx.compose.ui.graphics.Color(0xFF4CAF50), shape = RoundedCornerShape(50))
                 ) {
-                    Icon(Icons.Default.Check, contentDescription = "Ответить", tint = androidx.compose.ui.graphics.Color.White)
+                    Icon(Icons.Default.Check, contentDescription = "Ответить", tint = androidx.compose.ui.graphics.Color.White, modifier = Modifier.size(36.dp))
+                }
+            } else {
+                // Разговор или Исходящий набор
+
+                // Кнопка микрофона (Mute)
+                IconButton(
+                    onClick = {
+                        isMuted = !isMuted
+                        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as android.media.AudioManager
+                        audioManager.isMicrophoneMute = isMuted
+                    },
+                    modifier = Modifier
+                        .size(64.dp)
+                        .background(
+                            if (isMuted) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.surfaceVariant,
+                            shape = RoundedCornerShape(50)
+                        )
+                ) {
+                    Icon(
+                        imageVector = if (isMuted) Icons.Default.Check else Icons.Default.Face, // Временные иконки
+                        contentDescription = "Микрофон",
+                        tint = if (isMuted) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
 
-            } else {
-                // ЕСЛИ ТРУБКА УЖЕ ПОДНЯТА (Разговор активен — показываем Громкую связь и Сброс)
+                // Кнопка завершения звонка (Красная по центру)
+                IconButton(
+                    onClick = {
+                        call.disconnect()
+                        onDisconnect()
+                    },
+                    modifier = Modifier.size(80.dp).background(MaterialTheme.colorScheme.error, shape = RoundedCornerShape(50))
+                ) {
+                    Icon(Icons.Default.Close, contentDescription = "Завершить вызов", tint = MaterialTheme.colorScheme.onError, modifier = Modifier.size(32.dp))
+                }
 
                 // Кнопка громкой связи (Спикер)
                 IconButton(
                     onClick = {
                         isSpeakerOn = !isSpeakerOn
-                        // Безопасно вызываем переключение через наш сервис
                         MyInCallService.toggleSpeaker(isSpeakerOn)
                     },
                     modifier = Modifier
@@ -3019,20 +2960,6 @@ fun ActiveCallScreen(
                         tint = if (isSpeakerOn) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(28.dp)
                     )
-                }
-
-                // Кнопка завершения начатого разговора (Сброс)
-                IconButton(
-                    onClick = {
-                        call.disconnect()
-                        onDisconnect()
-                    },
-                    modifier = Modifier.size(64.dp).background(
-                        MaterialTheme.colorScheme.error,
-                        shape = RoundedCornerShape(50)
-                    )
-                ) {
-                    Icon(Icons.Default.Close, contentDescription = "Завершить вызов", tint = MaterialTheme.colorScheme.onError)
                 }
             }
         }
