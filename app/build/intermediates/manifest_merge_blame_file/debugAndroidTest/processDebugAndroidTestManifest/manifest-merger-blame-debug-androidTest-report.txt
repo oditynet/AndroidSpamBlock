@@ -3,24 +3,24 @@
 3    package="com.example.blocktel.test" >
 4
 5    <uses-sdk
-5-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest8446967932105032285.xml:5:5-74
+5-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest4887228047328289710.xml:5:5-74
 6        android:minSdkVersion="33"
-6-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest8446967932105032285.xml:5:15-41
+6-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest4887228047328289710.xml:5:15-41
 7        android:targetSdkVersion="36" />
-7-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest8446967932105032285.xml:5:42-71
+7-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest4887228047328289710.xml:5:42-71
 8
 9    <instrumentation
-9-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest8446967932105032285.xml:7:5-11:70
+9-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest4887228047328289710.xml:7:5-11:70
 10        android:name="androidx.test.runner.AndroidJUnitRunner"
-10-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest8446967932105032285.xml:7:22-76
+10-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest4887228047328289710.xml:7:22-76
 11        android:functionalTest="false"
-11-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest8446967932105032285.xml:10:22-52
+11-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest4887228047328289710.xml:10:22-52
 12        android:handleProfiling="false"
-12-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest8446967932105032285.xml:9:22-53
+12-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest4887228047328289710.xml:9:22-53
 13        android:label="Tests for com.example.blocktel"
-13-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest8446967932105032285.xml:11:22-68
+13-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest4887228047328289710.xml:11:22-68
 14        android:targetPackage="com.example.blocktel" />
-14-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest8446967932105032285.xml:8:22-66
+14-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest4887228047328289710.xml:8:22-66
 15
 16    <uses-permission android:name="android.permission.REORDER_TASKS" />
 16-->[androidx.test:core:1.5.0] /home/odity/.gradle/caches/9.1.0/transforms/33ef8f2edb0dfe7fb270ec469f97ad51/transformed/core-1.5.0/AndroidManifest.xml:24:5-72
