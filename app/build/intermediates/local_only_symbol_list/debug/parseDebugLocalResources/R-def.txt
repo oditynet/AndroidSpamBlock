@@ -16,4 +16,5 @@ string app_name
 style Theme.BlockTel1
 xml backup_rules
 xml data_extraction_rules
+xml file_paths
 xml network_security_config

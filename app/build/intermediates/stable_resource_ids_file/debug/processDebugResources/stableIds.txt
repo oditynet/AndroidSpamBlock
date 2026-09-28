@@ -1,3 +1,4 @@
+com.example.blocktel:xml/file_paths = 0x7f0f0002
 com.example.blocktel:xml/data_extraction_rules = 0x7f0f0001
 com.example.blocktel:xml/backup_rules = 0x7f0f0000
 com.example.blocktel:styleable/SplitPlaceholderRule = 0x7f0e000f
@@ -45,7 +46,7 @@ com.example.blocktel:style/TextAppearance.Compat.Notification.Title = 0x7f0d0008
 com.example.blocktel:id/transition_clip = 0x7f070075
 com.example.blocktel:string/m3c_date_picker_today_description = 0x7f0c0047
 com.example.blocktel:string/m3c_search_bar_search = 0x7f0c0055
-com.example.blocktel:xml/network_security_config = 0x7f0f0002
+com.example.blocktel:xml/network_security_config = 0x7f0f0003
 com.example.blocktel:string/m3c_date_picker_switch_to_next_month = 0x7f0c0043
 com.example.blocktel:drawable/notification_icon_background = 0x7f060025
 com.example.blocktel:string/m3c_date_picker_switch_to_calendar_mode = 0x7f0c0040

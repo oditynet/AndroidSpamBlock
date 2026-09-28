@@ -36,6 +36,10 @@
         "source": "com.example.blocktel1.app-main-47:/mipmap-xxhdpi/ic_launcher_round.webp"
     },
     {
+        "merged": "com.example.blocktel1.app-debug-45:/xml_file_paths.xml.flat",
+        "source": "com.example.blocktel1.app-main-47:/xml/file_paths.xml"
+    },
+    {
         "merged": "com.example.blocktel1.app-debug-45:/mipmap-mdpi_ic_launcher_foreground.webp.flat",
         "source": "com.example.blocktel1.app-main-47:/mipmap-mdpi/ic_launcher_foreground.webp"
     },
