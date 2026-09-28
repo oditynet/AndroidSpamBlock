@@ -914,7 +914,7 @@ fun CallMonitorApp(
                             Text("📞 Телефон")
                             if (settings.value.isDefaultDialer) {
                                 Text(
-                                    text = "версия 0.3.6", //versionName = "0.3.5" nтоже менять в build.gradle.kts APP
+                                    text = "версия 0.3.6.1", //versionName = "0.3.5" nтоже менять в build.gradle.kts APP
                                     fontSize = 12.sp,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -2408,7 +2408,7 @@ fun SettingsScreen() {
             var isChecking by remember { mutableStateOf(true) }
             var isDownloading by remember { mutableStateOf(false) }
 
-            LaunchedEffect(Unit) {
+            /*LaunchedEffect(Unit) {
                 // Запускаем сверку, передавая автоматически определенную версию из системы
                 val (hasUpdate, urlOrError, githubVersion) = AppUpdateManager.checkLatestVersion(currentAppVersion)
 
@@ -2421,7 +2421,7 @@ fun SettingsScreen() {
                     updateStatusText = "У вас установлена актуальная версия."
                 }
                 isChecking = false
-            }
+            }*/
 
             Card(
                 modifier = Modifier.fillMaxWidth(),

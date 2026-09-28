@@ -24,7 +24,7 @@ class MyNotificationListener : NotificationListenerService() {
         if (!settings.nightModeEnabled) return
 
         // Проверяем, наступило ли ночное время
-        if (isNightTimeActive(settings)) {
+        if (!isNightTimeActive(settings)) {
             // ИСПРАВЛЕНИЕ: Проверяем текущий фильтр напрямую у сервиса (currentInterruptionFilter)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
                 currentInterruptionFilter != INTERRUPTION_FILTER_NONE) {
