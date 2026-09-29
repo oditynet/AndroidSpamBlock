@@ -1,6 +1,7 @@
 name: Android Auto Release
 
 on:
+  workflow_dispatch: 
   push:
     # Скрипт сработает только тогда, когда вы вешаете на код тег версии (например, ver_0.3.7)
     tags:
