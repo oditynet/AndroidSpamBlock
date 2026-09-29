@@ -1,4 +1,7 @@
 # AndroidSpamBlock
+
+[![Android Auto Release](https://github.com/oditynet/AndroidSpamBlock/actions/workflows/main.yml/badge.svg)](https://github.com/oditynet/AndroidSpamBlock/actions/workflows/main.yml)
+
 Android block spam становится полноценным телефоном для звонков. Поддерживаются 2 симкарты. Пока криво работает ввод номера и коррекция. 
 
 
