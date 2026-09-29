@@ -259,7 +259,7 @@ class MyInCallService : InCallService() {
         }
     }
 
-    // Вспомогательный метод пропуска звонка (Ваш оригинальный код интерфейса)
+    // Вспомогательный метод пропуска звонка с жестким выводом окна на передний план
     private fun allowCallSystem(call: Call) {
         currentCall.value = call
         val isIncoming = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -271,11 +271,19 @@ class MyInCallService : InCallService() {
             startRingtone(this)
             startVibration(this)
         }
+
+        // Мощный интент для пробития фонового режима Android
         val intent = Intent(this, MainActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            // Флаги NEW_TASK (запуск из сервиса) + SINGLE_TOP (не плодить окна) + CLEAR_TOP (вытащить из бэкстека)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_SINGLE_TOP or
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
+
+        Log.d(TAG, "Отправляем интент запуска MainActivity поверх других приложений")
         startActivity(intent)
     }
+
 
     override fun onCallRemoved(call: Call) {
         super.onCallRemoved(call)

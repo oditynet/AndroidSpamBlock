@@ -7,9 +7,10 @@ import android.os.Build
 import android.util.Log
 
 class BootReceiver : BroadcastReceiver() {
-    override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
-            Log.d("BootReceiver", "Телефон перезагружен. Запуск CallBlockingService...")
+    override fun onReceive(context: Context, intent: Intent?) {
+        // КРИТИЧЕСКАЯ ПРОВЕРКА: реагируем ТОЛЬКО на настоящую перезагрузку железа
+        if (intent?.action == Intent.ACTION_BOOT_COMPLETED || intent?.action == "android.intent.action.QUICKBOOT_POWERON") {
+            Log.d("BootReceiver", "Телефон РЕАЛЬНО перезагружен. Запуск CallBlockingService...")
 
             val serviceIntent = Intent(context, CallBlockingService::class.java)
             try {

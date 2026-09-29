@@ -503,14 +503,20 @@ fun loadCallHistory(context: Context, blockedPatterns: List<String>, limit: Int 
             var count = 0
 
             while (c.moveToNext() && count < limit) {
-                val number = c.getString(numberIndex) ?: "Неизвестный номер"
+                // 1. Извлекаем сырые данные из курсора
+                val number = c.getString(numberIndex) ?: "Скрытый номер"
                 val cachedName = c.getString(nameIndex)
                 val dateLong = c.getLong(dateIndex)
                 val callType = c.getInt(typeIndex)
+
+                // ИСПРАВЛЕНИЕ: Восстанавливаем переменную duration, которую потерял компилятор
                 val duration = if (durationIndex != -1) c.getString(durationIndex) ?: "0" else "0"
+
+                // ИСПРАВЛЕНИЕ: Восстанавливаем переменную date, которую потерял компилятор
+                val dateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
                 val date = if (dateLong > 0) dateFormat.format(Date(dateLong)) else "Неизвестно"
 
-                // ЧЕТКОЕ ОПРЕДЕЛЕНИЕ СТАТУСА И НАПРАВЛЕНИЯ ЗВONКА
+                // ЧЕТКОЕ ОПРЕДЕЛЕНИЕ СТАТУСА И НАПРАВЛЕНИЯ ЗВОНКА
                 var isIncoming = false
                 val typeText = when (callType) {
                     android.provider.CallLog.Calls.INCOMING_TYPE -> { isIncoming = true; "📥 Входящий" }
@@ -524,24 +530,27 @@ fun loadCallHistory(context: Context, blockedPatterns: List<String>, limit: Int 
                 val formattedNumber = formatPhoneNumber(number)
                 val cleanNumber = number.filter { it.isDigit() || it == '+' }
 
+                // Логика определения имени абонента
                 var displayName = cachedName
                 if (displayName.isNullOrBlank() && cleanNumber.isNotBlank()) {
                     displayName = getContactNameFromPhoneBook(context, cleanNumber)
+                }
+
+                // Если номер скрыт/текстовый и имени в контактах нет — пишем сам текст (например "Скрытый номер")
+                if (displayName.isNullOrBlank() && cleanNumber.isBlank() && number.isNotBlank()) {
+                    displayName = number
                 }
 
                 // === ВЫЧИСЛЕНИЕ ТОЧНОЙ ПРИЧИНЫ БЛОКИРОВКИ ===
                 var blockReasonText: String? = null
                 val isContact = !displayName.isNullOrBlank() && displayName != number && displayName != "Неизвестный" && displayName != "Загрузка..."
 
-                // 1. Проверка на скрытый номер
-                if (settings.blockHiddenNumbers && (number.isBlank() || number.contains("Неизвестный"))) {
+                if (settings.blockHiddenNumbers && (number.isBlank() || number.contains("Неизвестный") || number.contains("Скрытый"))) {
                     blockReasonText = "Скрытый/анонимный номер"
                 }
-                // 2. Проверка на международный номер
                 else if (settings.blockInternational && number.startsWith("+") && !number.startsWith("+7")) {
                     blockReasonText = "Международный вызов (не РФ)"
                 }
-                // 3. Проверка по черным спискам и паттернам
                 else {
                     if (blockedPatterns.isNotEmpty()) {
                         val match = blockedPatterns.find { p ->
@@ -554,9 +563,7 @@ fun loadCallHistory(context: Context, blockedPatterns: List<String>, limit: Int 
                     }
                 }
 
-                // 4. Проверка ночного режима на момент совершения звонка
                 if (blockReasonText == null && settings.nightModeEnabled && isIncoming && !isContact) {
-                    // Используем историческое время звонка из базы данных (dateLong)
                     val callCalendar = Calendar.getInstance().apply { timeInMillis = dateLong }
                     val callHour = callCalendar.get(Calendar.HOUR_OF_DAY)
                     val callMinute = callCalendar.get(Calendar.MINUTE)
@@ -576,13 +583,11 @@ fun loadCallHistory(context: Context, blockedPatterns: List<String>, limit: Int 
                     }
                 }
 
-                // Звонок помечается заблокированным, если система сохранила его как заблокированный/отклоненный,
-                // либо если под текущие правила приложения подпадает старый звонок
                 val isActuallyBlocked = (callType == android.provider.CallLog.Calls.BLOCKED_TYPE ||
                         callType == android.provider.CallLog.Calls.REJECTED_TYPE ||
                         blockReasonText != null)
-                // ===========================================
 
+                // ИСПРАВЛЕНИЕ: Безопасная конвертация длины звонка с использованием восстановленной duration
                 val durationText = if (duration.toIntOrNull() ?: 0 > 0) {
                     "${duration.toInt() / 60}:${String.format("%02d", duration.toInt() % 60)}"
                 } else "0:00"
@@ -596,7 +601,7 @@ fun loadCallHistory(context: Context, blockedPatterns: List<String>, limit: Int 
                     number = formattedNumber,
                     cleanNumber = cleanNumber,
                     name = displayName,
-                    timestamp = date,
+                    timestamp = date, // Использует исправленную переменную строки даты
                     type = typeText,
                     isIncoming = isIncoming,
                     duration = durationText,
@@ -607,12 +612,22 @@ fun loadCallHistory(context: Context, blockedPatterns: List<String>, limit: Int 
                 ))
                 count++
             }
+
         }
     } catch (e: Exception) {
         Log.e("CallMonitor", "Ошибка загрузки истории", e)
     }
 
     return callLogs
+}
+
+fun pokeNotificationService(context: Context) {
+    try {
+        val intent = Intent(context, MyNotificationListener::class.java)
+        context.startService(intent)
+    } catch (e: Exception) {
+        Log.e("MainActivity", "Не удалось запустить MyNotificationListener напрямую: ${e.message}")
+    }
 }
 
 // Получение имени из телефонной книги
@@ -914,7 +929,7 @@ fun CallMonitorApp(
                             Text("📞 Телефон")
                             if (settings.value.isDefaultDialer) {
                                 Text(
-                                    text = "версия 0.3.6.2", //versionName = "0.3.5" nтоже менять в build.gradle.kts APP
+                                    text = "версия 0.3.7", //versionName = "0.3.5" nтоже менять в build.gradle.kts APP
                                     fontSize = 12.sp,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -2574,6 +2589,7 @@ fun SettingsScreen() {
                     )
 
                     // ПОД-БЛОК: Кнопка запроса DND. Показывается ТОЛЬКО если разрешение НЕ дано
+                    // ПОД-БЛОК: Автоматический запрос на Чтение, управление и ответы на уведомления
                     if (!hasNotificationPolicyAccess) {
                         Card(
                             colors = CardDefaults.cardColors(
@@ -2587,17 +2603,21 @@ fun SettingsScreen() {
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
-                                    text = "⚠️ Требуется доступ к звуку для глушения сообщений.",
+                                    text = "⚠️ Требуется доступ к чтению, управлению и ответам на уведомления для автоматического глушения.",
                                     fontSize = 12.sp,
                                     modifier = Modifier.weight(1f).padding(end = 4.dp)
                                 )
                                 Button(
                                     onClick = {
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !notificationManager.isNotificationPolicyAccessGranted) {
-                                            val intent = Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
+                                        // Надежный вызов системного окна "Доступ к уведомлениям" для Android 6.0 - 15+
+                                        try {
+                                            val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS").apply {
+                                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                            }
                                             context.startActivity(intent)
-                                        } else {
-                                            val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
+                                        } catch (e: Exception) {
+                                            // Резервный вызов общего меню приложений
+                                            val intent = Intent(android.provider.Settings.ACTION_SETTINGS)
                                             context.startActivity(intent)
                                         }
                                     },
@@ -2622,6 +2642,7 @@ fun SettingsScreen() {
                                     if (isNightEnabled) {
                                         settings.value = settings.value.copy(nightStartHour = it)
                                         saveSettings(context, settings.value)
+                                        pokeNotificationService(context)
                                     }
                                 }
                             )
@@ -2635,6 +2656,7 @@ fun SettingsScreen() {
                                     if (isNightEnabled) {
                                         settings.value = settings.value.copy(nightStartMinute = it)
                                         saveSettings(context, settings.value)
+                                        pokeNotificationService(context)
                                     }
                                 }
                             )
@@ -2653,6 +2675,7 @@ fun SettingsScreen() {
                                     if (isNightEnabled) {
                                         settings.value = settings.value.copy(nightEndHour = it)
                                         saveSettings(context, settings.value)
+                                        pokeNotificationService(context)
                                     }
                                 }
                             )
@@ -2666,6 +2689,7 @@ fun SettingsScreen() {
                                     if (isNightEnabled) {
                                         settings.value = settings.value.copy(nightEndMinute = it)
                                         saveSettings(context, settings.value)
+                                        pokeNotificationService(context)
                                     }
                                 }
                             )
@@ -2862,6 +2886,7 @@ fun ActiveCallScreen(
     // Управление экраном блокировки
     LaunchedEffect(call) {
         activity?.window?.let { window ->
+            // 1. Позволяет окну отображаться поверх системного экрана блокировки (Keyguard)
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O_MR1) {
                 activity.setShowWhenLocked(true)
                 activity.setTurnScreenOn(true)
@@ -2869,11 +2894,19 @@ fun ActiveCallScreen(
                 @Suppress("DEPRECATION")
                 window.addFlags(
                     android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-                            android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
-                            android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+                            android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
                 )
             }
+
+            // 2. КРИТИЧЕСКОЕ ДОБАВЛЕНИЕ: Флаг KEEP_SCREEN_ON (чтобы экран не тух во время вызова)
+            // и флаг DISMISS_KEYGUARD, чтобы приложение сразу выходило на передний план
+            window.addFlags(
+                android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
+                        android.view.WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
+                        android.view.WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON
+            )
         }
+        Log.d("ActiveCallScreen", "Вызов принудительно выведен поверх остальных окон")
     }
 
     // Слушатель тикания секунд разговора

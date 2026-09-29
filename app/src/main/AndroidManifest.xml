@@ -57,7 +57,7 @@
         </provider>
         <service
             android:name=".MyNotificationListener"
-            android:label="Блокировщик звука уведомлений"
+            android:label="BlockTel Notification Глушилка"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
             android:exported="true">
             <intent-filter>
@@ -109,7 +109,9 @@
             android:exported="true"
             android:showWhenLocked="true"
             android:turnScreenOn="true"
-            android:launchMode="singleTask">
+            android:inheritShowWhenLocked="true"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.BlockTel1">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
