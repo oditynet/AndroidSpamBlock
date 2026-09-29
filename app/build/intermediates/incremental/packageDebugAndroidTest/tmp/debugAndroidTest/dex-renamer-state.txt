@@ -1,4 +1,4 @@
-#Tue Sep 29 15:24:02 MSK 2026
+#Tue Sep 29 15:41:47 MSK 2026
 base.0=/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/intermediates/dex/debugAndroidTest/mergeExtDexDebugAndroidTest/classes.dex
 base.1=/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/intermediates/dex/debugAndroidTest/mergeProjectDexDebugAndroidTest/0/classes.dex
 path.0=classes.dex

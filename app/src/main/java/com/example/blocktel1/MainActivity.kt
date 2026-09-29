@@ -929,7 +929,7 @@ fun CallMonitorApp(
                             Text("📞 Телефон")
                             if (settings.value.isDefaultDialer) {
                                 Text(
-                                    text = "версия 0.3.7", //versionName = "0.3.5" nтоже менять в build.gradle.kts APP
+                                    text = "версия 0.3.7.1", //versionName = "0.3.5" nтоже менять в build.gradle.kts APP
                                     fontSize = 12.sp,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -993,20 +993,25 @@ fun DialerScreen(
     onRequestPermissions: () -> Unit
 ) {
     val context = LocalContext.current
-    var isDefault by remember { mutableStateOf(false) }
-    var suggestions by remember { mutableStateOf<List<Contact>>(emptyList()) }
 
+    // ИСПРАВЛЕНИЕ: Читаем настройку прямо в момент инициализации State.
+    // Теперь начальное значение подставится мгновенно и карточка не мелькнет!
+    var isDefault by remember { mutableStateOf(loadSettings(context).isDefaultDialer) }
+
+    var suggestions by remember { mutableStateOf<List<Contact>>(emptyList()) }
     var phoneNumber by remember { mutableStateOf("") }
     var cursorPosition by remember { mutableStateOf(0) }
-
     var dropdownExpanded by remember { mutableStateOf(false) }
+
     val simCards = MainActivity.globalSimCards
     var selectedSim by MainActivity.globalSelectedSim
 
+    // Этот блок оставляем — он обновит интерфейс, если статус изменится на лету в системе
     LaunchedEffect(Unit) {
         isDefault = loadSettings(context).isDefaultDialer
     }
 
+    // ИСПРАВЛЕНИЕ: Поиск и фильтрация контактов полностью перенесены в фоновый IO поток
     LaunchedEffect(phoneNumber) {
         if (phoneNumber.length >= 2) {
             fun normalizeNum(num: String): String {
@@ -1014,10 +1019,20 @@ fun DialerScreen(
                 return if (d.startsWith("8")) "7" + d.drop(1) else d
             }
             val queryNormalized = normalizeNum(phoneNumber)
-            suggestions = loadContacts(context, "").filter {
-                normalizeNum(it.phoneNumber).contains(queryNormalized) ||
-                        it.name.contains(phoneNumber, ignoreCase = true)
-            }.take(5)
+
+            // Запускаем тяжелое чтение контактов в фоновом пуле потоков
+            withContext(Dispatchers.IO) {
+                val allContacts = loadContacts(context, "")
+                val filtered = allContacts.filter {
+                    normalizeNum(it.phoneNumber).contains(queryNormalized) ||
+                            it.name.contains(phoneNumber, ignoreCase = true)
+                }.take(5)
+
+                // Возвращаем результат на главный UI поток
+                withContext(Dispatchers.Main) {
+                    suggestions = filtered
+                }
+            }
         } else {
             suggestions = emptyList()
         }
@@ -1322,11 +1337,17 @@ fun ContactsScreen() {
     var isLoading by remember { mutableStateOf(false) }
     val currentSim by MainActivity.globalSelectedSim
 
+    // ИСПРАВЛЕНИЕ: Живой поиск по телефонной книге в фоне
     LaunchedEffect(searchQuery) {
         isLoading = true
-        contacts.clear()
-        contacts.addAll(loadContacts(context, searchQuery))
-        isLoading = false
+        withContext(Dispatchers.IO) {
+            val filteredContacts = loadContacts(context, searchQuery)
+            withContext(Dispatchers.Main) {
+                contacts.clear()
+                contacts.addAll(filteredContacts)
+                isLoading = false
+            }
+        }
     }
 
     Column(
@@ -1479,15 +1500,22 @@ fun CallHistoryScreen() {
     var isLoading by remember { mutableStateOf(false) }
     val blockedPatterns = remember { mutableStateListOf<String>() }
 
+    // ИСПРАВЛЕНИЕ: Загрузка журнала вызовов больше не блокирует прорисовку интерфейса
     LaunchedEffect(Unit) {
         isLoading = true
-        blockedPatterns.clear()
-        blockedPatterns.addAll(loadBlockedPatterns(context))
-        callLogs.clear()
-        callLogs.addAll(loadCallHistory(context, blockedPatterns))
-        isLoading = false
-    }
+        withContext(Dispatchers.IO) {
+            val localPatterns = loadBlockedPatterns(context)
+            val localHistory = loadCallHistory(context, localPatterns)
 
+            withContext(Dispatchers.Main) {
+                blockedPatterns.clear()
+                blockedPatterns.addAll(localPatterns)
+                callLogs.clear()
+                callLogs.addAll(localHistory)
+                isLoading = false
+            }
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
