@@ -1,4 +1,16 @@
+<div align="center">
+
 # AndroidSpamBlock
+
+### **Умный консенсус-блокировщик спама и телефонный ассистент для Android**
+
+Привет! Это open-source приложение для защиты от нежелательных звонков, массового обзвона и спам-АТС, работающее на базе Jetpack Compose и облачного консенсуса Baserow.
+
+<!-- Твои бейджи статуса (замени oditynet на свой логин, если он отличается) -->
+---
+</div>
+
+
 
 [![Android Auto Release](https://github.com/oditynet/AndroidSpamBlock/actions/workflows/main.yml/badge.svg)](https://github.com/oditynet/AndroidSpamBlock/actions/workflows/main.yml)
 
