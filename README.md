@@ -99,6 +99,13 @@ Ver 0.1:
 adb shell cmd notification post -t "Ночной Тест" -S big "com.android.vending" "Проверка глушения звука извне"
 adb shell am start -a android.intent.action.CALL -d tel:+79991234567
 ```
+```
+git add .github/workflows/main.yml
+git commit -m "Fix workflow path"
+git push origin main
+git tag ver_0.3.7.2
+git push origin ver_0.3.7.2
+```
 
 Вы добавляете имена, которые показываются во время звонка или часть номера и по этому паттерну блокируется. 
 
