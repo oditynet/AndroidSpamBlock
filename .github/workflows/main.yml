@@ -3,7 +3,6 @@ name: Android Auto Release
 on:
   workflow_dispatch: 
   push:
-    # Скрипт сработает только тогда, когда вы вешаете на код тег версии (например, ver_0.3.7)
     tags:
       - 'ver_*'
 
@@ -11,7 +10,7 @@ jobs:
   build-and-release:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Даем роботу право создавать релизы на вашем гитхабе
+      contents: write
 
     steps:
     - name: Checkout Code
@@ -26,20 +25,22 @@ jobs:
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
-
-    # Собираем сразу релизный (чистый) APK файл
     - name: Build Release APK
       run: ./gradlew assembleRelease
 
-    # Автоматически создаем релиз на GitHub и прикрепляем туда готовый APK
+    # Берем системное имя тега и переименовываем файл под ваш формат
+    - name: Rename APK for Release
+      run: |
+        TAG_NAME="${{ github.ref_name }}"
+        VERSION_NUMBER="${TAG_NAME#ver_}"
+        mv app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/AndroidSpamBlock-${VERSION_NUMBER}.apk
+
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
       with:
-        # Берем имя тега (например, ver_0.3.7)
         tag_name: ${{ github.ref_name }}
         name: Release ${{ github.ref_name }}
         draft: false
         prerelease: false
-        # Указываем путь к собранному файлу и переименовываем его под формат вашей системы обновления
         files: |
-          app/build/outputs/apk/release/app-release-unsigned.apk
+          app/build/outputs/apk/release/AndroidSpamBlock-*.apk    
