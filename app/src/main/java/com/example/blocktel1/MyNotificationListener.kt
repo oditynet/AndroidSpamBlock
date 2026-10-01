@@ -40,18 +40,19 @@ class MyNotificationListener : NotificationListenerService() {
     }
 
     private fun checkAndApplyNightMode() {
+        return //OFF режим
         val context = applicationContext
         val settings = loadSettings(context)
 
         // 1. Если ночной режим выключен — принудительно возвращаем все звуки
-        if (!settings.nightModeEnabled) {
+            /*if (!settings.nightModeEnabled) {
             try {
                 requestInterruptionFilter(INTERRUPTION_FILTER_ALL)
             } catch (e: Exception) {
                 Log.e(TAG, "Ошибка переключения фильтра: ${e.message}")
             }
             return
-        }
+        }*/
 
         // 2. Живой расчет минут суток
         val calendar = Calendar.getInstance()
@@ -69,7 +70,7 @@ class MyNotificationListener : NotificationListenerService() {
         }
 
         // 3. Прямое управление режимом "Не беспокоить"
-        try {
+        /*try {
             if (isNightNow) {
                 requestInterruptionFilter(INTERRUPTION_FILTER_NONE)
                 Log.d(TAG, "ЛОГ: Ночное время активно. Звуки смартфона полностью ГЛУШАТСЯ.")
@@ -79,6 +80,6 @@ class MyNotificationListener : NotificationListenerService() {
             }
         } catch (e: Exception) {
             Log.e(TAG, "Ошибка DND: ${e.message}. Проверьте, выдан ли доступ к уведомлениям!")
-        }
+        }*/
     }
 }

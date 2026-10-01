@@ -825,8 +825,8 @@ suspend fun updatePatternsFromInternet(context: Context, currentPatterns: Mutabl
                 val urlObj = java.net.URL(url)
                 connection = urlObj.openConnection() as java.net.HttpURLConnection
                 connection.requestMethod = "GET"
-                connection.connectTimeout = 15000
-                connection.readTimeout = 15000
+                connection.connectTimeout = 4000
+                connection.readTimeout = 4000
                 connection.connect()
 
                 if (connection.responseCode == java.net.HttpURLConnection.HTTP_OK) {
@@ -929,7 +929,7 @@ fun CallMonitorApp(
                             Text("📞 Телефон")
                             if (settings.value.isDefaultDialer) {
                                 Text(
-                                    text = "версия 0.3.7.1", //versionName = "0.3.5" nтоже менять в build.gradle.kts APP
+                                    text = "версия 0.3.7.2", //versionName = "0.3.5" nтоже менять в build.gradle.kts APP
                                     fontSize = 12.sp,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -1574,32 +1574,36 @@ fun CallHistoryScreen() {
                                 val userPattern = "user_${call.cleanNumber}"
 
                                 if (!blockedPatterns.contains(userPattern)) {
-                                    // Запускаем асинхронный фоновый поток для работы с диском и сетью
+                                    // Добавляем в локальный UI-список строго на Главном потоке!
+                                    blockedPatterns.add(userPattern)
+
                                     scope.launch {
-                                        // 1. Сохранение паттернов и SharedPreferences переносим в фоновый IO поток
+                                        // 1. Сохраняем на диск в фоновом потоке
                                         withContext(Dispatchers.IO) {
-                                            blockedPatterns.add(userPattern)
                                             saveBlockedPatterns(context, blockedPatterns)
 
                                             val prefs = context.getSharedPreferences("blocktel_prefs", Context.MODE_PRIVATE)
                                             prefs.edit().putLong("mass_spam_time_${call.cleanNumber}", System.currentTimeMillis()).apply()
                                         }
 
-                                        // 2. Получение Android ID
+                                        // 2. Получаем Android ID
                                         val androidId = android.provider.Settings.Secure.getString(
                                             context.contentResolver, android.provider.Settings.Secure.ANDROID_ID
                                         ) ?: "unknown_device"
 
-                                        // 3. Отправка жалобы в облако
-                                        BaserowClient.addSpamVote(call.cleanNumber, androidId, 1)
+                                        // 3. ОТПРАВКА В ОБЛАКО (теперь выполнится гарантированно)
+                                        val isUploaded = withContext(Dispatchers.IO) {
+                                            BaserowClient.addSpamVote(call.cleanNumber, androidId, 1)
+                                        }
 
-                                        // 4. Показ Toast-сообщения возвращаем на главный поток интерфейса
+                                        // 4. Показываем результат
                                         withContext(Dispatchers.Main) {
-                                            android.widget.Toast.makeText(
-                                                context,
-                                                "Номер успешно заблокирован и отправлен в облако",
-                                                android.widget.Toast.LENGTH_SHORT
-                                            ).show()
+                                            val message = if (isUploaded) {
+                                                "Номер заблокирован и отправлен в облако! ✅"
+                                            } else {
+                                                "Локально заблокирован, но сбой сети с облаком ⚠️"
+                                            }
+                                            android.widget.Toast.makeText(context, message, android.widget.Toast.LENGTH_SHORT).show()
                                         }
                                     }
                                 }
@@ -1928,11 +1932,45 @@ fun BlockingPatternsScreen() {
 
                                 if (!alreadyExists) {
                                     blockedPatterns.add(userPattern)
-                                    saveBlockedPatterns(context, blockedPatterns)
 
-                                    // СОХРАНЯЕМ ВРЕМЯ ДОБАВЛЕНИЯ ДЛЯ МАССОВОГО ОБЗВОНА
-                                    val prefs = context.getSharedPreferences("blocktel_prefs", Context.MODE_PRIVATE)
-                                    prefs.edit().putLong("mass_spam_time_$cleanPattern", System.currentTimeMillis()).apply()
+                                    // Запускаем асинхронный процесс
+                                    scope.launch {
+                                        withContext(Dispatchers.IO) {
+                                            saveBlockedPatterns(context, blockedPatterns)
+
+                                            // Сохраняем время для правила 7 дней защитных масок
+                                            val prefs = context.getSharedPreferences("blocktel_prefs", Context.MODE_PRIVATE)
+                                            prefs.edit().putLong("mass_spam_time_$cleanPattern", System.currentTimeMillis()).apply()
+                                        }
+
+                                        // ПРОВЕРКА: Считается ли паттерн полноценным номером (длина 11-12 символов)
+                                        val isFullPhoneNumber = cleanPattern.length >= 11
+
+                                        if (isFullPhoneNumber) {
+                                            // Получаем ID устройства для защиты от накруток на сервере
+                                            val androidId = android.provider.Settings.Secure.getString(
+                                                context.contentResolver, android.provider.Settings.Secure.ANDROID_ID
+                                            ) ?: "unknown_device"
+
+                                            // Выгружаем полноценный номер на сайт Baserow
+                                            val isUploaded = withContext(Dispatchers.IO) {
+                                                BaserowClient.addSpamVote(cleanPattern, androidId, 1)
+                                            }
+
+                                            withContext(Dispatchers.Main) {
+                                                if (isUploaded) {
+                                                    android.widget.Toast.makeText(context, "Номер выгружен на сайт Baserow!", android.widget.Toast.LENGTH_SHORT).show()
+                                                } else {
+                                                    android.widget.Toast.makeText(context, "Сохранено локально (ошибка отправки)", android.widget.Toast.LENGTH_SHORT).show()
+                                                }
+                                            }
+                                        } else {
+                                            // Если это короткий паттерн (код города, префикс, маска обзвона)
+                                            withContext(Dispatchers.Main) {
+                                                android.widget.Toast.makeText(context, "Короткий паттерн сохранен локально", android.widget.Toast.LENGTH_SHORT).show()
+                                            }
+                                        }
+                                    }
 
                                     newPattern = ""
                                 }
@@ -2618,7 +2656,7 @@ fun SettingsScreen() {
 
                     // ПОД-БЛОК: Кнопка запроса DND. Показывается ТОЛЬКО если разрешение НЕ дано
                     // ПОД-БЛОК: Автоматический запрос на Чтение, управление и ответы на уведомления
-                    if (!hasNotificationPolicyAccess) {
+                    /*if (!hasNotificationPolicyAccess) {
                         Card(
                             colors = CardDefaults.cardColors(
                                 containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f)
@@ -2655,7 +2693,7 @@ fun SettingsScreen() {
                                 }
                             }
                         }
-                    }
+                    }*/
 
                     // Сетка настроек времени (визуально затухает, если галка ночного режима выключена)
                     val isNightEnabled = settings.value.nightModeEnabled
@@ -3192,10 +3230,16 @@ fun SimSelectionDialog(
 // Например, "+79991234567" превратит в "+7999123"
 fun getSpamMask(phoneNumber: String): String {
     val clean = phoneNumber.filter { it.isDigit() || it == '+' }
-    return if (clean.length > 4) {
-        clean.dropLast(4)
-    } else {
-        clean
+    return when {
+        // 1. Международный или стандартный сотовый/городской РФ (+79991234567 или 89991234567)
+        clean.length >= 11 -> clean.dropLast(4) // Отрезаем последние 4 цифры
+
+        // 2. Старый прямой городской без кода города, но с префиксом пула (например, 495055)
+        // У таких номеров колл-центры обычно меняют только последние 2-3 цифры
+        clean.length in 6..7 -> clean.dropLast(2) // Отрезаем строго последние 2 цифры
+
+        // 3. Короткие номера (900, 112) или уже готовые префиксы, введенные вручную (8800)
+        else -> clean // Оставляем как есть, ничего не отрезаем
     }
 }
 

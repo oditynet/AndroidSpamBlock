@@ -1,7 +1,9 @@
 package com.example.blocktel1
 
+import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.PowerManager
 import android.telecom.Call
 import android.telecom.InCallService
 import android.util.Log
@@ -10,21 +12,20 @@ import kotlinx.coroutines.launch
 
 class MyInCallService : InCallService() {
 
+    private var powerManager: PowerManager? = null
+    private var proximityWakeLock: PowerManager.WakeLock? = null
+
     companion object {
         private const val TAG = "MyInCallService"
         var currentCall = mutableStateOf<android.telecom.Call?>(null)
         private var instance: MyInCallService? = null
 
-        // Плеер для воспроизведения системного рингтона
         private var mediaPlayer: android.media.MediaPlayer? = null
-        // Объект для управления вибрацией железа телефона
         private var vibrator: android.os.Vibrator? = null
 
-        // ФУНКЦИЯ ДЛЯ ВКЛЮЧЕНИЯ ВИБРАЦИИ
         fun startVibration(context: android.content.Context) {
             try {
                 val settings = loadSettings(context)
-                // Проверяем галку в настройках, которую выбрал пользователь
                 if (!settings.vibrationEnabled) {
                     Log.d(TAG, "Вибрация отключена пользователем в настройках")
                     return
@@ -34,22 +35,15 @@ class MyInCallService : InCallService() {
                     vibrator = context.getSystemService(android.content.Context.VIBRATOR_SERVICE) as android.os.Vibrator
                 }
 
-                // Паттерн прерывистого звонка: 0мс ждем, 1000мс вибрируем, 1000мс отдыхаем
                 val pattern = longArrayOf(0, 1000, 1000)
 
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                    // Для современных Android (8.0 и до Android 14/15/16)
-                    // 0 означает зациклить паттерн с самого начала
                     val effect = android.os.VibrationEffect.createWaveform(pattern, 0)
-
-                    // Привязываем вибрацию к типу "Звонок", чтобы учитывался режим "Не беспокоить"
                     val attributes = android.media.AudioAttributes.Builder()
                         .setUsage(android.media.AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
                         .build()
-
                     vibrator?.vibrate(effect, attributes)
                 } else {
-                    // Для очень старых версий Android
                     @Suppress("DEPRECATION")
                     vibrator?.vibrate(pattern, 0)
                 }
@@ -59,11 +53,10 @@ class MyInCallService : InCallService() {
             }
         }
 
-        // ФУНКЦИЯ ДЛЯ СТОПА ВИБРАЦИИ
         fun stopVibration() {
             try {
                 vibrator?.let {
-                    it.cancel() // Программный стоп мотора вибрации
+                    it.cancel()
                     Log.d(TAG, "Вибрация остановлена")
                 }
                 vibrator = null
@@ -71,26 +64,19 @@ class MyInCallService : InCallService() {
                 Log.e(TAG, "Ошибка остановки вибрации: ${e.message}")
             }
         }
-
-
-        // ФУНКЦИЯ ДЛЯ ЗАПУСКА СИСТЕМНОЙ МЕЛОДИИ ЗВОНКА
         fun startRingtone(context: android.content.Context) {
             try {
-                if (mediaPlayer != null) return // Уже играет
+                if (mediaPlayer != null) return
 
-                // 1. Запрашиваем у системы URI мелодии, которую выбрал пользователь
                 val ringtoneUri: android.net.Uri = android.media.RingtoneManager.getActualDefaultRingtoneUri(
                     context,
                     android.media.RingtoneManager.TYPE_RINGTONE
                 ) ?: android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_RINGTONE)
 
-                // 2. Инициализируем плеер
                 mediaPlayer = android.media.MediaPlayer().apply {
                     setDataSource(context, ringtoneUri)
-                    isLooping = true // Зацикливаем проигрывание
+                    isLooping = true
 
-                    // 3. Указываем Android, что этот звук — именно входящий вызов
-                    // Это автоматически применит громкость рингтона и учтет режим "Не беспокоить"
                     val audioAttributes = android.media.AudioAttributes.Builder()
                         .setUsage(android.media.AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
                         .setContentType(android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION)
@@ -103,13 +89,10 @@ class MyInCallService : InCallService() {
                 Log.d(TAG, "Системный рингтон успешно запущен: $ringtoneUri")
             } catch (e: Exception) {
                 Log.e(TAG, "Ошибка воспроизведения системного рингтона: ${e.message}")
-
-                // Резервный вариант на случай ошибки доступа к кастомному файлу
                 playFallbackRington(context)
             }
         }
 
-        // Резервный запуск стандартного звука, если к выбранному файлу нет доступа
         private fun playFallbackRington(context: android.content.Context) {
             try {
                 val fallbackUri = android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_RINGTONE)
@@ -130,7 +113,6 @@ class MyInCallService : InCallService() {
             }
         }
 
-        // ФУНКЦИЯ ДЛЯ ОСТАНОВКИ МЕЛОДИИ
         fun stopRingtone() {
             try {
                 mediaPlayer?.let {
@@ -145,7 +127,7 @@ class MyInCallService : InCallService() {
                 Log.e(TAG, "Ошибка при остановке рингтона: ${e.message}")
             }
         }
-        // НАДЕЖНАЯ ФУНКЦИЯ ДЛЯ ANDROID 14+: Работает через AudioManager железа телефона
+
         fun toggleSpeaker(turnOn: Boolean) {
             val route = if (turnOn) {
                 android.telecom.CallAudioState.ROUTE_SPEAKER
@@ -155,14 +137,11 @@ class MyInCallService : InCallService() {
 
             android.os.Handler(android.os.Looper.getMainLooper()).post {
                 try {
-                    // Проверяем: если инстанс запущен, принудительно приводим его к базовому классу InCallService
                     val serviceInstance = instance as? android.telecom.InCallService
-
                     if (serviceInstance != null) {
-                        // Подавляем ложное предупреждение старых версий компилятора
                         @Suppress("DEPRECATION")
                         serviceInstance.setAudioRoute(route)
-                        Log.d(TAG, "Аудио-маршрут успешно изменен через InCallService на: $route")
+                        Log.d(TAG, "Аудио-маршрут изменен на: $route")
                     } else {
                         Log.e(TAG, "Не удалось изменить маршрут: Инстанс сервиса пуст")
                     }
@@ -172,18 +151,57 @@ class MyInCallService : InCallService() {
             }
         }
     }
+    private val callCallback = object : Call.Callback() {
+        override fun onStateChanged(call: Call, state: Int) {
+            when (state) {
+                Call.STATE_ACTIVE -> {
+                    turnOnProximitySensor()
+                }
+                Call.STATE_DISCONNECTED, Call.STATE_DISCONNECTING -> {
+                    turnOffProximitySensor()
+                }
+            }
+        }
+    }
 
     override fun onCreate() {
         super.onCreate()
-        instance = this // Запоминаем инстанс при создании сервиса
+        instance = this
+
+        powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+        if (powerManager?.isWakeLockLevelSupported(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK) == true) {
+            proximityWakeLock = powerManager?.newWakeLock(
+                PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK,
+                "BlockTel:ProximityScreenOff"
+            )
+            Log.d(TAG, "Датчик приближения успешно инициализирован")
+        } else {
+            Log.e(TAG, "Устройство не поддерживает PROXIMITY_SCREEN_OFF_WAKE_LOCK")
+        }
     }
 
     override fun onDestroy() {
+        turnOffProximitySensor()
         super.onDestroy()
-        instance = null // Очищаем ссылку при уничтожении
+        instance = null
+    }
+
+    private fun turnOnProximitySensor() {
+        if (proximityWakeLock != null && !proximityWakeLock!!.isHeld) {
+            proximityWakeLock!!.acquire()
+            Log.d(TAG, "Датчик приближения АКТИВИРОВАН")
+        }
+    }
+
+    private fun turnOffProximitySensor() {
+        if (proximityWakeLock != null && proximityWakeLock!!.isHeld) {
+            proximityWakeLock!!.release()
+            Log.d(TAG, "Датчик приближения ДЕАКТИВИРОВАН")
+        }
     }
     override fun onCallAdded(call: Call) {
         super.onCallAdded(call)
+        call.registerCallback(callCallback)
 
         val state = call.state
         val isIncoming = (state == android.telecom.Call.STATE_RINGING)
@@ -193,9 +211,11 @@ class MyInCallService : InCallService() {
             Log.d(TAG, "Игнорируем триггер: вызов находится в промежуточном состоянии $state")
             return
         }
-        // Если это исходящий вызов, то мы его никогда не блокируем, а сразу выводим окно
+
         if (isOutgoing) {
-            Log.d(TAG, "Обнаружен исходящий вызов. Открываем ActiveCallScreen.")
+            Log.d(TAG, "Обнаружен исходящий вызов. Активируем датчик.")
+            turnOnProximitySensor()
+
             currentCall.value = call
             val intent = Intent(this, MainActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
@@ -204,7 +224,6 @@ class MyInCallService : InCallService() {
             return
         }
 
-
         val rawPhoneNumber = call.details.handle?.schemeSpecificPart ?: ""
         val phoneNumber = android.net.Uri.decode(rawPhoneNumber)
         val contactName = getContactNameFromPhoneBook(this, phoneNumber)
@@ -212,7 +231,6 @@ class MyInCallService : InCallService() {
         val settings = loadSettings(this)
         val blockedPatterns = loadBlockedPatterns(this)
 
-        // 2. Локальная моментальная проверка (Ваши контакты, Ночной режим, Черный список)
         val shouldBlockLocally = shouldBlockCall(phoneNumber, contactName, blockedPatterns, settings, this)
 
         if (shouldBlockLocally) {
@@ -221,20 +239,15 @@ class MyInCallService : InCallService() {
             return
         }
 
-        // 3. Облачная проверка Baserow (только для незнакомых номеров, которых нет в книге контактов)
         if (contactName == null) {
             val androidId = android.provider.Settings.Secure.getString(
                 contentResolver, android.provider.Settings.Secure.ANDROID_ID
             ) ?: "unknown_device"
 
-            // Запускаем асинхронный сетевой запрос строго в фоновом пуле потоков (Dispatchers.IO)
             kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
                 val isSpamInCloud = BaserowClient.checkIsSpam(phoneNumber, androidId)
 
-                // Возвращаемся на главный поток UI без использования Handler
                 kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
-
-                    // Дополнительная проверка: не отменил ли пользователь вызов, пока шел интернет-запрос
                     if (isSpamInCloud && call.state == android.telecom.Call.STATE_RINGING) {
                         Log.d(TAG, "Облачный консенсус Baserow велел ЗАБЛОКИРОВАТЬ звонок.")
                         rejectCallSystem(call)
@@ -245,12 +258,10 @@ class MyInCallService : InCallService() {
                 }
             }
         } else {
-            // Номер из телефонной книги — пускаем вызов мгновенно без интернета
             allowCallSystem(call)
         }
     }
 
-    // Вспомогательный метод сброса звонка для чистоты кода
     private fun rejectCallSystem(call: Call) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             call.reject(false, "Blocked by Cloud Consensus")
@@ -259,7 +270,6 @@ class MyInCallService : InCallService() {
         }
     }
 
-    // Вспомогательный метод пропуска звонка с жестким выводом окна на передний план
     private fun allowCallSystem(call: Call) {
         currentCall.value = call
         val isIncoming = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -272,9 +282,7 @@ class MyInCallService : InCallService() {
             startVibration(this)
         }
 
-        // Мощный интент для пробития фонового режима Android
         val intent = Intent(this, MainActivity::class.java).apply {
-            // Флаги NEW_TASK (запуск из сервиса) + SINGLE_TOP (не плодить окна) + CLEAR_TOP (вытащить из бэкстека)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or
                     Intent.FLAG_ACTIVITY_SINGLE_TOP or
                     Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -284,8 +292,10 @@ class MyInCallService : InCallService() {
         startActivity(intent)
     }
 
-
     override fun onCallRemoved(call: Call) {
+        call.unregisterCallback(callCallback)
+        turnOffProximitySensor()
+
         super.onCallRemoved(call)
         stopRingtone()
         stopVibration()

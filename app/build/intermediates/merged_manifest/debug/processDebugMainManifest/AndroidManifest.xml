@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.blocktel"
     android:versionCode="1"
-    android:versionName="0.3.7.1" >
+    android:versionName="0.3.7.2" >
 
     <uses-sdk
         android:minSdkVersion="33"
@@ -38,6 +38,7 @@
     <!-- Разрешение на конкретный тип Foreground Service для Android 14+ -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
