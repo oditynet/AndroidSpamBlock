@@ -1,6 +1,19 @@
+<div align="center">
+
 # AndroidSpamBlock
+
+### **Умный консенсус-блокировщик спама и телефонный ассистент для Android**
+
+<!-- Твои бейджи статуса (замени oditynet на свой логин, если он отличается) -->
+---
+</div>
+
+
 Android block spam становится полноценным телефоном для звонков. Поддерживаются 2 симкарты. Пока криво работает ввод номера и коррекция. 
 
+[![Android Auto Release](https://github.com/oditynet/AndroidSpamBlock/actions/workflows/main.yml/badge.svg)](https://github.com/oditynet/AndroidSpamBlock/actions/workflows/main.yml)
+
+## Версии
 
 Ver 0.3.7.2:
 - Пока отключитл уведомления в ночное время. А то будильник не работает
