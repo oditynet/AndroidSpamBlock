@@ -1,7 +1,7 @@
 name: Android Auto Release
 
+# Убираем лишние триггеры, оставляем ТОЛЬКО пуш тегов
 on:
-  workflow_dispatch: 
   push:
     tags:
       - 'ver_*'
@@ -28,11 +28,12 @@ jobs:
     - name: Build Release APK
       run: ./gradlew assembleRelease
 
-    # Берем системное имя тега и переименовываем файл под ваш формат
+    # Этот шаг вырежет чистые цифры из тега (например, из ver_0.3.7.1 сделает 0.3.7.1)
     - name: Rename APK for Release
       run: |
         TAG_NAME="${{ github.ref_name }}"
         VERSION_NUMBER="${TAG_NAME#ver_}"
+        echo "Релизим версию: $VERSION_NUMBER"
         mv app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/AndroidSpamBlock-${VERSION_NUMBER}.apk
 
     - name: Create GitHub Release
@@ -43,4 +44,4 @@ jobs:
         draft: false
         prerelease: false
         files: |
-          app/build/outputs/apk/release/AndroidSpamBlock-*.apk    
+          app/build/outputs/apk/release/AndroidSpamBlock-*.apk
