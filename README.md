@@ -13,6 +13,8 @@ Android block spam становится полноценным телефоно�
 
 [![Android Auto Release](https://github.com/oditynet/AndroidSpamBlock/actions/workflows/main.yml/badge.svg)](https://github.com/oditynet/AndroidSpamBlock/actions/workflows/main.yml)
 
+![CodeQL](https://github.com/oditynet/AndroidSpamBlock/actions/workflows/codeql.yml/badge.svg)
+
 ## Версии
 
 Ver 0.3.7.3:
