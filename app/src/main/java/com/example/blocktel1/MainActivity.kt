@@ -929,7 +929,7 @@ fun CallMonitorApp(
                             Text("📞 Телефон")
                             if (settings.value.isDefaultDialer) {
                                 Text(
-                                    text = "версия 0.3.7.2", //versionName = "0.3.5" nтоже менять в build.gradle.kts APP
+                                    text = "версия 0.3.7.3", //versionName = "0.3.5" nтоже менять в build.gradle.kts APP
                                     fontSize = 12.sp,
                                     color = MaterialTheme.colorScheme.primary
                                 )

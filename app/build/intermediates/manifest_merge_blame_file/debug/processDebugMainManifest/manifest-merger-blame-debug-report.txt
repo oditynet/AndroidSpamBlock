@@ -2,7 +2,7 @@
 2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
 3    package="com.example.blocktel"
 4    android:versionCode="1"
-5    android:versionName="0.3.7.2" >
+5    android:versionName="0.3.7.3" >
 6
 7    <uses-sdk
 8        android:minSdkVersion="33"
@@ -10,89 +10,89 @@
 10
 11    <!-- Необходимые разрешения -->
 12    <uses-permission android:name="android.permission.READ_CONTACTS" />
-12-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:6:5-72
-12-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:6:22-69
+12-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:6:5-72
+12-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:6:22-69
 13    <uses-permission android:name="android.permission.READ_CALL_LOG" />
-13-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:7:5-72
-13-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:7:22-69
+13-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:7:5-72
+13-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:7:22-69
 14    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-14-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:8:5-75
-14-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:8:22-72
+14-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:8:5-75
+14-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:8:22-72
 15    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
-15-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:9:5-77
-15-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:9:22-74
+15-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:9:5-77
+15-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:9:22-74
 16    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-16-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:10:5-77
-16-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:10:22-74
+16-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:10:5-77
+16-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:10:22-74
 17    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-17-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:11:5-77
-17-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:11:22-74
+17-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:11:5-77
+17-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:11:22-74
 18    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" />
-18-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:12:5-88
-18-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:12:22-85
+18-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:12:5-88
+18-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:12:22-85
 19    <uses-permission android:name="android.permission.CALL_PHONE" />
-19-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:13:5-69
-19-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:13:22-66
+19-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:13:5-69
+19-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:13:22-66
 20    <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" />
-20-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:14:5-75
-20-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:14:22-72
+20-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:14:5-75
+20-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:14:22-72
 21    <uses-permission android:name="android.permission.BIND_SCREENING_SERVICE" />
-21-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:15:5-81
-21-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:15:22-78
+21-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:15:5-81
+21-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:15:22-78
 22    <uses-permission android:name="android.permission.BIND_INCALL_SERVICE" />
-22-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:16:5-78
-22-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:16:22-75
+22-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:16:5-78
+22-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:16:22-75
 23    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-23-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:8:5-75
-23-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:8:22-72
+23-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:8:5-75
+23-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:8:22-72
 24    <uses-permission android:name="android.permission.CALL_PHONE" />
-24-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:13:5-69
-24-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:13:22-66
+24-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:13:5-69
+24-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:13:22-66
 25    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-25-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:20:5-77
-25-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:20:22-75
+25-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:20:5-77
+25-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:20:22-75
 26    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
-26-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:21:5-81
-26-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:21:22-78
+26-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:21:5-81
+26-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:21:22-78
 27    <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" />
-27-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:14:5-75
-27-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:14:22-72
+27-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:14:5-75
+27-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:14:22-72
 28    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-28-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:23:5-80
-28-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:23:22-77
+28-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:23:5-80
+28-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:23:22-77
 29    <uses-permission android:name="android.permission.WAKE_LOCK" />
-29-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:25:5-68
-29-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:25:22-65
+29-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:25:5-68
+29-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:25:22-65
 30    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
-30-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:21:5-81
-30-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:21:22-78
+30-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:21:5-81
+30-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:21:22-78
 31
 32    <!-- Разрешение на автозапуск после перезагрузки -->
 33    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-33-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:29:1-77
-33-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:29:18-74
+33-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:29:1-77
+33-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:29:18-74
 34
 35    <!-- Разрешение на запрос исключения из оптимизации батареи -->
 36    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
-36-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:32:1-91
-36-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:32:18-88
+36-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:32:1-91
+36-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:32:18-88
 37
 38    <!-- Разрешение на конкретный тип Foreground Service для Android 14+ -->
 39    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
-39-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:35:1-85
-39-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:35:18-82
+39-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:35:1-85
+39-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:35:18-82
 40    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
-40-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:36:5-83
-40-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:36:22-80
+40-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:36:5-83
+40-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:36:22-80
 41    <uses-permission android:name="android.permission.WAKE_LOCK" />
-41-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:25:5-68
-41-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:25:22-65
+41-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:25:5-68
+41-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:25:22-65
 42    <uses-permission android:name="android.permission.VIBRATE" />
-42-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:40:5-66
-42-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:40:22-63
+42-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:40:5-66
+42-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:40:22-63
 43    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
-43-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:42:5-85
-43-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:42:22-82
+43-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:42:5-85
+43-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:42:22-82
 44    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 44-->[androidx.media3:media3-common:1.9.2] /home/odity/.gradle/caches/9.1.0/transforms/8102c8aa68b1c93da093628a5a30305c/transformed/media3-common-1.9.2/AndroidManifest.xml:22:5-79
 44-->[androidx.media3:media3-common:1.9.2] /home/odity/.gradle/caches/9.1.0/transforms/8102c8aa68b1c93da093628a5a30305c/transformed/media3-common-1.9.2/AndroidManifest.xml:22:22-76
@@ -112,221 +112,221 @@
 51-->[androidx.core:core:1.16.0] /home/odity/.gradle/caches/9.1.0/transforms/c9e65b4f6f94437ea11aa0d56b36334b/transformed/core-1.16.0/AndroidManifest.xml:26:22-94
 52
 53    <application
-53-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:43:5-159:19
+53-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:43:5-159:19
 54        android:allowBackup="true"
-54-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:44:9-35
+54-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:44:9-35
 55        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
 55-->[androidx.core:core:1.16.0] /home/odity/.gradle/caches/9.1.0/transforms/c9e65b4f6f94437ea11aa0d56b36334b/transformed/core-1.16.0/AndroidManifest.xml:28:18-86
 56        android:debuggable="true"
 57        android:extractNativeLibs="false"
 58        android:icon="@mipmap/ic_launcher"
-58-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:45:9-43
+58-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:45:9-43
 59        android:label="@string/app_name"
-59-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:46:9-41
+59-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:46:9-41
 60        android:roundIcon="@mipmap/ic_launcher_round"
-60-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:47:9-54
+60-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:47:9-54
 61        android:supportsRtl="true"
-61-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:48:9-35
+61-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:48:9-35
 62        android:theme="@style/Theme.BlockTel1" >
-62-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:49:9-47
+62-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:49:9-47
 63        <provider
 64            android:name="androidx.core.content.FileProvider"
-64-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:52:13-62
+64-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:52:13-62
 65            android:authorities="com.example.blocktel.fileprovider"
-65-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:53:13-64
+65-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:53:13-64
 66            android:exported="false"
-66-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:54:13-37
+66-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:54:13-37
 67            android:grantUriPermissions="true" >
-67-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:55:13-47
+67-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:55:13-47
 68            <meta-data
-68-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:56:13-58:54
+68-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:56:13-58:54
 69                android:name="android.support.FILE_PROVIDER_PATHS"
-69-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:57:17-67
+69-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:57:17-67
 70                android:resource="@xml/file_paths" />
-70-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:58:17-51
+70-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:58:17-51
 71        </provider>
 72
 73        <service
-73-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:60:9-68:19
+73-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:60:9-68:19
 74            android:name="com.example.blocktel1.MyNotificationListener"
-74-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:61:13-51
+74-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:61:13-51
 75            android:exported="true"
-75-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:64:13-36
+75-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:64:13-36
 76            android:label="BlockTel Notification Глушилка"
-76-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:62:13-59
+76-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:62:13-59
 77            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" >
-77-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:63:13-87
+77-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:63:13-87
 78            <intent-filter>
-78-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:65:13-67:29
+78-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:65:13-67:29
 79                <action android:name="android.service.notification.NotificationListenerService" />
-79-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:66:17-99
-79-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:66:25-96
+79-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:66:17-99
+79-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:66:25-96
 80            </intent-filter>
 81        </service>
 82
 83        <!-- 1. Регистрируем BootReceiver для автозапуска -->
 84        <receiver
-84-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:71:9-79:20
+84-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:71:9-79:20
 85            android:name="com.example.blocktel1.BootReceiver"
-85-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:72:13-41
+85-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:72:13-41
 86            android:enabled="true"
-86-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:73:13-35
+86-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:73:13-35
 87            android:exported="true" >
-87-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:74:13-36
+87-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:74:13-36
 88            <intent-filter>
-88-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:75:13-78:29
+88-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:75:13-78:29
 89                <action android:name="android.intent.action.BOOT_COMPLETED" />
-89-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:76:17-79
-89-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:76:25-76
+89-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:76:17-79
+89-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:76:25-76
 90
 91                <category android:name="android.intent.category.DEFAULT" />
-91-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:77:17-76
-91-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:77:27-73
+91-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:77:17-76
+91-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:77:27-73
 92            </intent-filter>
 93        </receiver>
 94
 95        <!-- 2. Обновляем описание CallBlockingService, добавляя тип службы -->
 96        <service
-96-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:82:9-107:19
+96-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:82:9-107:19
 97            android:name="com.example.blocktel1.CallBlockingService"
-97-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:83:13-48
+97-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:83:13-48
 98            android:enabled="true"
-98-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:84:13-35
+98-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:84:13-35
 99            android:exported="false"
-99-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:85:13-37
+99-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:85:13-37
 100            android:foregroundServiceType="specialUse" >
-100-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:86:13-55
+100-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:86:13-55
 101
 102            <!-- Внутри тега service можно добавить описание для Google Play (требуется для specialUse) -->
 103            <meta-data
-103-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:88:13-90:40
+103-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:88:13-90:40
 104                android:name="android.telecom.IN_CALL_SERVICE_UI"
-104-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:89:17-66
+104-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:89:17-66
 105                android:value="true" />
-105-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:90:17-37
+105-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:90:17-37
 106
 107            <!-- КРИТИЧЕСКИЙ ФЛАГ 1: Отключает стандартный системный рингтон по умолчанию -->
 108            <meta-data
-108-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:93:13-95:40
+108-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:93:13-95:40
 109                android:name="android.telecom.IN_CALL_SERVICE_RINGING"
-109-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:94:17-71
+109-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:94:17-71
 110                android:value="true" />
-110-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:95:17-37
+110-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:95:17-37
 111
 112            <!-- КРИТИЧЕСКИЙ ФЛАГ 2: Запрещает системе вмешиваться в аудиопоток звонка -->
 113            <meta-data
-113-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:98:13-100:39
+113-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:98:13-100:39
 114                android:name="android.telecom.IN_CALL_SERVICE_AUDIO_NOTIFY"
-114-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:99:17-76
+114-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:99:17-76
 115                android:value="true" />
-115-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:100:17-37
+115-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:100:17-37
 116
 117            <intent-filter>
-117-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:101:13-103:29
+117-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:101:13-103:29
 118                <action android:name="android.telecom.InCallService" />
-118-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:102:17-72
-118-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:102:25-69
+118-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:102:17-72
+118-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:102:25-69
 119            </intent-filter>
 120
 121            <property
-121-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:104:9-106:84
+121-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:104:9-106:84
 122                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-122-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:105:13-72
+122-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:105:13-72
 123                android:value="Spam call blocking and background monitoring service" />
-123-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:106:13-81
+123-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:106:13-81
 124        </service>
 125
 126        <activity
-126-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:109:9-133:20
+126-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:109:9-133:20
 127            android:name="com.example.blocktel1.MainActivity"
-127-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:110:13-41
+127-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:110:13-41
 128            android:exported="true"
-128-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:111:13-36
+128-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:111:13-36
 129            android:inheritShowWhenLocked="true"
-129-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:114:13-49
+129-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:114:13-49
 130            android:launchMode="singleTop"
-130-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:115:13-43
+130-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:115:13-43
 131            android:showWhenLocked="true"
-131-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:112:13-42
+131-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:112:13-42
 132            android:theme="@style/Theme.BlockTel1"
-132-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:116:13-51
+132-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:116:13-51
 133            android:turnScreenOn="true" >
-133-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:113:13-40
+133-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:113:13-40
 134            <intent-filter>
-134-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:118:13-121:29
+134-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:118:13-121:29
 135                <action android:name="android.intent.action.MAIN" />
-135-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:119:17-69
-135-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:119:25-66
+135-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:119:17-69
+135-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:119:25-66
 136
 137                <category android:name="android.intent.category.LAUNCHER" />
-137-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:120:17-77
-137-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:120:27-74
+137-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:120:17-77
+137-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:120:27-74
 138            </intent-filter>
 139
 140            <!-- Для приложения по умолчанию -->
 141            <intent-filter>
-141-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:124:13-127:29
+141-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:124:13-127:29
 142                <action android:name="android.intent.action.DIAL" />
-142-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:125:17-69
-142-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:125:25-66
+142-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:125:17-69
+142-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:125:25-66
 143
 144                <category android:name="android.intent.category.DEFAULT" />
-144-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:77:17-76
-144-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:77:27-73
+144-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:77:17-76
+144-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:77:27-73
 145            </intent-filter>
 146            <intent-filter>
-146-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:128:13-132:29
+146-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:128:13-132:29
 147                <action android:name="android.intent.action.DIAL" />
-147-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:125:17-69
-147-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:125:25-66
+147-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:125:17-69
+147-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:125:25-66
 148
 149                <category android:name="android.intent.category.DEFAULT" />
-149-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:77:17-76
-149-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:77:27-73
+149-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:77:17-76
+149-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:77:27-73
 150
 151                <data android:scheme="tel" />
-151-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:131:17-46
-151-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:131:23-43
+151-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:131:17-46
+151-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:131:23-43
 152            </intent-filter>
 153        </activity>
 154
 155        <service
-155-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:137:9-145:19
+155-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:137:9-145:19
 156            android:name="com.example.blocktel1.MyCallScreeningService"
-156-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:138:13-51
+156-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:138:13-51
 157            android:enabled="true"
-157-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:140:13-35
+157-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:140:13-35
 158            android:exported="true"
-158-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:141:13-36
+158-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:141:13-36
 159            android:permission="android.permission.BIND_SCREENING_SERVICE" >
-159-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:139:13-75
+159-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:139:13-75
 160            <intent-filter>
-160-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:142:13-144:29
+160-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:142:13-144:29
 161                <action android:name="android.telecom.CallScreeningService" />
-161-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:143:17-79
-161-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:143:25-76
+161-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:143:17-79
+161-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:143:25-76
 162            </intent-filter>
 163        </service>
 164        <service
-164-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:147:9-157:19
+164-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:147:9-157:19
 165            android:name="com.example.blocktel1.MyInCallService"
-165-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:148:13-44
+165-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:148:13-44
 166            android:exported="true"
-166-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:150:13-36
+166-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:150:13-36
 167            android:permission="android.permission.BIND_INCALL_SERVICE" >
-167-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:149:13-72
+167-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:149:13-72
 168            <meta-data
-168-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:88:13-90:40
+168-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:88:13-90:40
 169                android:name="android.telecom.IN_CALL_SERVICE_UI"
-169-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:89:17-66
+169-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:89:17-66
 170                android:value="true" />
-170-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:90:17-37
+170-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:90:17-37
 171
 172            <intent-filter>
-172-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:101:13-103:29
+172-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:101:13-103:29
 173                <action android:name="android.telecom.InCallService" />
-173-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:102:17-72
-173-->/home/odity/AndroidStudioProjects/AndroidSpamBlock/app/src/main/AndroidManifest.xml:102:25-69
+173-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:102:17-72
+173-->/home/odity/bin/AndroidSpamBlock/app/src/main/AndroidManifest.xml:102:25-69
 174            </intent-filter>
 175        </service>
 176

@@ -29,7 +29,7 @@ com.example.blocktel1.test.app-activity-compose-1.8.2-27 /home/odity/.gradle/cac
 com.example.blocktel1.test.app-lifecycle-process-2.9.4-28 /home/odity/.gradle/caches/9.1.0/transforms/f5613f7376ff12fba4d53cb00d949556/transformed/lifecycle-process-2.9.4/res
 com.example.blocktel1.test.app-ui-test-29 /home/odity/.gradle/caches/9.1.0/transforms/fa7ba77e97552e30a3733a8c545a5cd2/transformed/ui-test/res
 com.example.blocktel1.test.app-startup-runtime-1.2.0-30 /home/odity/.gradle/caches/9.1.0/transforms/fb0539a16c92145c29d51692af0ae40c/transformed/startup-runtime-1.2.0/res
-com.example.blocktel1.test.app-updated_navigation_xml-31 /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/generated/updated_navigation_xml/debugAndroidTest
-com.example.blocktel1.test.app-packageDebugAndroidTestResources-32 /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/intermediates/incremental/debugAndroidTest/packageDebugAndroidTestResources/merged.dir
-com.example.blocktel1.test.app-packageDebugAndroidTestResources-33 /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/intermediates/incremental/debugAndroidTest/packageDebugAndroidTestResources/stripped.dir
-com.example.blocktel1.test.app-debugAndroidTest-34 /home/odity/AndroidStudioProjects/AndroidSpamBlock/app/build/intermediates/merged_res/debugAndroidTest/mergeDebugAndroidTestResources
+com.example.blocktel1.test.app-updated_navigation_xml-31 /home/odity/bin/AndroidSpamBlock/app/build/generated/updated_navigation_xml/debugAndroidTest
+com.example.blocktel1.test.app-packageDebugAndroidTestResources-32 /home/odity/bin/AndroidSpamBlock/app/build/intermediates/incremental/debugAndroidTest/packageDebugAndroidTestResources/merged.dir
+com.example.blocktel1.test.app-packageDebugAndroidTestResources-33 /home/odity/bin/AndroidSpamBlock/app/build/intermediates/incremental/debugAndroidTest/packageDebugAndroidTestResources/stripped.dir
+com.example.blocktel1.test.app-debugAndroidTest-34 /home/odity/bin/AndroidSpamBlock/app/build/intermediates/merged_res/debugAndroidTest/mergeDebugAndroidTestResources
