@@ -67,6 +67,18 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.material3.Divider
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.launch
+
 
 // Модель для хранения информации о SIM-карте
 data class SimCardInfo(
@@ -142,9 +154,11 @@ data class CallLog(
 
 // Модель контакта
 data class Contact(
-    val id: String,
+    val id: String,              // CONTACT_ID (уникальный для контакта)
+    val contactId: String,       // дублирует id, для совместимости с репозиторием
     val name: String,
-    val phoneNumber: String,
+    val phoneNumber: String,     // первый номер (для обратной совместимости)
+    val phones: List<String> = emptyList(),  // все номера
     val photoUri: String? = null
 )
 
@@ -179,7 +193,7 @@ class MainActivity : ComponentActivity() {
 
     private val permissionGranted = mutableStateOf(false)
     private val isDefaultDialerState = mutableStateOf(false)
-
+private val pendingDialNumber = mutableStateOf<String?>(null)
     private val batteryOptimizationLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
@@ -209,19 +223,39 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun extractDialNumber(intent: Intent?): String? {
+        val data = intent?.data
+        android.util.Log.d("MainActivity", "extractDialNumber: action=${intent?.action}, scheme=${data?.scheme}, ssp=${data?.schemeSpecificPart}")
+        if (data == null || data.scheme != "tel") return null
+        return data.schemeSpecificPart?.trim()?.takeIf { it.isNotBlank() }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        android.util.Log.d("MainActivity", "onNewIntent: $intent")
+        val number = extractDialNumber(intent)
+        android.util.Log.d("MainActivity", "onNewIntent extracted: $number")
+        if (number != null) {
+            pendingDialNumber.value = number
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+         pendingDialNumber.value = extractDialNumber(intent)
 
         checkPermissions()
         checkDefaultDialer()
 
         setContent {
             BlockTel1Theme {
+                // Читаем ЗДЕСЬ, внутри Composable — Compose подпишется на изменения
+                val dialNumber = pendingDialNumber.value
                 CallMonitorApp(
                     permissionGranted = permissionGranted.value,
-                    onRequestPermissions = { requestPermissions() }
+                    onRequestPermissions = { requestPermissions() },
+                    initialDialNumber = dialNumber
                 )
             }
         }
@@ -697,13 +731,15 @@ fun getContactNameFromPhoneBook(context: Context, phoneNumber: String?): String?
     }
 }
 // Загрузка контактов
+// Загрузка контактов
 fun loadContacts(context: Context, searchQuery: String = ""): List<Contact> {
-    val contacts = mutableListOf<Contact>()
+    val result = mutableListOf<Contact>()
 
     try {
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            return contacts
-        }
+        if (ContextCompat.checkSelfPermission(
+                context, Manifest.permission.READ_CONTACTS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) return result
 
         val uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI
         val projection = arrayOf(
@@ -717,7 +753,6 @@ fun loadContacts(context: Context, searchQuery: String = ""): List<Contact> {
             "${ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME} LIKE ? OR " +
                     "${ContactsContract.CommonDataKinds.Phone.NUMBER} LIKE ?"
         } else null
-
         val selectionArgs = if (searchQuery.isNotBlank()) {
             arrayOf("%$searchQuery%", "%$searchQuery%")
         } else null
@@ -727,33 +762,71 @@ fun loadContacts(context: Context, searchQuery: String = ""): List<Contact> {
             ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME
         )
 
+        val map = LinkedHashMap<String, MutableList<String>>()
+        val names = HashMap<String, String>()
+        val systemPhotoUris = HashMap<String, String?>()
+
         cursor?.use { c ->
-            val idIndex = c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID)
-            val nameIndex = c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
-            val numberIndex = c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
-            val photoIndex = c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI)
+            val idIdx = c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID)
+            val nameIdx = c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
+            val numIdx = c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
+            val photoIdx = c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI)
 
             while (c.moveToNext()) {
-                val id = c.getString(idIndex)
-                val name = c.getString(nameIndex) ?: "Без имени"
-                val number = c.getString(numberIndex) ?: ""
-                val photoUri = if (photoIndex != -1) c.getString(photoIndex) else null
+                val id = c.getString(idIdx) ?: continue
+                val name = c.getString(nameIdx) ?: "Без имени"
+                val number = c.getString(numIdx) ?: ""
+                val sysPhoto = if (photoIdx != -1) c.getString(photoIdx) else null
 
                 if (number.isNotBlank()) {
-                    contacts.add(Contact(
-                        id = id,
-                        name = name,
-                        phoneNumber = formatPhoneNumber(number),
-                        photoUri = photoUri
-                    ))
+                    val list = map.getOrPut(id) { mutableListOf() }
+                    // Убираем дубликаты номеров (Google + локальный + SIM)
+                    if (!list.contains(number)) list.add(number)
+                    names[id] = name
+                    if (sysPhoto != null) systemPhotoUris[id] = sysPhoto
                 }
             }
+        }
+
+        map.forEach { (id, phones) ->
+            var localPhoto = ContactPhotoStore.getPhotoUri(context, id)?.toString()
+
+            // Если локального фото нет, но есть системное (Google) — копируем его к себе
+            if (localPhoto == null && systemPhotoUris.containsKey(id)) {
+                val sysUriStr = systemPhotoUris[id]
+                if (!sysUriStr.isNullOrBlank()) {
+                    try {
+                        val input = context.contentResolver.openInputStream(Uri.parse(sysUriStr))
+                        val bytes = input?.use { it.readBytes() }
+                        input?.close()
+                        if (bytes != null) {
+                            if (ContactPhotoStore.savePhoto(context, id, bytes)) {
+                                localPhoto = ContactPhotoStore.getPhotoUri(context, id)?.toString()
+                                Log.d("Contacts", "Скопировали системное фото для id=$id")
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.e("Contacts", "Ошибка копирования системного фото для id=$id: ${e.message}")
+                    }
+                }
+            }
+
+            result.add(
+                Contact(
+                    id = id,
+                    contactId = id,
+                    name = names[id] ?: "Без имени",
+                    phoneNumber = formatPhoneNumber(phones.first()),
+                    phones = phones.map { formatPhoneNumber(it) }.distinct(),
+                    photoUri = localPhoto
+                )
+            )
         }
     } catch (e: Exception) {
         Log.e("Contacts", "Ошибка загрузки контактов", e)
     }
 
-    return contacts
+    return result
 }
 
 // Запрос на статус по умолчанию
@@ -898,9 +971,10 @@ suspend fun updatePatternsFromInternet(context: Context, currentPatterns: Mutabl
 @Preview(showBackground = true)
 @Composable
 fun CallMonitorApp(
-    permissionGranted: Boolean = true, // Добавили = true
-    isDefaultDialer: Boolean = false, // Передаем статус сюда
-    onRequestPermissions: () -> Unit = {} // Добавили = {}
+    permissionGranted: Boolean = true,
+    isDefaultDialer: Boolean = false,
+    onRequestPermissions: () -> Unit = {},
+    initialDialNumber: String? = null
 ) {
 
     // Наблюдаем за появлением звонков из нашего сервиса
@@ -929,7 +1003,7 @@ fun CallMonitorApp(
                             Text("📞 Телефон")
                             if (settings.value.isDefaultDialer) {
                                 Text(
-                                    text = "версия 0.3.7.3", //versionName = "0.3.5" nтоже менять в build.gradle.kts APP
+                                    text = "версия 0.3.7.5", //versionName = "0.3.5" nтоже менять в build.gradle.kts APP
                                     fontSize = 12.sp,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -975,7 +1049,11 @@ fun CallMonitorApp(
         ) { innerPadding ->
             Box(modifier = Modifier.padding(innerPadding)) {
                 when (selectedTab) {
-                    0 -> DialerScreen(permissionGranted,   onRequestPermissions)
+                    0 -> DialerScreen(
+                        permissionGranted = permissionGranted,
+                        onRequestPermissions = onRequestPermissions,
+                        initialNumber = initialDialNumber
+                    )
                     1 -> ContactsScreen()
                     2 -> CallHistoryScreen()
                     3 -> BlockingPatternsScreen()
@@ -990,7 +1068,8 @@ fun CallMonitorApp(
 @Composable
 fun DialerScreen(
     permissionGranted: Boolean,
-    onRequestPermissions: () -> Unit
+    onRequestPermissions: () -> Unit,
+    initialNumber: String? = null
 ) {
     val context = LocalContext.current
 
@@ -999,8 +1078,18 @@ fun DialerScreen(
     var isDefault by remember { mutableStateOf(loadSettings(context).isDefaultDialer) }
 
     var suggestions by remember { mutableStateOf<List<Contact>>(emptyList()) }
-    var phoneNumber by remember { mutableStateOf("") }
-    var cursorPosition by remember { mutableStateOf(0) }
+    var phoneNumber by remember { mutableStateOf(initialNumber ?: "") }
+    var cursorPosition by remember { mutableStateOf((initialNumber ?: "").length) }
+
+    LaunchedEffect(initialNumber) {
+        android.util.Log.d("DialerScreen", "LaunchedEffect initialNumber=$initialNumber, current phoneNumber=$phoneNumber")
+        if (!initialNumber.isNullOrBlank()) {
+            // Убираем всё, кроме цифр, +, *, #
+            val cleaned = initialNumber.filter { it.isDigit() || it == '+' || it == '*' || it == '#' }
+            phoneNumber = cleaned
+            cursorPosition = cleaned.length
+        }
+    }
     var dropdownExpanded by remember { mutableStateOf(false) }
 
     val simCards = MainActivity.globalSimCards
@@ -1329,23 +1418,134 @@ fun ZeroButton(modifier: Modifier = Modifier, onClick: () -> Unit, onLongPress: 
     }
 }
 // Экран контактов
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ContactsScreen() {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val contacts = remember { mutableStateListOf<Contact>() }
     var searchQuery by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
     val currentSim by MainActivity.globalSelectedSim
 
-    // ИСПРАВЛЕНИЕ: Живой поиск по телефонной книге в фоне
+    var editingDraft by remember { mutableStateOf<ContactDraft?>(null) }
+    var contactToDelete by remember { mutableStateOf<Contact?>(null) }
+
+    // Сохраняет позицию скролла при перезагрузке списка
+    val listState = rememberLazyListState()
+
+    fun reloadContacts() {
+        scope.launch {
+            isLoading = true
+            val loaded = withContext(Dispatchers.IO) { loadContacts(context, searchQuery) }
+            contacts.clear()
+            contacts.addAll(loaded)
+            isLoading = false
+        }
+    }
+
     LaunchedEffect(searchQuery) {
         isLoading = true
         withContext(Dispatchers.IO) {
-            val filteredContacts = loadContacts(context, searchQuery)
+            val filtered = loadContacts(context, searchQuery)
             withContext(Dispatchers.Main) {
                 contacts.clear()
-                contacts.addAll(filteredContacts)
+                contacts.addAll(filtered)
                 isLoading = false
+            }
+        }
+    }
+
+    fun placeCall(rawNumber: String) {
+        try {
+            val cleanNumber = rawNumber.replace(Regex("[^0-9+]"), "")
+            if (cleanNumber.isBlank()) return
+
+            val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
+            val uri = Uri.fromParts("tel", cleanNumber, null)
+            val extras = Bundle()
+
+            if (currentSim != null) {
+                val accounts = telecomManager.getCallCapablePhoneAccounts()
+                val matched = accounts.find { handle ->
+                    handle.id.contains(currentSim!!.id.toString()) ||
+                            handle.id.contains(currentSim!!.slotIndex.toString())
+                }
+                if (matched != null) {
+                    extras.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, matched)
+                }
+                extras.putInt("com.android.phone.extra.slot", currentSim!!.slotIndex)
+                extras.putInt("simSlot", currentSim!!.slotIndex)
+            }
+            extras.putInt("android.telecom.extra.START_CALL_WITH_KEYPAD", 1)
+            telecomManager.placeCall(uri, extras)
+        } catch (e: SecurityException) {
+            android.widget.Toast.makeText(
+                context, "Нет разрешения на звонки", android.widget.Toast.LENGTH_SHORT
+            ).show()
+        } catch (e: Exception) {
+            android.widget.Toast.makeText(
+                context, "Ошибка при звонке", android.widget.Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    val importVcfLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            scope.launch {
+                isLoading = true
+                val imported = withContext(Dispatchers.IO) {
+                    try {
+                        val text = context.contentResolver
+                            .openInputStream(uri)?.bufferedReader()?.use { it.readText() } ?: ""
+                        val parsed = parseVcf(text)
+                        var ok = 0
+                        parsed.forEach { vcf ->
+                            if (ContactRepository.importVcfContact(context, vcf)) ok++
+                        }
+                        ok
+                    } catch (e: Exception) {
+                        Log.e("ContactsScreen", "importVcf: ${e.message}")
+                        0
+                    }
+                }
+                isLoading = false
+                android.widget.Toast.makeText(
+                    context, "Импортировано: $imported", android.widget.Toast.LENGTH_LONG
+                ).show()
+                reloadContacts()
+            }
+        }
+    }
+
+    val exportVcfLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("text/x-vcard")
+    ) { uri: Uri? ->
+        if (uri != null) {
+            scope.launch {
+                val ok = withContext(Dispatchers.IO) {
+                    try {
+                        val snapshot = contacts.toList()
+                        val vcfText = exportContactsToVcf(contacts.toList()) { photoUri ->
+                            ContactPhotoStore.readBytes(context, photoUri)
+                        }
+                        context.contentResolver.openOutputStream(uri)?.use { out ->
+                            out.write(vcfText.toByteArray(Charsets.UTF_8))
+                        }
+                        true
+                    } catch (e: Exception) {
+                        Log.e("ContactsScreen", "exportVcf: ${e.message}")
+                        false
+                    }
+                }
+                android.widget.Toast.makeText(
+                    context,
+                    if (ok) "Экспорт завершён" else "Ошибка экспорта",
+                    android.widget.Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
@@ -1366,125 +1566,269 @@ fun ContactsScreen() {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        if (isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            OutlinedButton(
+                onClick = {
+                    importVcfLauncher.launch(
+                        arrayOf("text/x-vcard", "text/vcard", "text/plain", "*/*")
+                    )
+                },
+                modifier = Modifier.weight(1f)
             ) {
+                Icon(Icons.Default.Add, contentDescription = null)
+                Spacer(Modifier.width(4.dp))
+                Text("Импорт", fontSize = 12.sp)
+            }
+            OutlinedButton(
+                onClick = { exportVcfLauncher.launch("contacts.vcf") },
+                modifier = Modifier.weight(1f)
+            ) {
+                Icon(Icons.Default.Share, contentDescription = null)
+                Spacer(Modifier.width(4.dp))
+                Text("Экспорт", fontSize = 12.sp)
+            }
+            Button(
+                onClick = { editingDraft = ContactDraft() },
+                modifier = Modifier.weight(1f)
+            ) {
+                Icon(Icons.Default.Add, contentDescription = null)
+                Spacer(Modifier.width(4.dp))
+                Text("Новый", fontSize = 12.sp)
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        if (isLoading) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
         } else if (contacts.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("Контакты не найдены")
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("Контакты не найдены")
+                    Spacer(Modifier.height(8.dp))
+                    Button(onClick = { editingDraft = ContactDraft() }) {
+                        Text("Добавить первый контакт")
+                    }
+                }
             }
         } else {
             LazyColumn(
+                state = listState,  // ← сохраняет позицию скролла
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                items(contacts) { contact ->
+                items(contacts, key = { it.id }) { contact ->
                     ContactItem(
                         contact = contact,
-                        onCallClick = {
-                            try {
-                                val cleanNumber = contact.phoneNumber.replace(Regex("[^0-9+]"), "")
-                                if (cleanNumber.isNotBlank()) {
-                                    val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
-                                    val uri = Uri.fromParts("tel", cleanNumber, null)
-                                    val extras = Bundle()
-                                    //telecomManager.placeCall(uri, extras)
-
-                                    if (currentSim != null) {
-                                        val callCapableAccounts = telecomManager.getCallCapablePhoneAccounts()
-
-                                        // Ищем системный идентификатор Handle для нашего слота SIM
-                                        val matchedHandle = callCapableAccounts.find { handle ->
-                                            handle.id.contains(currentSim!!.id.toString()) ||
-                                                    handle.id.contains(currentSim!!.slotIndex.toString())
-                                        }
-
-                                        if (matchedHandle != null) {
-                                            extras.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, matchedHandle)
-                                        }
-
-                                        // Дублируем скрытые флаги слотов для различных вендорных прошивок (Xiaomi, Samsung)
-                                        extras.putInt("com.android.phone.extra.slot", currentSim!!.slotIndex)
-                                        extras.putInt("simSlot", currentSim!!.slotIndex)
-
-                                        Log.d("ContactsCall", "Инициализация звонка из Контактов через SIM ${currentSim!!.slotIndex + 1}")
-                                    } else {
-                                        Log.d("ContactsCall", "Глобальная SIM не задана, звонок идет через системную SIM по умолчанию")
-                                    }
-                                    // Флаг, чтобы открывалась клавиатура во время звонка, если необходимо
-                                    extras.putInt("android.telecom.extra.START_CALL_WITH_KEYPAD", 1)
-
-                                    // Совершаем реальный вызов
-                                    telecomManager.placeCall(uri, extras)
-
-                                }
-                            } catch (e: SecurityException) {
-                                Log.e("Contacts", "Security error: ${e.message}")
-                                android.widget.Toast.makeText(
-                                    context,
-                                    "Нет разрешения на звонки",
-                                    android.widget.Toast.LENGTH_SHORT
-                                ).show()
-                            } catch (e: Exception) {
-                                Log.e("Contacts", "Error: ${e.message}")
-                                android.widget.Toast.makeText(
-                                    context,
-                                    "Ошибка при звонке",
-                                    android.widget.Toast.LENGTH_SHORT
-                                ).show()
+                        onCallClick = { phone -> placeCall(phone) },
+                        onEdit = {
+                            scope.launch {
+                                val (first, last, middle) = ContactRepository.loadStructuredName(
+                                    context, contact.contactId
+                                )
+                                editingDraft = ContactDraft(
+                                    id = contact.contactId,
+                                    firstName = first,
+                                    lastName = last,
+                                    middleName = middle,
+                                    displayName = contact.name,
+                                    phones = contact.phones.ifEmpty { listOf(contact.phoneNumber) },
+                                    photoUri = contact.photoUri
+                                )
                             }
-                        }
+                        },
+                        onAdd = { editingDraft = ContactDraft() },
+                        onDelete = { contactToDelete = contact }
                     )
                 }
             }
         }
     }
+
+    editingDraft?.let { draft ->
+        ContactEditScreen(
+            draft = draft,
+            onCancel = { editingDraft = null },
+            onSave = { updated ->
+                scope.launch {
+                    isLoading = true
+                    val ok = withContext(Dispatchers.IO) {
+                        if (updated.id == null) {
+                            ContactRepository.insertContact(context, updated)
+                        } else {
+                            ContactRepository.updateContact(context, updated)
+                        }
+                    }
+                    isLoading = false
+                    editingDraft = null
+                    android.widget.Toast.makeText(
+                        context,
+                        if (ok) "Сохранено" else "Ошибка сохранения",
+                        android.widget.Toast.LENGTH_SHORT
+                    ).show()
+                    if (ok) {
+                        // Локально обновляем только этот элемент, если он существует
+                        val idx = contacts.indexOfFirst { it.contactId == updated.id }
+                        if (idx >= 0 && updated.id != null) {
+                            val reloaded = withContext(Dispatchers.IO) {
+                                loadContacts(context, searchQuery)
+                                    .firstOrNull { it.contactId == updated.id }
+                            }
+                            if (reloaded != null) {
+                                contacts[idx] = reloaded
+                            } else {
+                                // Контакт не найден — возможно, переименован; перезагружаем всё
+                                reloadContacts()
+                            }
+                        } else {
+                            // Новый контакт — перезагружаем, чтобы он появился
+                            reloadContacts()
+                        }
+                    }
+                }
+            }
+        )
+    }
+
+    contactToDelete?.let { target ->
+        AlertDialog(
+            onDismissRequest = { contactToDelete = null },
+            title = { Text("Удалить контакт?") },
+            text = { Text("Контакт «${target.name}» будет удалён из телефонной книги.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        scope.launch {
+                            val ok = ContactRepository.deleteContact(context, target.contactId)
+                            contactToDelete = null
+                            if (ok) {
+                                // Удаляем локально — LazyColumn сам уберёт элемент,
+                                // позиция скролла сохранится благодаря listState
+                                contacts.removeAll { it.contactId == target.contactId }
+                            } else {
+                                android.widget.Toast.makeText(
+                                    context, "Ошибка удаления", android.widget.Toast.LENGTH_SHORT
+                                ).show()
+                                reloadContacts()
+                            }
+                        }
+                    }
+                ) { Text("Удалить") }
+            },
+            dismissButton = {
+                TextButton(onClick = { contactToDelete = null }) { Text("Отмена") }
+            }
+        )
+    }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ContactItem(
     contact: Contact,
-    onCallClick: () -> Unit
+    onCallClick: (String) -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
+    onAdd: () -> Unit
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Row(
+    var menuExpanded by remember { mutableStateOf(false) }
+    var phonePickerExpanded by remember { mutableStateOf(false) }
+
+    Box {
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .combinedClickable(
+                    onClick = {
+                        if (contact.phones.size > 1) phonePickerExpanded = true
+                        else onCallClick(contact.phones.firstOrNull() ?: contact.phoneNumber)
+                    },
+                    onLongClick = { menuExpanded = true },
+                    onLongClickLabel = "Действия с контактом"
+                )
         ) {
-            Column(
-                modifier = Modifier.weight(1f)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = contact.name,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
+                ContactAvatar(
+                    photoUri = contact.photoUri,
+                    name = contact.name,
+                    size = 44.dp
                 )
-                Text(
-                    text = contact.phoneNumber,
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                )
-            }
+                Spacer(Modifier.width(12.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        text = contact.name,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    val numbers = contact.phones.ifEmpty { listOf(contact.phoneNumber) }
+                    numbers.forEach { phone ->
+                        Text(
+                            text = phone,
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        )
+                    }
+                }
 
-            IconButton(
-                onClick = onCallClick,
-                colors = IconButtonDefaults.iconButtonColors(
-                    contentColor = MaterialTheme.colorScheme.primary
-                )
-            ) {
-                Icon(Icons.Default.Call, contentDescription = "Позвонить")
+                IconButton(
+                    onClick = {
+                        if (contact.phones.size > 1) phonePickerExpanded = true
+                        else onCallClick(contact.phones.firstOrNull() ?: contact.phoneNumber)
+                    },
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Icon(Icons.Default.Call, contentDescription = "Позвонить")
+                }
             }
+        }
+
+        DropdownMenu(
+            expanded = phonePickerExpanded,
+            onDismissRequest = { phonePickerExpanded = false }
+        ) {
+            val numbers = contact.phones.ifEmpty { listOf(contact.phoneNumber) }
+            numbers.forEach { phone ->
+                DropdownMenuItem(
+                    text = { Text(phone) },
+                    leadingIcon = { Icon(Icons.Default.Call, contentDescription = null) },
+                    onClick = {
+                        phonePickerExpanded = false
+                        onCallClick(phone)
+                    }
+                )
+            }
+        }
+
+        DropdownMenu(
+            expanded = menuExpanded,
+            onDismissRequest = { menuExpanded = false }
+        ) {
+            DropdownMenuItem(
+                text = { Text("Редактировать") },
+                leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null) },
+                onClick = { menuExpanded = false; onEdit() }
+            )
+            DropdownMenuItem(
+                text = { Text("Добавить новый") },
+                leadingIcon = { Icon(Icons.Default.Add, contentDescription = null) },
+                onClick = { menuExpanded = false; onAdd() }
+            )
+            DropdownMenuItem(
+                text = { Text("Удалить") },
+                leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null) },
+                onClick = { menuExpanded = false; onDelete() }
+            )
         }
     }
 }

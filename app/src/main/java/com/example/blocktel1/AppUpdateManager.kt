@@ -33,8 +33,9 @@ object AppUpdateManager {
             if (conn.responseCode == java.net.HttpURLConnection.HTTP_OK) {
                 val htmlText = conn.inputStream.bufferedReader().use { it.readText() }
 
-                val versionPattern = Pattern.compile("ver_([0-9]+\\\\.[0-9.]+)")
+                val versionPattern = Pattern.compile("ver_(\\d+(?:\\.\\d+)+)")
                 val matcher = versionPattern.matcher(htmlText)
+                    //Log.i(TAG, "ver_" + htmlText)
 
                 if (matcher.find()) {
                     val latestVersion = matcher.group(1) ?: ""

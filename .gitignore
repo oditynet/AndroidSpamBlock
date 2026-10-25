@@ -1,0 +1,23 @@
+key_blocktel1
+# Собранные артефакты
+build/
+*/build/
+app/build/
+
+# Локальные настройки (путь к SDK, пароли)
+local.properties
+
+# Ключи и подписи
+*.jks
+*.keystore
+key_blocktel1
+keystore.properties
+
+# Android Studio
+.idea/
+*.iml
+.gradle/
+captures/
+.externalNativeBuild/
+.cxx/
+app/build.gradle.kts

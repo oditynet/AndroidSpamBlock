@@ -26,24 +26,29 @@ class MyCallScreeningService : CallScreeningService() {
     }
 
     override fun onScreenCall(callDetails: Call.Details) {
+        val isIncoming = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            callDetails.callDirection == Call.Details.DIRECTION_INCOMING
+        } else true
+
+        Log.d(TAG, "onScreenCall: direction=${if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) callDetails.callDirection else -1}, isIncoming=$isIncoming")
+
+        if (!isIncoming) {
+            Log.d(TAG, "Исходящий — пропускаем без блокировки")
+            respondToCall(callDetails, CallScreeningService.CallResponse.Builder()
+                .setDisallowCall(false)
+                .setRejectCall(false)
+                .build())
+            return
+        }
+
         val phoneNumber = callDetails.handle?.schemeSpecificPart ?: ""
-        val cleanNumber = phoneNumber.replace(Regex("[^0-9+]"), "")
-
-
-        val contactName = getContactName(cleanNumber)
+        val contactName = getContactName(phoneNumber)
         Log.d(TAG, "Имя: ${contactName ?: "Не найдено"}")
 
         val settings = loadSettings(this)
         val blockedPatterns = loadBlockedPatterns(this)
 
-        val shouldBlock = shouldBlockCall(
-            phoneNumber,
-            contactName,
-            blockedPatterns,
-            settings,
-            this
-        )
-
+        val shouldBlock = shouldBlockCall(phoneNumber, contactName, blockedPatterns, settings, this)
         Log.d(TAG, "Блокировать: $shouldBlock")
 
         if (shouldBlock) {
@@ -63,7 +68,6 @@ class MyCallScreeningService : CallScreeningService() {
                 .setRejectCall(shouldBlock)
                 .build()
         }
-
         respondToCall(callDetails, response)
     }
 
@@ -74,7 +78,8 @@ class MyCallScreeningService : CallScreeningService() {
             val cleanNumber = phoneNumber.replace(Regex("[^0-9+]"), "")
 
             val uri = ContactsContract.PhoneLookup.CONTENT_FILTER_URI.buildUpon()
-                .appendPath(cleanNumber)
+                //.appendPath(cleanNumber)
+                .appendPath(phoneNumber)
                 .build()
 
             val projection = arrayOf(ContactsContract.PhoneLookup.DISPLAY_NAME)

@@ -4,17 +4,27 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("/home/odity/android-studio/bin/key_blocktel1")
+            storePassword = "123456"
+            keyAlias = "key0"
+            keyPassword = "123456"
+        }
+    }
     namespace = "com.example.blocktel1"
     compileSdk {
         version = release(36)
     }
 
+
+
     defaultConfig {
-        applicationId = "com.example.blocktel"
+        applicationId = "com.example.blocktel1"
         minSdk = 33
         targetSdk = 36
         versionCode = 1
-        versionName = "0.3.7.3"
+        versionName = "0.3.7.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -66,4 +76,6 @@ dependencies {
     // Для определения номера телефона
     implementation(libs.play.services.auth)
     implementation(libs.play.services.identity)
+
+    implementation("io.coil-kt:coil-compose:2.7.0")
 }
