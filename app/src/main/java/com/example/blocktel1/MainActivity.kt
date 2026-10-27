@@ -1003,7 +1003,7 @@ fun CallMonitorApp(
                             Text("📞 Телефон")
                             if (settings.value.isDefaultDialer) {
                                 Text(
-                                    text = "версия 0.3.7.5", //versionName = "0.3.5" nтоже менять в build.gradle.kts APP
+                                    text = "версия 0.3.7.6", //versionName = "0.3.5" nтоже менять в build.gradle.kts APP
                                     fontSize = 12.sp,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -3287,6 +3287,9 @@ fun ActiveCallScreen(
     val context = LocalContext.current
     val activity = context as? android.app.Activity
 
+    var isKeypadVisible by remember { mutableStateOf(false) }
+    var dtmfDigits by remember { mutableStateOf("") }
+
     // ИСПРАВЛЕНИЕ: Объявляем недостающие переменные состояния
     var isSpeakerOn by remember { mutableStateOf(false) }
     var isMuted by remember { mutableStateOf(false) }
@@ -3369,6 +3372,21 @@ fun ActiveCallScreen(
         }
     }
 
+    // Слушатель тикания секунд разговора
+    LaunchedEffect(callState) {
+        if (callState == android.telecom.Call.STATE_ACTIVE) {
+            while (true) {
+                kotlinx.coroutines.delay(1000)
+                durationInSeconds++
+            }
+        } else {
+            durationInSeconds = 0
+            // Скрываем клавиатуру при завершении/изменении состояния вызова
+            isKeypadVisible = false
+            dtmfDigits = ""
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -3433,92 +3451,183 @@ fun ActiveCallScreen(
             }
         }
 
-        // Нижний блок динамических кнопок (Остается как в прошлой правке)
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(bottom = 48.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
+        // Нижний блок динамических кнопок
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 48.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (callState == android.telecom.Call.STATE_RINGING) {
-                // Кнопка сброса входящего (Красная)
-                IconButton(
-                    onClick = {
-                        call.reject(false, null)
-                        onDisconnect()
-                    },
-                    modifier = Modifier.size(84.dp).background(MaterialTheme.colorScheme.error, shape = RoundedCornerShape(50))
-                ) {
-                    Icon(Icons.Default.Close, contentDescription = "Отклонить", tint = MaterialTheme.colorScheme.onError, modifier = Modifier.size(36.dp))
-                }
+            // Отображение введённых DTMF-цифр
+            if (isKeypadVisible) {
+                Text(
+                    text = dtmfDigits.ifEmpty { " " },
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+            }
 
-                // Кнопка принять входящий (Зеленая)
-                IconButton(
-                    onClick = {
-                        MyInCallService.stopRingtone()
-                        MyInCallService.stopVibration()
-                        call.answer(android.telecom.VideoProfile.STATE_AUDIO_ONLY)
-                    },
-                    modifier = Modifier.size(84.dp).background(androidx.compose.ui.graphics.Color(0xFF4CAF50), shape = RoundedCornerShape(50))
+            // Сетка клавиатуры (показывается только во время активного разговора)
+            if (isKeypadVisible && callState == android.telecom.Call.STATE_ACTIVE) {
+                val keypadRows = listOf(
+                    listOf("1", "2", "3"),
+                    listOf("4", "5", "6"),
+                    listOf("7", "8", "9"),
+                    listOf("*", "0", "#")
+                )
+                Column(
+                    modifier = Modifier.padding(bottom = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    Icon(Icons.Default.Check, contentDescription = "Ответить", tint = androidx.compose.ui.graphics.Color.White, modifier = Modifier.size(36.dp))
+                    keypadRows.forEach { row ->
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            row.forEach { digit ->
+                                Button(
+                                    onClick = {
+                                        dtmfDigits += digit
+                                        try {
+                                            call.playDtmfTone(digit.first())
+                                        } catch (e: Exception) {
+                                            Log.e("ActiveCallScreen", "DTMF error: ${e.message}")
+                                        }
+                                    },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(52.dp),
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                                    ),
+                                    contentPadding = PaddingValues(0.dp)
+                                ) {
+                                    Text(digit, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                                }
+                            }
+                        }
+                    }
                 }
-            } else {
-                // Разговор или Исходящий набор
+            }
 
-                // Кнопка микрофона (Mute)
-                IconButton(
-                    onClick = {
-                        isMuted = !isMuted
-                        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as android.media.AudioManager
-                        audioManager.isMicrophoneMute = isMuted
-                    },
-                    modifier = Modifier
-                        .size(64.dp)
-                        .background(
-                            if (isMuted) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.surfaceVariant,
-                            shape = RoundedCornerShape(50)
+            // Основные кнопки управления
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (callState == android.telecom.Call.STATE_RINGING) {
+                    // Кнопка сброса входящего (Красная)
+                    IconButton(
+                        onClick = {
+                            call.reject(false, null)
+                            onDisconnect()
+                        },
+                        modifier = Modifier.size(84.dp).background(MaterialTheme.colorScheme.error, shape = RoundedCornerShape(50))
+                    ) {
+                        Icon(Icons.Default.Close, contentDescription = "Отклонить", tint = MaterialTheme.colorScheme.onError, modifier = Modifier.size(36.dp))
+                    }
+
+                    // Кнопка принять входящий (Зеленая)
+                    IconButton(
+                        onClick = {
+                            MyInCallService.stopRingtone()
+                            MyInCallService.stopVibration()
+                            call.answer(android.telecom.VideoProfile.STATE_AUDIO_ONLY)
+                        },
+                        modifier = Modifier.size(84.dp).background(androidx.compose.ui.graphics.Color(0xFF4CAF50), shape = RoundedCornerShape(50))
+                    ) {
+                        Icon(Icons.Default.Check, contentDescription = "Ответить", tint = androidx.compose.ui.graphics.Color.White, modifier = Modifier.size(36.dp))
+                    }
+                } else {
+                    // Разговор или Исходящий набор
+
+                    // Кнопка микрофона (Mute)
+                    IconButton(
+                        onClick = {
+                            isMuted = !isMuted
+                            val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as android.media.AudioManager
+                            audioManager.isMicrophoneMute = isMuted
+                        },
+                        modifier = Modifier
+                            .size(64.dp)
+                            .background(
+                                if (isMuted) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.surfaceVariant,
+                                shape = RoundedCornerShape(50)
+                            )
+                    ) {
+                        Icon(
+                            imageVector = if (isMuted) Icons.Default.Check else Icons.Default.Face,
+                            contentDescription = "Микрофон",
+                            tint = if (isMuted) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                ) {
-                    Icon(
-                        imageVector = if (isMuted) Icons.Default.Check else Icons.Default.Face, // Временные иконки
-                        contentDescription = "Микрофон",
-                        tint = if (isMuted) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
+                    }
 
-                // Кнопка завершения звонка (Красная по центру)
-                IconButton(
-                    onClick = {
-                        call.disconnect()
-                        onDisconnect()
-                    },
-                    modifier = Modifier.size(80.dp).background(MaterialTheme.colorScheme.error, shape = RoundedCornerShape(50))
-                ) {
-                    Icon(Icons.Default.Close, contentDescription = "Завершить вызов", tint = MaterialTheme.colorScheme.onError, modifier = Modifier.size(32.dp))
-                }
+                    // Кнопка завершения звонка (Красная по центру)
+                    IconButton(
+                        onClick = {
+                            call.disconnect()
+                            onDisconnect()
+                        },
+                        modifier = Modifier.size(80.dp).background(MaterialTheme.colorScheme.error, shape = RoundedCornerShape(50))
+                    ) {
+                        Icon(Icons.Default.Close, contentDescription = "Завершить вызов", tint = MaterialTheme.colorScheme.onError, modifier = Modifier.size(32.dp))
+                    }
 
-                // Кнопка громкой связи (Спикер)
-                IconButton(
-                    onClick = {
-                        isSpeakerOn = !isSpeakerOn
-                        MyInCallService.toggleSpeaker(isSpeakerOn)
-                    },
-                    modifier = Modifier
-                        .size(64.dp)
-                        .background(
-                            if (isSpeakerOn) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
-                            shape = RoundedCornerShape(50)
+                    // Кнопка КЛАВИАТУРЫ (DTMF) — только во время активного разговора
+                    if (callState == android.telecom.Call.STATE_ACTIVE) {
+                        IconButton(
+                            onClick = {
+                                isKeypadVisible = !isKeypadVisible
+                                if (!isKeypadVisible) {
+                                    // При закрытии клавиатуры очищаем введённые цифры
+                                    dtmfDigits = ""
+                                }
+                            },
+                            modifier = Modifier
+                                .size(64.dp)
+                                .background(
+                                    if (isKeypadVisible) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                                    shape = RoundedCornerShape(50)
+                                )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Menu,
+                                contentDescription = "Клавиатура",
+                                tint = if (isKeypadVisible) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(28.dp)
+                            )
+                        }
+                    }
+
+                    // Кнопка громкой связи (Спикер)
+                    IconButton(
+                        onClick = {
+                            isSpeakerOn = !isSpeakerOn
+                            MyInCallService.toggleSpeaker(isSpeakerOn)
+                        },
+                        modifier = Modifier
+                            .size(64.dp)
+                            .background(
+                                if (isSpeakerOn) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                                shape = RoundedCornerShape(50)
+                            )
+                    ) {
+                        Icon(
+                            painter = androidx.compose.ui.res.painterResource(id = android.R.drawable.stat_sys_speakerphone),
+                            contentDescription = "Громкая связь",
+                            tint = if (isSpeakerOn) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(28.dp)
                         )
-                ) {
-                    Icon(
-                        painter = androidx.compose.ui.res.painterResource(id = android.R.drawable.stat_sys_speakerphone),
-                        contentDescription = "Громкая связь",
-                        tint = if (isSpeakerOn) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(28.dp)
-                    )
+                    }
                 }
             }
         }
+
     }
 }
 
